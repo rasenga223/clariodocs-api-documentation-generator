@@ -20,7 +20,10 @@ export const SidebarItem = ({ icon, label }: SidebarItemProps) => {
     <Button
       type="button"
       variant={"ghost"}
-      className="h-auto w-full cursor-pointer justify-start gap-4 rounded-md p-2 hover:bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0"
+      className={cn(
+        "group h-auto w-full cursor-pointer justify-start gap-4 rounded-none p-2 hover:!bg-emerald-500",
+        "focus-visible:ring-0 focus-visible:ring-offset-0",
+      )}
       aria-label={label}
       role="menuitem"
       onFocus={() => setIsFocused(true)}
@@ -52,9 +55,9 @@ export const SidebarItem = ({ icon, label }: SidebarItemProps) => {
               transition: { duration: 0.3 },
             }}
             className={cn(
-              "overflow-hidden whitespace-nowrap",
+              "overflow-hidden whitespace-nowrap text-zinc-400 transition-colors group-hover:text-white",
               isFocused &&
-                "text-primary-300 dark:text-primary-100 font-semibold",
+                "dark:text-primary-100 font-semibold text-emerald-300",
             )}
             aria-hidden={!isOpen}
           >
