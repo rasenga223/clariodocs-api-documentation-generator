@@ -68,12 +68,7 @@ export const Sidebar = () => {
       aria-label="Main navigation"
       tabIndex={-1}
     >
-      <header
-        className={cn(
-          "grid transition-all",
-          isOpen ? "place-content-end" : "place-content-center",
-        )}
-      >
+      <header className={cn("mr-1 grid place-content-end")}>
         <Button
           size={"icon"}
           variant={"ghost"}
