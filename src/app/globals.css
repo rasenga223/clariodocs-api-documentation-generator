@@ -4,8 +4,8 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  /* --background: #ffffff;
-  --foreground: #171717; */
+  --background: #ffffff;
+  --foreground: #171717;
   --radius: 0.625rem;
   --background: oklch(1 0 0);
   --foreground: oklch(0.141 0.005 285.823);
