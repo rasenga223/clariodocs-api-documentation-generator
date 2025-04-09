@@ -56,13 +56,14 @@ export default function HomePage() {
     <div className="flex h-screen w-full">
       <Sidebar />
       <div className="flex flex-col flex-1">
-        <EditorHeader 
-          view={view} 
-          setView={setView} 
-          history={history} 
-          revertToVersion={revertToVersion} 
-          saveVersion={saveVersion}  // Pass saveVersion here
-        />
+      <EditorHeader
+        code={code}
+        saveVersion={saveVersion}
+        setView={setView}
+        view={view}
+        history={history}
+        revertToVersion={revertToVersion}
+      />
         <div className="flex flex-1 overflow-hidden">
           {(view === "split" || view === "editor") && (
             <EditorPane code={code} setCode={setCode} view={view} />
