@@ -11,7 +11,7 @@ export const DecorativeSquare: React.FC<DecorativeSquareProps> = ({
     <div
       aria-hidden="true"
       className={cn(
-        "pointer-events-none absolute z-50 aspect-square w-4 border-0 border-emerald-500",
+        "pointer-events-none absolute z-40 aspect-square w-4 border-0 border-emerald-500",
         className,
       )}
     />

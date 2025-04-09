@@ -38,7 +38,7 @@ export const Sidebar = () => {
   const SIDEBAR_VARIANTS = {
     open: {
       x: 0,
-      width: "20rem",
+      width: "16rem",
       transition: {
         x: { duration: 0.5, ease: "easeInOut" },
         width: { delay: isMobile ? 0.3 : 0, duration: 0.5, ease: "easeInOut" },
@@ -58,7 +58,7 @@ export const Sidebar = () => {
     <motion.aside
       ref={sidebarRef}
       className={cn(
-        "dark:bg-background z-40 h-svh min-w-20 space-y-8 border-r bg-white p-4 max-md:absolute md:z-50 md:space-y-4",
+        "dark:bg-background z-50 h-svh min-w-20 space-y-8 border-r bg-white p-4 max-md:absolute md:z-50 md:space-y-4",
         !isOpen && isMobile && "pointer-events-none",
       )}
       initial="closed"
@@ -73,7 +73,7 @@ export const Sidebar = () => {
           size={"icon"}
           variant={"ghost"}
           onClick={toggleSidebar}
-          className="aspect-square cursor-pointer shadow-sm"
+          className="aspect-square cursor-pointer shadow-sm max-lg:hidden"
           aria-label={isOpen ? "Close sidebar" : "Open sidebar"}
           aria-expanded={isOpen}
         >
