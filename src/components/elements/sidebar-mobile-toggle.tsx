@@ -147,7 +147,7 @@ export const SidebarMobileToggle = () => {
   return (
     <div
       ref={dragRef}
-      className="fixed right-0 z-50 rounded-l-lg bg-emerald-500 p-2 select-none"
+      className="fixed right-0 z-50 cursor-grab rounded-l-lg bg-emerald-500 p-2 select-none active:cursor-grabbing"
       style={{ top: `${offsetY}px` }}
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
