@@ -1,11 +1,14 @@
 "use client";
 
-import { useState } from "react";
+// import { useState } from "react";
 import Editor from "@monaco-editor/react";
 
-export default function EditorPane() {
-  const [code, setCode] = useState<string>("// Write your MDX or content here\n");
+type Props = {
+  code: string;
+  setCode: (val: string) => void;
+};
 
+export default function EditorPane({ code, setCode }: Props) {
   return (
     <div className="w-1/2 h-full border-r overflow-hidden bg-gray-50 dark:bg-gray-900">
       <Editor
