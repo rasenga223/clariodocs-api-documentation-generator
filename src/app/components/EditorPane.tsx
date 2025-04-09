@@ -1,16 +1,20 @@
 "use client";
 
-// import { useState } from "react";
 import Editor from "@monaco-editor/react";
 
 type Props = {
   code: string;
   setCode: (val: string) => void;
+  view: "split" | "editor" | "preview";
 };
 
-export default function EditorPane({ code, setCode }: Props) {
+export default function EditorPane({ code, setCode, view }: Props) {
   return (
-    <div className="w-1/2 h-full border-r overflow-hidden bg-gray-50 dark:bg-gray-900">
+    <div
+      className={`h-full border-r overflow-hidden bg-gray-50 dark:bg-gray-900 ${
+        view === "split" ? "w-1/2" : "w-full"
+      }`}
+    >
       <Editor
         height="100%"
         defaultLanguage="markdown"

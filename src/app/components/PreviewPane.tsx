@@ -8,16 +8,16 @@ import { MDXProvider } from "@mdx-js/react";
 
 interface Props {
   code: string;
+  view: "split" | "editor" | "preview";
 }
 
-export default function PreviewPane({ code }: Props) {
+export default function PreviewPane({ code, view }: Props) {
   const [Component, setComponent] = useState<React.ComponentType | null>(null);
 
   useEffect(() => {
     try {
       const compiled = compileSync(code, {
         outputFormat: "function-body",
-        // useDynamicImport: false,
       });
 
       const result = runSync(String(compiled), {
@@ -37,7 +37,11 @@ export default function PreviewPane({ code }: Props) {
   }, [code]);
 
   return (
-    <div className="w-1/2 h-full p-4 overflow-y-auto bg-white dark:bg-gray-950">
+    <div
+      className={`h-full p-4 overflow-y-auto bg-white dark:bg-gray-950 ${
+        view === "split" ? "w-1/2" : "w-full"
+      }`}
+    >
       <MDXProvider>
         {Component ? <Component /> : <p className="text-gray-400">Loading preview...</p>}
       </MDXProvider>
