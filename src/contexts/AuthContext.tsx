@@ -10,6 +10,7 @@ interface AuthContextType {
   signInWithGitHub: () => Promise<void>;
   signInWithEmail: (email: string) => Promise<{ error: Error | null }>;
   signOut: () => Promise<void>;
+  updateUserProfile: (data: { name?: string; email?: string; phone?: string }) => Promise<{ error: Error | null }>;
 }
 
 // Create a default value for the context
@@ -19,6 +20,7 @@ const defaultContextValue: AuthContextType = {
   signInWithGitHub: async () => {},
   signInWithEmail: async () => ({ error: null }),
   signOut: async () => {},
+  updateUserProfile: async () => ({ error: null }),
 };
 
 const AuthContext = createContext<AuthContextType>(defaultContextValue);
@@ -98,12 +100,51 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const updateUserProfile = async ({ name, email, phone }: { name?: string; email?: string; phone?: string }) => {
+    try {
+      // Update user metadata
+      if (name || phone !== undefined) {
+        const { error: metadataError } = await supabase.auth.updateUser({
+          data: {
+            ...(name && { name }),
+            ...(phone !== undefined && { phone }),
+          },
+        });
+
+        if (metadataError) {
+          throw metadataError;
+        }
+      }
+
+      // Update email separately if provided
+      if (email && email !== user?.email) {
+        const { error: emailError } = await supabase.auth.updateUser({
+          email,
+        });
+
+        if (emailError) {
+          throw emailError;
+        }
+      }
+
+      // Refresh user data
+      const updatedUser = await getUser();
+      setUser(updatedUser);
+
+      return { error: null };
+    } catch (error) {
+      console.error('Error updating profile:', error);
+      return { error: error instanceof Error ? error : new Error('Failed to update profile') };
+    }
+  };
+
   const value = {
     user,
     loading,
     signInWithGitHub,
     signInWithEmail,
     signOut,
+    updateUserProfile,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

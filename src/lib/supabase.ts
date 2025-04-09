@@ -20,6 +20,7 @@ export type UserData = {
     preferred_username?: string;
     user_name?: string;
     full_name?: string;
+    phone?: string;
   };
 };
 

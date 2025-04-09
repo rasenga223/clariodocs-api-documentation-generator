@@ -4,6 +4,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import ProfileInfo from '@/components/ProfileInfo';
+import Link from 'next/link';
 
 export default function Dashboard() {
   const { user, loading, signOut } = useAuth();
@@ -40,12 +41,20 @@ export default function Dashboard() {
       <div className="mx-auto max-w-4xl">
         <div className="mb-8 flex items-center justify-between">
           <h1 className="text-3xl font-bold md:text-4xl">Dashboard</h1>
-          <button
-            onClick={signOut}
-            className="rounded-md bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700"
-          >
-            Sign out
-          </button>
+          <div className="flex gap-2">
+            <Link
+              href="/profile"
+              className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
+            >
+              Profile Settings
+            </Link>
+            <button
+              onClick={signOut}
+              className="rounded-md bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700"
+            >
+              Sign out
+            </button>
+          </div>
         </div>
 
         <div className="rounded-lg bg-white p-6 shadow-md dark:bg-gray-800">
