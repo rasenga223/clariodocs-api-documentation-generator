@@ -1,9 +1,8 @@
 "use client"
 
-import { useState } from "react"
 import { saveAs } from "file-saver"
 import { jsPDF } from "jspdf"
-import { Code, Download, Eye, FileText, History, SplitIcon as LayoutSplit, Save, Settings } from 'lucide-react'
+import { Code, Download, Eye, FileText, History, SplitIcon as LayoutSplit, Save } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -24,7 +23,6 @@ type Props = {
 }
 
 export default function EditorHeader({ view, setView, history, revertToVersion, saveVersion, code }: Props) {
-  const [showSettings, setShowSettings] = useState(false)
 
   const exportMarkdown = () => {
     if (code.trim()) {
@@ -157,10 +155,6 @@ export default function EditorHeader({ view, setView, history, revertToVersion, 
             </DropdownMenuContent>
           </DropdownMenu>
         )}
-
-        <Button variant="ghost" size="icon" onClick={() => setShowSettings(!showSettings)}>
-          <Settings className="h-4 w-4" />
-        </Button>
       </div>
     </header>
   )
