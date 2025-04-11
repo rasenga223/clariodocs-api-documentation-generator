@@ -9,7 +9,7 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
       <main className="flex flex-col">
         <DashboardHeader />
         {/* <DashboardTab /> */}
-        <div className="scrollbar max-h-[calc(100dvh-4rem)] overflow-y-auto">
+        <div className="scrollbar max-h-[calc(100dvh-3.25rem)] flex-1 overflow-y-auto">
           {children}
         </div>
       </main>
