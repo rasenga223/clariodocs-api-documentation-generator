@@ -1,8 +1,14 @@
-'use client';
+"use client";
 
-import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import { supabase, UserData, getUser } from '@/lib/supabase';
-import { useRouter } from 'next/navigation';
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  ReactNode,
+} from "react";
+import { supabase, UserData, getUser } from "@/lib/supabase";
+import { useRouter } from "next/navigation";
 
 interface AuthContextType {
   user: UserData | null;
@@ -34,7 +40,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const userData = await getUser();
         setUser(userData);
       } catch (error) {
-        console.error('Error fetching user:', error);
+        console.error("Error fetching user:", error);
       } finally {
         setLoading(false);
       }
@@ -51,7 +57,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           setUser(null);
         }
         setLoading(false);
-      }
+      },
     );
 
     return () => {
@@ -62,14 +68,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const signInWithGitHub = async () => {
     try {
       const { error } = await supabase.auth.signInWithOAuth({
-        provider: 'github',
+        provider: "github",
         options: {
           redirectTo: `${window.location.origin}/auth/callback`,
         },
       });
       if (error) throw error;
     } catch (error) {
-      console.error('Error signing in with GitHub:', error);
+      console.error("Error signing in with GitHub:", error);
     }
   };
 
@@ -83,8 +89,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       });
       return { error };
     } catch (error) {
-      console.error('Error signing in with email:', error);
-      return { error: new Error('Failed to sign in with email') };
+      console.error("Error signing in with email:", error);
+      return { error: new Error("Failed to sign in with email") };
     }
   };
 
@@ -92,9 +98,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       await supabase.auth.signOut();
       setUser(null);
-      router.push('/');
+      router.push("/");
     } catch (error) {
-      console.error('Error signing out:', error);
+      console.error("Error signing out:", error);
     }
   };
 
@@ -111,5 +117,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
 export function useAuth() {
   const context = useContext(AuthContext);
+  if (context === undefined) {
+    throw new Error("useAuth must be used within a AuthProvider");
+  }
   return context;
 }
