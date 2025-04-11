@@ -29,7 +29,7 @@ export default function Home() {
       <div className="grid min-h-screen grid-rows-[20px_1fr_20px] items-center justify-items-center gap-16 p-8 pb-20 font-[family-name:var(--font-geist-sans)] sm:p-20">
         <main className="row-start-2 flex flex-col items-center gap-[32px] sm:items-start">
           <div className="flex items-center justify-center">
-            <div className="h-8 w-8 animate-spin rounded-full border-t-4 border-blue-500"></div>
+            <div className="w-8 h-8 border-t-4 border-blue-500 rounded-full animate-spin"></div>
           </div>
         </main>
       </div>
@@ -40,7 +40,7 @@ export default function Home() {
     <div className="grid min-h-screen grid-rows-[20px_1fr_20px] items-center justify-items-center gap-16 p-8 pb-20 font-[family-name:var(--font-geist-sans)] sm:p-20">
       <main className="row-start-2 flex flex-col items-center gap-[32px] sm:items-start">
         {user ? (
-          <div className="w-full rounded-lg bg-white p-6 shadow-lg dark:bg-gray-800">
+          <div className="w-full p-6 bg-white rounded-lg shadow-lg dark:bg-gray-800">
             <h2 className="mb-4 text-2xl font-bold">
               Hi, <span className="text-blue-600 dark:text-blue-400">{userName}</span>! 👋
             </h2>
