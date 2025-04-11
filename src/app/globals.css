@@ -158,11 +158,13 @@
   }
   body {
     @apply bg-background text-foreground;
-    font-feature-settings: "rlig" 1, "calt" 1;
+    font-feature-settings:
+      "rlig" 1,
+      "calt" 1;
     font-family: Arial, Helvetica, sans-serif;
   }
   @property --initial-loading {
-    syntax: '<percentage>';
+    syntax: "<percentage>";
     initial-value: 0%;
     inherits: false;
   }
@@ -170,9 +172,15 @@
 
 @layer utilities {
   @keyframes initial-loading {
-    0% { transform: translateX(-34px); }
-    50% { transform: translateX(96px); }
-    100% { transform: translateX(-34px); }
+    0% {
+      transform: translateX(-34px);
+    }
+    50% {
+      transform: translateX(96px);
+    }
+    100% {
+      transform: translateX(-34px);
+    }
   }
 
   .animate-initial-loading {
@@ -182,13 +190,13 @@
 
 /* Add custom styles for the MDX preview */
 .prose pre {
-  @apply p-4 overflow-x-auto rounded-md;
+  @apply overflow-x-auto rounded-md p-4;
   background-color: var(--tw-prose-pre-bg);
   border: 1px solid var(--tw-prose-pre-border);
 }
 
 .prose code {
-  @apply px-1 py-0.5 rounded text-sm;
+  @apply rounded px-1 py-0.5 text-sm;
   color: var(--tw-prose-code);
   background-color: var(--tw-prose-pre-bg);
 }
@@ -197,7 +205,7 @@
 .prose h2,
 .prose h3,
 .prose h4 {
-  @apply font-bold scroll-m-20;
+  @apply scroll-m-20 font-bold;
   color: var(--tw-prose-headings);
 }
 
@@ -236,7 +244,7 @@
 }
 
 .prose blockquote {
-  @apply pl-4 my-4 italic;
+  @apply my-4 pl-4 italic;
   border-left: 4px solid var(--tw-prose-quote-borders);
   color: var(--tw-prose-quotes);
 }
@@ -247,7 +255,7 @@
 }
 
 .prose table {
-  @apply w-full my-4 border-collapse;
+  @apply my-4 w-full border-collapse;
 }
 
 .prose th,
@@ -258,4 +266,19 @@
 
 .prose th {
   background-color: var(--tw-prose-pre-bg);
+}
+
+.scrollbar::-webkit-scrollbar {
+  width: 8px;
+}
+.scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.scrollbar::-webkit-scrollbar-thumb {
+  @apply rounded-[100vw] bg-emerald-500/50;
+  transition: all 200ms ease-in-out;
+}
+.scrollbar::-webkit-scrollbar-thumb:hover {
+  @apply bg-emerald-500;
+  cursor: pointer;
 }
