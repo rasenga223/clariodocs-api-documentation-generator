@@ -1,5 +1,6 @@
 "use client";
 import { useRef, useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 import { SidebarIcon } from "lucide-react";
 import { motion } from "motion/react";
 
@@ -17,6 +18,7 @@ const ITEMS = [
 
 export const Sidebar = () => {
   const isMobile = useIsMobile();
+  const pathname = usePathname();
   const sidebarRef = useRef<HTMLDivElement>(null);
   const [hasMounted, setHasMounted] = useState(false);
   const { isOpen, toggleSidebar } = useSidebar();
@@ -109,11 +111,14 @@ export const Sidebar = () => {
           {isOpen && hasMounted && "example@email.com"}
         </motion.li> */}
 
-        {ITEMS.map((item) => (
-          <li key={item.id} className="w-full">
-            <SidebarItem icon={item.icon} label={item.label} />
-          </li>
-        ))}
+        {ITEMS.map((item) => {
+          const isActive = pathname === item.link;
+          return (
+            <li key={item.id} className="w-full">
+              <SidebarItem {...item} isActive={isActive} />
+            </li>
+          );
+        })}
       </menu>
     </motion.aside>
   );
