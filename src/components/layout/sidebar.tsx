@@ -1,5 +1,5 @@
 "use client";
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
 import { SidebarIcon } from "lucide-react";
 import { motion } from "motion/react";
 
@@ -18,7 +18,13 @@ const ITEMS = [
 export const Sidebar = () => {
   const isMobile = useIsMobile();
   const sidebarRef = useRef<HTMLDivElement>(null);
+  const [hasMounted, setHasMounted] = useState(false);
   const { isOpen, toggleSidebar } = useSidebar();
+
+  // Set the Component has mounted
+  useEffect(() => {
+    setHasMounted(true);
+  }, []);
 
   // Handle FOCUS trap on mobile screens
   useEffect(() => {
@@ -62,7 +68,7 @@ export const Sidebar = () => {
         !isOpen && isMobile && "pointer-events-none",
       )}
       initial="closed"
-      animate={isOpen ? "open" : "closed"}
+      animate={isOpen && hasMounted ? "open" : "closed"}
       variants={SIDEBAR_VARIANTS}
       role="navigation"
       aria-label="Main navigation"
@@ -100,7 +106,7 @@ export const Sidebar = () => {
           className="ml-2 overflow-hidden whitespace-nowrap"
           aria-hidden={!isOpen}
         >
-          {isOpen && "example@email.com"}
+          {isOpen && hasMounted && "example@email.com"}
         </motion.li>
 
         {ITEMS.map((item) => (

@@ -1,5 +1,4 @@
 "use client";
-import { useIsMobile } from "@/hooks/use-ismobile";
 import {
   createContext,
   useContext,
@@ -7,6 +6,7 @@ import {
   useCallback,
   useEffect,
 } from "react";
+import { useIsMobile } from "@/hooks/use-ismobile";
 
 type SidebarContextType = {
   isOpen: boolean;
@@ -21,9 +21,20 @@ export function SidebarProvider({ children }: { children: React.ReactNode }) {
   const isMobile = useIsMobile();
   const [isOpen, setIsOpen] = useState(!isMobile);
 
+  // On mount, READ the persisted sidebar state from localStorage
   useEffect(() => {
-    setIsOpen(!isMobile);
+    const stored = localStorage.getItem("sidebarOpen");
+    if (stored !== null) {
+      setIsOpen(JSON.parse(stored));
+    } else {
+      setIsOpen(!isMobile);
+    }
   }, [isMobile]);
+
+  // PERSIST sidebar state to localStorage when it changes.
+  useEffect(() => {
+    localStorage.setItem("sidebarOpen", JSON.stringify(isOpen));
+  }, [isOpen]);
 
   const openSidebar = useCallback(() => {
     setIsOpen(true);
