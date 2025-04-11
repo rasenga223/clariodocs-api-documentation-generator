@@ -1,10 +1,12 @@
 import '@/app/globals.css';
+import type React from "react";
+import { Suspense } from 'react';
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import { AuthProvider } from '@/contexts/AuthContext';
 import { ThemeProvider } from "@/components/ThemeProvider";
-import { Suspense } from 'react';
-import type React from "react";
+import { Toaster } from "@/components/ui/sonner";
+import { Providers } from "@/provider";
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-geist-sans' });
 
@@ -28,14 +30,17 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${inter.className} bg-background text-foreground`}>
+      <body className={`${inter.className}  dark antialiased bg-background text-foreground`}>
         <Suspense fallback={<Loading />}>
-          <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
-            <AuthProvider>
-              {children}
-            </AuthProvider>
-          </ThemeProvider>
+          <Providers>
+            <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
+              <AuthProvider>
+                {children}
+              </AuthProvider>
+            </ThemeProvider>
+          </Providers>
         </Suspense>
+        <Toaster />
       </body>
     </html>
   );
