@@ -2,12 +2,15 @@ import "@/app/globals.css";
 import type React from "react";
 import { Suspense } from "react";
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { DM_Sans } from "next/font/google";
 import { Toaster } from "@/components/ui/sonner";
 import { Loader } from "@/components/elements/loader";
 import { Providers } from "@/provider";
 
-const inter = Inter({ subsets: ["latin"], variable: "--font-geist-sans" });
+const dmSans = DM_Sans({
+  subsets: ["latin"],
+  variable: "--font-dm-sans",
+});
 
 export const metadata: Metadata = {
   title: "API Documentation Generator",
@@ -30,7 +33,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${inter.className} dark bg-background text-foreground antialiased`}
+        className={`${dmSans.className} dark bg-background text-foreground antialiased`}
       >
         <Suspense fallback={<Loading />}>
           <Providers>{children}</Providers>

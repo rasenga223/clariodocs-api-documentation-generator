@@ -1,8 +1,13 @@
 "use client";
 import { useRef, useEffect, useState } from "react";
-import { usePathname } from "next/navigation";
-import { SidebarIcon } from "lucide-react";
 import { motion } from "motion/react";
+import { usePathname } from "next/navigation";
+import {
+  FileSliders,
+  LayoutDashboard,
+  SidebarIcon,
+  UserRound,
+} from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { SidebarItem } from "@/components/elements/sidebar-item";
@@ -11,9 +16,9 @@ import { useIsMobile } from "@/hooks/use-ismobile";
 import { cn } from "@/lib/utils";
 
 const ITEMS = [
-  { id: 1, label: "Dashboard", icon: "D", link: "/dashboard" },
-  { id: 2, label: "Editor", icon: "E", link: "/editor" },
-  { id: 3, label: "Profile", icon: "P", link: "/profile" },
+  { id: 1, label: "Dashboard", Icon: LayoutDashboard, link: "/dashboard" },
+  { id: 2, label: "Editor", Icon: FileSliders, link: "/editor" },
+  { id: 3, label: "Profile", Icon: UserRound, link: "/profile" },
 ];
 
 export const Sidebar = () => {
@@ -21,7 +26,7 @@ export const Sidebar = () => {
   const pathname = usePathname();
   const sidebarRef = useRef<HTMLDivElement>(null);
   const [hasMounted, setHasMounted] = useState(false);
-  const { isOpen, toggleSidebar } = useSidebar();
+  const { isOpen, openSidebar, closeSidebar, toggleSidebar } = useSidebar();
 
   // Set the Component has mounted
   useEffect(() => {
@@ -74,6 +79,8 @@ export const Sidebar = () => {
       variants={SIDEBAR_VARIANTS}
       role="navigation"
       aria-label="Main navigation"
+      onMouseEnter={openSidebar}
+      onMouseLeave={closeSidebar}
       tabIndex={-1}
     >
       <header className={cn("mr-1 grid place-content-end")}>

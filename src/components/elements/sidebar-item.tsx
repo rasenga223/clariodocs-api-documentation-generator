@@ -7,14 +7,14 @@ import { useSidebar } from "@/provider/sidebar";
 import { cn } from "@/lib/utils";
 
 interface SidebarItemProps {
-  icon: React.ReactNode;
+  Icon: React.ElementType;
   label: string;
   link: string;
   isActive: boolean;
 }
 
 export const SidebarItem = ({
-  icon,
+  Icon,
   label,
   link,
   isActive,
@@ -28,7 +28,7 @@ export const SidebarItem = ({
       href={link}
       aria-labelledby={label}
       className={cn(
-        "group flex h-auto w-full cursor-pointer items-center justify-start gap-4 rounded-none p-2 py-1.5 text-sm hover:!bg-emerald-500/80",
+        "group flex h-auto w-full cursor-pointer items-center justify-start gap-4 rounded-none p-2 py-1.5 text-sm",
         "focus-visible:ring-0 focus-visible:ring-offset-0",
       )}
       aria-label={label}
@@ -38,13 +38,13 @@ export const SidebarItem = ({
     >
       <span
         className={cn(
-          "flex aspect-square min-w-8 items-center justify-center rounded-md bg-zinc-100 dark:bg-zinc-800/50",
-          isFocused && "ring-2 ring-emerald-500",
-          isActive && "bg-emerald-500 dark:bg-emerald-500",
+          "flex aspect-square min-w-8 items-center justify-center rounded-md bg-zinc-100 text-zinc-500 group-hover:text-zinc-100 dark:bg-zinc-800/50",
+          isFocused && "text-zinc-100 ring-2 ring-emerald-500",
+          isActive && "bg-emerald-500 text-zinc-100 dark:bg-emerald-500/80",
         )}
         aria-hidden="true"
       >
-        {icon}
+        <Icon />
       </span>
 
       <AnimatePresence>
