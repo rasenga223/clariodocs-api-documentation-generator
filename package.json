@@ -23,12 +23,13 @@
     "@types/file-saver": "^2.0.7",
     "@types/jszip": "^3.4.0",
     "@types/react-syntax-highlighter": "^15.5.13",
+    "@types/uuid": "^10.0.0",
     "axios": "^1.8.4",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "file-saver": "^2.0.5",
-    "jszip": "^3.10.1",
     "jspdf": "^3.0.1",
+    "jszip": "^3.10.1",
     "lucide-react": "^0.487.0",
     "next": "15.2.5",
     "next-themes": "^0.4.6",
@@ -40,7 +41,8 @@
     "rehype-highlight": "^7.0.2",
     "remark-gfm": "^4.0.1",
     "tailwind-merge": "^3.2.0",
-    "tailwindcss-animate": "^1.0.7"
+    "tailwindcss-animate": "^1.0.7",
+    "uuid": "^11.1.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

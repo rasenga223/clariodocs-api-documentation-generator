@@ -20,9 +20,11 @@ type Props = {
   revertToVersion: (index: number) => void
   saveVersion: () => void
   code: string
+  isSaving?: boolean
+  hasProject?: boolean
 }
 
-export default function EditorHeader({ view, setView, history, revertToVersion, saveVersion, code }: Props) {
+export default function EditorHeader({ view, setView, history, revertToVersion, saveVersion, code, isSaving, hasProject }: Props) {
 
   const exportMarkdown = () => {
     if (code.trim()) {
@@ -66,12 +68,12 @@ export default function EditorHeader({ view, setView, history, revertToVersion, 
   const getViewIcon = () => {
     switch (view) {
       case "editor":
-        return <Code className="h-4 w-4" />
+        return <Code className="w-4 h-4" />
       case "preview":
-        return <Eye className="h-4 w-4" />
+        return <Eye className="w-4 h-4" />
       case "split":
       default:
-        return <LayoutSplit className="h-4 w-4" />
+        return <LayoutSplit className="w-4 h-4" />
     }
   }
 
@@ -88,46 +90,58 @@ export default function EditorHeader({ view, setView, history, revertToVersion, 
   }
 
   return (
-    <header className="h-14 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 px-4 flex items-center justify-between">
+    <header className="flex items-center justify-between px-4 border-b h-14 bg-background border-border">
       <div className="flex items-center space-x-2">
-        <h1 className="text-lg font-semibold">MDX Editor</h1>
+        <h1 className="text-lg font-semibold text-foreground">MDX Editor</h1>
       </div>
 
       <div className="flex items-center space-x-2">
         <Button variant="outline" size="sm" onClick={() => setView(getNextView())}>
           {getViewIcon()}
-          <span className="ml-2 hidden sm:inline">{view.charAt(0).toUpperCase() + view.slice(1)}</span>
+          <span className="hidden ml-2 sm:inline">{view.charAt(0).toUpperCase() + view.slice(1)}</span>
         </Button>
 
-        <Button variant="default" size="sm" onClick={saveVersion}>
-          <Save className="h-4 w-4 mr-2" />
-          <span className="hidden sm:inline">Save</span>
+        <Button variant="default" size="sm" onClick={saveVersion} disabled={isSaving}>
+          {isSaving ? (
+            <>
+              <svg className="w-4 h-4 mr-2 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+              </svg>
+              <span className="hidden sm:inline">Saving...</span>
+            </>
+          ) : (
+            <>
+              <Save className="w-4 h-4 mr-2" />
+              <span className="hidden sm:inline">Save{hasProject ? ' to Project' : ''}</span>
+            </>
+          )}
         </Button>
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" size="sm">
-              <Download className="h-4 w-4 mr-2" />
+              <Download className="w-4 h-4 mr-2" />
               <span className="hidden sm:inline">Export</span>
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
+          <DropdownMenuContent align="end" className="bg-popover border-border">
             <DropdownMenuLabel>Export As</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={exportMarkdown}>
-              <FileText className="h-4 w-4 mr-2" />
+              <FileText className="w-4 h-4 mr-2" />
               Markdown (.md)
             </DropdownMenuItem>
             <DropdownMenuItem onClick={exportMDX}>
-              <Code className="h-4 w-4 mr-2" />
+              <Code className="w-4 h-4 mr-2" />
               MDX (.mdx)
             </DropdownMenuItem>
             <DropdownMenuItem onClick={exportJSON}>
-              <FileText className="h-4 w-4 mr-2" />
+              <FileText className="w-4 h-4 mr-2" />
               JSON (.json)
             </DropdownMenuItem>
             <DropdownMenuItem onClick={exportPDF}>
-              <FileText className="h-4 w-4 mr-2" />
+              <FileText className="w-4 h-4 mr-2" />
               PDF (.pdf)
             </DropdownMenuItem>
           </DropdownMenuContent>
@@ -137,18 +151,18 @@ export default function EditorHeader({ view, setView, history, revertToVersion, 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" size="sm">
-                <History className="h-4 w-4 mr-2" />
+                <History className="w-4 h-4 mr-2" />
                 <span className="hidden sm:inline">History</span>
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-56">
+            <DropdownMenuContent align="end" className="w-56 bg-popover border-border">
               <DropdownMenuLabel>Version History</DropdownMenuLabel>
               <DropdownMenuSeparator />
               {history.map((commit, index) => (
                 <DropdownMenuItem key={index} onClick={() => revertToVersion(index)}>
                   <div className="flex flex-col">
-                    <span className="text-sm">{new Date(commit.timestamp).toLocaleString()}</span>
-                    <span className="text-xs text-gray-500">{commit.code.substring(0, 20)}...</span>
+                    <span className="text-sm text-foreground">{new Date(commit.timestamp).toLocaleString()}</span>
+                    <span className="text-xs text-muted-foreground">{commit.code.substring(0, 20)}...</span>
                   </div>
                 </DropdownMenuItem>
               ))}

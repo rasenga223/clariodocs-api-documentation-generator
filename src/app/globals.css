@@ -4,65 +4,105 @@
 
 @layer base {
   :root {
+    /* Modern black/white color scheme with blue accents */
     --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    --foreground: 240 10% 3.9%;
 
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card-foreground: 240 10% 3.9%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover-foreground: 240 10% 3.9%;
 
-    --primary: 221.2 83.2% 53.3%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 222 89% 55%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 240 4.8% 95.9%;
+    --secondary-foreground: 240 5.9% 10%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted: 240 4.8% 95.9%;
+    --muted-foreground: 240 3.8% 46.1%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --accent: 240 4.8% 95.9%;
+    --accent-foreground: 240 5.9% 10%;
 
     --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 221.2 83.2% 53.3%;
+    --border: 240 5.9% 90%;
+    --input: 240 5.9% 90%;
+    --ring: 222 89% 55%;
 
     --radius: 0.5rem;
+
+    /* Prose variables for light mode */
+    --tw-prose-body: hsl(240, 10%, 3.9%);
+    --tw-prose-headings: hsl(240, 10%, 3.9%);
+    --tw-prose-lead: hsl(240, 3.8%, 46.1%);
+    --tw-prose-links: hsl(222, 89%, 55%);
+    --tw-prose-bold: hsl(240, 10%, 3.9%);
+    --tw-prose-counters: hsl(240, 3.8%, 46.1%);
+    --tw-prose-bullets: hsl(240, 5.9%, 76%);
+    --tw-prose-hr: hsl(240, 5.9%, 90%);
+    --tw-prose-quotes: hsl(240, 10%, 3.9%);
+    --tw-prose-quote-borders: hsl(240, 5.9%, 90%);
+    --tw-prose-captions: hsl(240, 3.8%, 46.1%);
+    --tw-prose-code: hsl(240, 10%, 3.9%);
+    --tw-prose-pre-code: hsl(240, 3.8%, 46.1%);
+    --tw-prose-pre-bg: hsl(240, 4.8%, 95.9%);
+    --tw-prose-pre-border: hsl(240, 5.9%, 90%);
+    --tw-prose-th-borders: hsl(240, 5.9%, 90%);
+    --tw-prose-td-borders: hsl(240, 5.9%, 90%);
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
+    /* Pure black theme with sharp contrast */
+    --background: 0 0% 0%;
+    --foreground: 0 0% 98%;
 
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
+    --card: 0 0% 0%;
+    --card-foreground: 0 0% 98%;
 
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 0 0% 0%;
+    --popover-foreground: 0 0% 98%;
 
-    --primary: 217.2 91.2% 59.8%;
-    --primary-foreground: 222.2 47.4% 11.2%;
+    --primary: 222 89% 55%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 0 0% 5%;
+    --secondary-foreground: 0 0% 98%;
 
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
+    --muted: 0 0% 5%;
+    --muted-foreground: 0 0% 63%;
 
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
+    --accent: 0 0% 5%;
+    --accent-foreground: 0 0% 98%;
 
     --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive-foreground: 0 0% 98%;
 
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 224.3 76.5% 48%;
+    --border: 0 0% 10%;
+    --input: 0 0% 10%;
+    --ring: 222 89% 55%;
+
+    /* Prose variables for dark mode */
+    --tw-prose-body: hsl(0, 0%, 98%);
+    --tw-prose-headings: hsl(0, 0%, 100%);
+    --tw-prose-lead: hsl(240, 5%, 64.9%);
+    --tw-prose-links: hsl(222, 89%, 70%);
+    --tw-prose-bold: hsl(0, 0%, 100%);
+    --tw-prose-counters: hsl(240, 5%, 64.9%);
+    --tw-prose-bullets: hsl(240, 3.7%, 25%);
+    --tw-prose-hr: hsl(240, 3.7%, 15.9%);
+    --tw-prose-quotes: hsl(0, 0%, 98%);
+    --tw-prose-quote-borders: hsl(240, 3.7%, 15.9%);
+    --tw-prose-captions: hsl(240, 5%, 64.9%);
+    --tw-prose-code: hsl(0, 0%, 98%);
+    --tw-prose-pre-code: hsl(0, 0%, 98%);
+    --tw-prose-pre-bg: hsl(240, 10%, 7%);
+    --tw-prose-pre-border: hsl(240, 3.7%, 15.9%);
+    --tw-prose-th-borders: hsl(240, 3.7%, 15.9%);
+    --tw-prose-td-borders: hsl(240, 3.7%, 15.9%);
   }
 }
 
@@ -79,11 +119,15 @@
 
 /* Add custom styles for the MDX preview */
 .prose pre {
-  @apply p-4 overflow-x-auto bg-gray-100 rounded-md dark:bg-gray-800;
+  @apply p-4 overflow-x-auto rounded-md;
+  background-color: var(--tw-prose-pre-bg);
+  border: 1px solid var(--tw-prose-pre-border);
 }
 
 .prose code {
-  @apply bg-gray-100 dark:bg-gray-800 px-1 py-0.5 rounded text-sm;
+  @apply px-1 py-0.5 rounded text-sm;
+  color: var(--tw-prose-code);
+  background-color: var(--tw-prose-pre-bg);
 }
 
 .prose h1,
@@ -91,6 +135,7 @@
 .prose h3,
 .prose h4 {
   @apply font-bold scroll-m-20;
+  color: var(--tw-prose-headings);
 }
 
 .prose h1 {
@@ -107,6 +152,7 @@
 
 .prose p {
   @apply mb-4 leading-7;
+  color: var(--tw-prose-body);
 }
 
 .prose ul,
@@ -127,11 +173,14 @@
 }
 
 .prose blockquote {
-  @apply pl-4 my-4 italic border-l-4 border-gray-300 dark:border-gray-700;
+  @apply pl-4 my-4 italic;
+  border-left: 4px solid var(--tw-prose-quote-borders);
+  color: var(--tw-prose-quotes);
 }
 
 .prose hr {
-  @apply my-6 border-gray-300 dark:border-gray-700;
+  @apply my-6;
+  border-color: var(--tw-prose-hr);
 }
 
 .prose table {
@@ -140,9 +189,10 @@
 
 .prose th,
 .prose td {
-  @apply p-2 border border-gray-300 dark:border-gray-700;
+  @apply p-2;
+  border: 1px solid var(--tw-prose-td-borders);
 }
 
 .prose th {
-  @apply bg-gray-100 dark:bg-gray-800;
+  background-color: var(--tw-prose-pre-bg);
 }

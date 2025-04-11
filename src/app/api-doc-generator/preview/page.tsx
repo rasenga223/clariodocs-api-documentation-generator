@@ -51,13 +51,13 @@ const CustomH1 = ({ children, ...props }: any) => {
   return (
     <h1
       id={id}
-      className="mb-6 mt-2 scroll-m-20 text-4xl font-bold tracking-tight"
+      className="mt-2 mb-6 text-4xl font-bold tracking-tight scroll-m-20"
       {...props}
     >
       {children}
       <a
         href={`#${id}`}
-        className="ml-2 opacity-0 transition-opacity hover:opacity-100"
+        className="ml-2 transition-opacity opacity-0 hover:opacity-100"
         aria-label="Link to section"
       >
         #
@@ -71,13 +71,13 @@ const CustomH2 = ({ children, ...props }: any) => {
   return (
     <h2
       id={id}
-      className="mb-4 mt-12 scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight first:mt-0"
+      className="pb-2 mt-12 mb-4 text-3xl font-semibold tracking-tight border-b scroll-m-20 first:mt-0"
       {...props}
     >
       {children}
       <a
         href={`#${id}`}
-        className="ml-2 opacity-0 transition-opacity hover:opacity-100"
+        className="ml-2 transition-opacity opacity-0 hover:opacity-100"
         aria-label="Link to section"
       >
         #
@@ -89,9 +89,9 @@ const CustomH2 = ({ children, ...props }: any) => {
 // Add custom code block component
 const CustomCodeBlock = ({ language, code, title }: CodeExample) => {
   return (
-    <div className="my-6 rounded-lg border bg-gray-50 dark:border-gray-800 dark:bg-gray-900">
+    <div className="my-6 border rounded-lg bg-gray-50 dark:border-gray-800 dark:bg-gray-900">
       {title && (
-        <div className="border-b px-4 py-2 font-mono text-sm text-gray-600 dark:border-gray-800 dark:text-gray-400">
+        <div className="px-4 py-2 font-mono text-sm text-gray-600 border-b dark:border-gray-800 dark:text-gray-400">
           {title}
         </div>
       )}
@@ -121,7 +121,7 @@ const ApiEndpointComponent = ({ method, path, description, examples }: ApiEndpoi
   };
 
   return (
-    <div className="my-8 rounded-lg border bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-900">
+    <div className="p-6 my-8 bg-white border rounded-lg shadow-sm dark:border-gray-800 dark:bg-gray-900">
       <div className="flex items-center gap-4">
         <span className={cn(
           'rounded px-2.5 py-1 text-sm font-semibold',
@@ -129,7 +129,7 @@ const ApiEndpointComponent = ({ method, path, description, examples }: ApiEndpoi
         )}>
           {method}
         </span>
-        <code className="rounded bg-gray-100 px-2 py-1 font-mono text-sm dark:bg-gray-800">
+        <code className="px-2 py-1 font-mono text-sm bg-gray-100 rounded dark:bg-gray-800">
           {path}
         </code>
       </div>
@@ -302,13 +302,6 @@ export default function PreviewDocumentationPage() {
   };
   
   /**
-   * Change the currently displayed MDX file
-   */
-  const handleFileChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setCurrentFileIndex(Number(e.target.value));
-  };
-  
-  /**
    * Navigate to the next file in the list
    */
   const handleNextFile = () => {
@@ -324,6 +317,13 @@ export default function PreviewDocumentationPage() {
     if (currentFileIndex > 0) {
       setCurrentFileIndex(currentFileIndex - 1);
     }
+  };
+  
+  /**
+   * Change the currently displayed MDX file
+   */
+  const handleFileChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setCurrentFileIndex(Number(e.target.value));
   };
   
   // Add function to extract headings from markdown content
@@ -370,13 +370,38 @@ export default function PreviewDocumentationPage() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
   
+  /**
+   * Navigate to the editor with the current MDX file content
+   */
+  const handleEditInEditor = () => {
+    if (!mdxFiles.length) return;
+    
+    const currentFile = mdxFiles[currentFileIndex];
+    
+    // Store the current MDX content in sessionStorage for the editor
+    sessionStorage.setItem('mdxEditorCode', currentFile.content);
+    
+    // Get project ID from sessionStorage if available
+    const projectId = sessionStorage.getItem('projectId') || null;
+    if (projectId) {
+      sessionStorage.setItem('editorProjectId', projectId);
+      console.log('📝 Set project ID for editor:', projectId);
+    }
+    
+    // Get the filename for reference
+    sessionStorage.setItem('editorFilename', currentFile.filename);
+    
+    // Navigate to the editor
+    router.push('/editor');
+  };
+  
   // Show loading state while checking for client-side rendering
   if (!isClient) {
     return (
-      <div className="flex min-h-screen items-center justify-center">
+      <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
           <svg
-            className="mx-auto h-10 w-10 animate-spin text-blue-500"
+            className="w-10 h-10 mx-auto text-blue-500 animate-spin"
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
             viewBox="0 0 24 24"
@@ -404,10 +429,10 @@ export default function PreviewDocumentationPage() {
   // Show message if no files were generated
   if (mdxFiles.length === 0) {
     return (
-      <div className="flex min-h-screen items-center justify-center">
+      <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
           <svg
-            className="mx-auto h-16 w-16 text-gray-400"
+            className="w-16 h-16 mx-auto text-gray-400"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -426,7 +451,7 @@ export default function PreviewDocumentationPage() {
           </p>
           <Link
             href="/dashboard/api-doc-generator/generate"
-            className="mt-4 inline-block rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
+            className="inline-block px-4 py-2 mt-4 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700"
           >
             Generate Documentation
           </Link>
@@ -444,11 +469,11 @@ export default function PreviewDocumentationPage() {
       {/* Sidebar Toggle Button (Mobile) */}
       <button
         onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-        className="fixed left-4 top-4 z-50 rounded-md bg-gray-200 p-2 lg:hidden dark:bg-gray-800"
+        className="fixed z-50 p-2 bg-gray-200 rounded-md left-4 top-4 lg:hidden dark:bg-gray-800"
         aria-label={isSidebarOpen ? 'Close sidebar' : 'Open sidebar'}
       >
         <svg
-          className="h-6 w-6"
+          className="w-6 h-6"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -479,9 +504,9 @@ export default function PreviewDocumentationPage() {
           'lg:relative lg:translate-x-0'
         )}
       >
-        <div className="flex h-full flex-col">
+        <div className="flex flex-col h-full">
           {/* Sidebar Header */}
-          <div className="sticky top-0 z-10 border-b bg-gray-50 p-4 dark:border-gray-700 dark:bg-gray-800">
+          <div className="sticky top-0 z-10 p-4 border-b bg-gray-50 dark:border-gray-700 dark:bg-gray-800">
             <div className="flex items-center justify-between">
               <h2 className="text-xl font-bold text-gray-900 dark:text-white">Documentation</h2>
               <Button
@@ -499,7 +524,7 @@ export default function PreviewDocumentationPage() {
               <select
                 value={currentFileIndex}
                 onChange={handleFileChange}
-                className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                className="w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
               >
                 {mdxFiles.map((file, index) => (
                   <option key={`file-${index}`} value={index}>
@@ -543,16 +568,16 @@ export default function PreviewDocumentationPage() {
 
       {/* Enhanced Main Content */}
       <div className="flex-1 overflow-auto">
-        <div className="mx-auto max-w-4xl px-4 py-8">
+        <div className="max-w-4xl px-4 py-8 mx-auto">
           {/* Enhanced Top Navigation Bar */}
-          <div className="mb-8 flex items-center justify-between">
+          <div className="flex items-center justify-between mb-8">
             <div className="flex items-center space-x-4">
               <Link
-                href="/dashboard/api-doc-generator/generate"
+                href="/api-doc-generator/generate"
                 className="flex items-center text-sm text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
               >
                 <svg
-                  className="mr-2 h-4 w-4"
+                  className="w-4 h-4 mr-2"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -570,6 +595,14 @@ export default function PreviewDocumentationPage() {
             
             <div className="flex items-center space-x-2">
               <Button
+                onClick={handleEditInEditor}
+                variant="default"
+                size="sm"
+                className="text-white bg-purple-600 hover:bg-purple-700 dark:bg-purple-700 dark:hover:bg-purple-800"
+              >
+                Edit in MDX Editor
+              </Button>
+              <Button
                 onClick={() => setViewMode(viewMode === 'preview' ? 'source' : 'preview')}
                 variant="outline"
                 size="sm"
@@ -580,7 +613,7 @@ export default function PreviewDocumentationPage() {
                 onClick={handleCopyToClipboard}
                 variant="outline"
                 size="sm"
-                className="bg-purple-50 text-purple-700 hover:bg-purple-100 dark:bg-purple-900/50 dark:text-purple-300 dark:hover:bg-purple-900/70"
+                className="text-purple-700 bg-purple-50 hover:bg-purple-100 dark:bg-purple-900/50 dark:text-purple-300 dark:hover:bg-purple-900/70"
               >
                 Copy
               </Button>
@@ -604,7 +637,7 @@ export default function PreviewDocumentationPage() {
                 h3: ({node, ...props}) => (
                   <h3
                     id={props.children?.toString().toLowerCase().replace(/[^\w]+/g, '-')}
-                    className="mb-4 mt-8 scroll-m-20 text-2xl font-semibold tracking-tight"
+                    className="mt-8 mb-4 text-2xl font-semibold tracking-tight scroll-m-20"
                     {...props}
                   />
                 ),

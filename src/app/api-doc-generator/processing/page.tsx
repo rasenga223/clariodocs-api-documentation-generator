@@ -83,7 +83,7 @@ export default function ProcessingPage() {
     if (isComplete) {
       // In a real app, we would wait for a success response before redirecting
       const redirectTimer = setTimeout(() => {
-        router.push(`/dashboard/api-doc-generator/preview?projectId=${projectId}`);
+        router.push(`/api-doc-generator/preview?projectId=${projectId}`);
       }, 1500);
 
       return () => clearTimeout(redirectTimer);
@@ -102,8 +102,8 @@ export default function ProcessingPage() {
   // Loading state
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center">
-        <div className="h-16 w-16 animate-spin rounded-full border-t-4 border-blue-500"></div>
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="w-16 h-16 border-t-4 border-blue-500 rounded-full animate-spin"></div>
       </div>
     );
   }
@@ -119,24 +119,24 @@ export default function ProcessingPage() {
 
   return (
     <div className="min-h-screen p-6 md:p-12">
-      <div className="mx-auto max-w-4xl">
-        <div className="mb-8 flex items-center justify-between">
+      <div className="max-w-4xl mx-auto">
+        <div className="flex items-center justify-between mb-8">
           <h1 className="text-3xl font-bold md:text-4xl">Processing Your API Documentation</h1>
           {!isComplete && (
             <button
               onClick={handleCancel}
-              className="rounded-md bg-gray-200 px-4 py-2 text-sm font-medium text-gray-800 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
+              className="px-4 py-2 text-sm font-medium text-gray-800 bg-gray-200 rounded-md hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
             >
               Cancel
             </button>
           )}
         </div>
 
-        <div className="rounded-lg bg-white p-8 shadow-md dark:bg-gray-800">
+        <div className="p-8 bg-white rounded-lg shadow-md dark:bg-gray-800">
           {processingError ? (
             <div className="text-center">
               <svg
-                className="mx-auto mb-4 h-16 w-16 text-red-500"
+                className="w-16 h-16 mx-auto mb-4 text-red-500"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -153,7 +153,7 @@ export default function ProcessingPage() {
               <p className="mb-6 text-gray-600 dark:text-gray-300">{processingError}</p>
               <Link
                 href="/dashboard/api-doc-generator"
-                className="inline-flex items-center rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
+                className="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700"
               >
                 Try Again
               </Link>
@@ -161,10 +161,10 @@ export default function ProcessingPage() {
           ) : (
             <div>
               <div className="mb-8 text-center">
-                <div className="mx-auto mb-6 h-24 w-24 rounded-full bg-blue-100 p-4 dark:bg-blue-900/30">
+                <div className="w-24 h-24 p-4 mx-auto mb-6 bg-blue-100 rounded-full dark:bg-blue-900/30">
                   {isComplete ? (
                     <svg
-                      className="h-16 w-16 text-green-500 dark:text-green-400"
+                      className="w-16 h-16 text-green-500 dark:text-green-400"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -179,7 +179,7 @@ export default function ProcessingPage() {
                     </svg>
                   ) : (
                     <svg
-                      className="h-16 w-16 animate-spin text-blue-600 dark:text-blue-400"
+                      className="w-16 h-16 text-blue-600 animate-spin dark:text-blue-400"
                       xmlns="http://www.w3.org/2000/svg"
                       fill="none"
                       viewBox="0 0 24 24"
@@ -212,7 +212,7 @@ export default function ProcessingPage() {
 
               {/* Progress Bar */}
               <div className="mb-6">
-                <div className="mb-2 flex justify-between">
+                <div className="flex justify-between mb-2">
                   <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
                     {stage.label}
                   </span>
@@ -220,9 +220,9 @@ export default function ProcessingPage() {
                     {stage.percentage}%
                   </span>
                 </div>
-                <div className="h-4 w-full overflow-hidden rounded-full bg-gray-200 dark:bg-gray-700">
+                <div className="w-full h-4 overflow-hidden bg-gray-200 rounded-full dark:bg-gray-700">
                   <div
-                    className="h-full rounded-full bg-blue-600 transition-all duration-500 ease-out"
+                    className="h-full transition-all duration-500 ease-out bg-blue-600 rounded-full"
                     style={{ width: `${stage.percentage}%` }}
                   ></div>
                 </div>
@@ -243,7 +243,7 @@ export default function ProcessingPage() {
                     >
                       {index < currentStage ? (
                         <svg
-                          className="h-5 w-5"
+                          className="w-5 h-5"
                           fill="none"
                           stroke="currentColor"
                           viewBox="0 0 24 24"
@@ -277,8 +277,8 @@ export default function ProcessingPage() {
               {isComplete && (
                 <div className="mt-8 text-center">
                   <Link
-                    href={`/dashboard/api-doc-generator/preview?projectId=${projectId}`}
-                    className="inline-flex items-center rounded-md bg-blue-600 px-6 py-3 text-base font-medium text-white hover:bg-blue-700"
+                    href={`/api-doc-generator/preview?projectId=${projectId}`}
+                    className="inline-flex items-center px-6 py-3 text-base font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700"
                   >
                     View Documentation
                   </Link>

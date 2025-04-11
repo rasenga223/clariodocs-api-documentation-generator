@@ -94,7 +94,6 @@ export default {
             code: {
               color: "var(--tw-prose-code)",
               fontWeight: "600",
-              backgroundColor: "var(--tw-prose-pre-bg)",
               borderRadius: "0.25rem",
               paddingTop: "0.125rem",
               paddingBottom: "0.125rem",
@@ -102,16 +101,18 @@ export default {
               paddingRight: "0.25rem",
             },
             "code::before": {
-              content: '"`"',
+              content: '""',
             },
             "code::after": {
-              content: '"`"',
+              content: '""',
             },
             pre: {
               color: "var(--tw-prose-pre-code)",
               backgroundColor: "var(--tw-prose-pre-bg)",
               overflowX: "auto",
               fontWeight: "400",
+              borderRadius: "0.375rem",
+              border: "1px solid var(--tw-prose-pre-border)",
             },
             "pre code": {
               backgroundColor: "transparent",

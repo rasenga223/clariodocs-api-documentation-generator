@@ -16,7 +16,7 @@ export const metadata: Metadata = {
 function Loading() {
   return (
     <div className="flex items-center justify-center min-h-screen">
-      <div className="w-10 h-10 border-4 border-blue-500 rounded-full animate-spin border-t-transparent"></div>
+      <div className="w-10 h-10 border-4 rounded-full border-primary animate-spin border-t-transparent"></div>
     </div>
   );
 }
@@ -29,13 +29,13 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${inter.className} bg-background text-foreground`}>
-        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
-          <AuthProvider>
-            <Suspense fallback={<Loading />}>
+        <Suspense fallback={<Loading />}>
+          <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
+            <AuthProvider>
               {children}
-            </Suspense>
-          </AuthProvider>
-        </ThemeProvider>
+            </AuthProvider>
+          </ThemeProvider>
+        </Suspense>
       </body>
     </html>
   );

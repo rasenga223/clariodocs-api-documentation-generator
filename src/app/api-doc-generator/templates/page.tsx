@@ -70,18 +70,18 @@ export default function TemplatesPage() {
 
   return (
     <div className="min-h-screen p-6 md:p-12">
-      <div className="mx-auto max-w-4xl">
-        <div className="mb-8 flex items-center justify-between">
+      <div className="max-w-4xl mx-auto">
+        <div className="flex items-center justify-between mb-8">
           <h1 className="text-3xl font-bold md:text-4xl">Choose a Template</h1>
           <Link
-            href="/dashboard/api-doc-generator/upload-method"
-            className="rounded-md bg-gray-200 px-4 py-2 text-sm font-medium text-gray-800 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
+            href="/api-doc-generator/generate"
+            className="px-4 py-2 text-sm font-medium text-gray-800 bg-gray-200 rounded-md hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
           >
             Back
           </Link>
         </div>
 
-        <div className="rounded-lg bg-white p-6 shadow-md dark:bg-gray-800">
+        <div className="p-6 bg-white rounded-lg shadow-md dark:bg-gray-800">
           <h2 className="mb-4 text-2xl font-bold">Select a Documentation Template</h2>
           <p className="mb-6 text-gray-600 dark:text-gray-300">
             Choose a starting point for your API documentation. Our AI will customize the template based on your needs.
@@ -111,11 +111,11 @@ export default function TemplatesPage() {
                       value={template.id}
                       checked={selectedTemplate === template.id}
                       onChange={() => setSelectedTemplate(template.id)}
-                      className="h-4 w-4 border-gray-300 text-blue-600 focus:ring-blue-500 dark:border-gray-600 dark:focus:ring-blue-600"
+                      className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500 dark:border-gray-600 dark:focus:ring-blue-600"
                     />
                     <label
                       htmlFor={`template-${template.id}`}
-                      className="ml-2 block text-lg font-medium text-gray-900 dark:text-white"
+                      className="block ml-2 text-lg font-medium text-gray-900 dark:text-white"
                     >
                       {template.name}
                     </label>
@@ -128,12 +128,12 @@ export default function TemplatesPage() {
 
           {/* Template Information */}
           {selectedTemplate && (
-            <div className="mt-8 rounded-lg border border-gray-200 bg-gray-50 p-6 dark:border-gray-700 dark:bg-gray-800">
+            <div className="p-6 mt-8 border border-gray-200 rounded-lg bg-gray-50 dark:border-gray-700 dark:bg-gray-800">
               <h3 className="mb-4 text-xl font-semibold">Template Features</h3>
               
               {/* Static features based on selection */}
               {selectedTemplate === 'minimal' && (
-                <ul className="ml-6 list-disc space-y-2 text-gray-700 dark:text-gray-300">
+                <ul className="ml-6 space-y-2 text-gray-700 list-disc dark:text-gray-300">
                   <li>Clean, distraction-free layout</li>
                   <li>Fast loading and performance</li>
                   <li>Mobile-optimized responsive design</li>
@@ -143,7 +143,7 @@ export default function TemplatesPage() {
               )}
               
               {selectedTemplate === 'developer' && (
-                <ul className="ml-6 list-disc space-y-2 text-gray-700 dark:text-gray-300">
+                <ul className="ml-6 space-y-2 text-gray-700 list-disc dark:text-gray-300">
                   <li>Multiple code examples in different languages</li>
                   <li>Interactive request builder</li>
                   <li>SDK integration guides</li>
@@ -153,7 +153,7 @@ export default function TemplatesPage() {
               )}
               
               {selectedTemplate === 'enterprise' && (
-                <ul className="ml-6 list-disc space-y-2 text-gray-700 dark:text-gray-300">
+                <ul className="ml-6 space-y-2 text-gray-700 list-disc dark:text-gray-300">
                   <li>Detailed schema documentation</li>
                   <li>Versioning support</li>
                   <li>Advanced search capabilities</li>
@@ -163,7 +163,7 @@ export default function TemplatesPage() {
               )}
               
               {selectedTemplate === 'interactive' && (
-                <ul className="ml-6 list-disc space-y-2 text-gray-700 dark:text-gray-300">
+                <ul className="ml-6 space-y-2 text-gray-700 list-disc dark:text-gray-300">
                   <li>Live API console</li>
                   <li>Request/response visualization</li>
                   <li>Authentication token management</li>
@@ -175,7 +175,7 @@ export default function TemplatesPage() {
           )}
 
           {/* Continue Button */}
-          <div className="mt-8 flex justify-end">
+          <div className="flex justify-end mt-8">
             <button
               onClick={handleContinue}
               disabled={!selectedTemplate || loading}
@@ -188,7 +188,7 @@ export default function TemplatesPage() {
               {loading ? (
                 <>
                   <svg
-                    className="mr-3 h-5 w-5 animate-spin"
+                    className="w-5 h-5 mr-3 animate-spin"
                     xmlns="http://www.w3.org/2000/svg"
                     fill="none"
                     viewBox="0 0 24 24"
@@ -213,7 +213,7 @@ export default function TemplatesPage() {
                 <>
                   Continue with {selectedTemplate ? templates.find(t => t.id === selectedTemplate)?.name : 'Template'}
                   <svg
-                    className="ml-2 h-5 w-5"
+                    className="w-5 h-5 ml-2"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
