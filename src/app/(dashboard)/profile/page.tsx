@@ -41,30 +41,26 @@ export default function ProfilePage() {
   const userPhone = user.user_metadata?.phone || "";
 
   return (
-    <div className="p-6 md:p-12">
-      <div className="mx-auto max-w-4xl">
-        <div className="rounded-lg bg-white p-6 shadow-md dark:bg-gray-800">
-          {isEditing ? (
-            <ProfileEditForm
-              initialData={{
-                name: userName,
-                email: userEmail || "",
-                phone: userPhone,
-              }}
-              onCancel={() => setIsEditing(false)}
-              onSuccess={() => {
-                setIsEditing(false);
-                toast.success("Profile updated successfully!");
-              }}
-            />
-          ) : (
-            <ProfileDisplay
-              user={{ ...user, email: user.email || "" }} // Fallback for email here
-              onEdit={() => setIsEditing(true)}
-            />
-          )}
-        </div>
-      </div>
+    <div className="p-4">
+      {isEditing ? (
+        <ProfileEditForm
+          initialData={{
+            name: userName,
+            email: userEmail || "",
+            phone: userPhone,
+          }}
+          onCancel={() => setIsEditing(false)}
+          onSuccess={() => {
+            setIsEditing(false);
+            toast.success("Profile updated successfully!");
+          }}
+        />
+      ) : (
+        <ProfileDisplay
+          user={{ ...user, email: user.email || "" }} // Fallback for email here
+          onEdit={() => setIsEditing(true)}
+        />
+      )}
     </div>
   );
 }

@@ -25,9 +25,9 @@ export const ProfileDisplay: React.FC<ProfileDisplayProps> = ({
   const userPhone = user.user_metadata?.phone || "";
 
   return (
-    <div>
-      <ProfileHeader title="Personal Information" onEdit={onEdit} />
-      <div className="mt-6 flex flex-col md:flex-row md:items-start md:space-x-6">
+    <div className="mx-auto max-w-xl">
+      <ProfileHeader onEdit={onEdit} />
+      <div className="mt-4 min-h-80 space-y-2 rounded-md border bg-zinc-900 p-2 pb-0">
         <ProfileAvatar userAvatar={userAvatar} userName={userName} />
         <ProfileDetails
           userName={userName}

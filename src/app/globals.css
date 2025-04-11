@@ -60,6 +60,8 @@
 }
 
 @theme inline {
+  --shadow-aura: 0 0 60px 20px rgba(0, 255, 200, 0.1);
+
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
@@ -171,20 +173,8 @@
 }
 
 @layer utilities {
-  @keyframes initial-loading {
-    0% {
-      transform: translateX(-34px);
-    }
-    50% {
-      transform: translateX(96px);
-    }
-    100% {
-      transform: translateX(-34px);
-    }
-  }
-
-  .animate-initial-loading {
-    animation: initial-loading 1.5s ease-in-out infinite;
+  .text-balance {
+    text-wrap: balance;
   }
 }
 
