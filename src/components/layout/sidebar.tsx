@@ -10,9 +10,9 @@ import { useIsMobile } from "@/hooks/use-ismobile";
 import { cn } from "@/lib/utils";
 
 const ITEMS = [
-  { id: 1, label: "Dashboard", icon: "D" },
-  { id: 2, label: "Settings", icon: "S" },
-  { id: 3, label: "Profile", icon: "P" },
+  { id: 1, label: "Dashboard", icon: "D", link: "/dashboard" },
+  { id: 2, label: "Editor", icon: "E", link: "/editor" },
+  { id: 3, label: "Profile", icon: "P", link: "/profile" },
 ];
 
 export const Sidebar = () => {
@@ -95,7 +95,7 @@ export const Sidebar = () => {
         role="menu"
       >
         {/* SHOW a header only when open */}
-        <motion.li
+        {/* <motion.li
           initial={{ opacity: 0, width: 0 }}
           animate={{
             opacity: isOpen ? 1 : 0,
@@ -107,7 +107,7 @@ export const Sidebar = () => {
           aria-hidden={!isOpen}
         >
           {isOpen && hasMounted && "example@email.com"}
-        </motion.li>
+        </motion.li> */}
 
         {ITEMS.map((item) => (
           <li key={item.id} className="w-full">

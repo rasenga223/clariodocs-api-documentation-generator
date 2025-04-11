@@ -1,3 +1,6 @@
+"use client";
+import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
 import { DecorativeSquare } from "@/components/elements/decorative-square";
 
 const DashboardPage = () => {
@@ -13,6 +16,7 @@ const DashboardPage = () => {
         <DecorativeSquare className="-right-px -bottom-px border-r border-b" />
         <DecorativeSquare className="-bottom-px -left-px border-l lg:hidden" />
         <div>Dashboard Content</div>
+        <Button onClick={() => toast("Event has been created.")}>Toast</Button>
       </section>
 
       <section className="">

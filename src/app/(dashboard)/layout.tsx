@@ -1,6 +1,6 @@
 import { Sidebar } from "@/components/layout/sidebar";
 import { DashboardHeader } from "@/components/layout/dashboard-header";
-import { DashboardTab } from "@/components/layout/dashboard-tab";
+// import { DashboardTab } from "@/components/layout/dashboard-tab";
 
 const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
   return (
@@ -8,8 +8,10 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
       <Sidebar />
       <main className="flex flex-col">
         <DashboardHeader />
-        <DashboardTab />
-        {children}
+        {/* <DashboardTab /> */}
+        <div className="max-h-[calc(100dvh-4rem)] overflow-y-auto">
+          {children}
+        </div>
       </main>
     </div>
   );

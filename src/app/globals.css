@@ -161,6 +161,23 @@
     font-feature-settings: "rlig" 1, "calt" 1;
     font-family: Arial, Helvetica, sans-serif;
   }
+  @property --initial-loading {
+    syntax: '<percentage>';
+    initial-value: 0%;
+    inherits: false;
+  }
+}
+
+@layer utilities {
+  @keyframes initial-loading {
+    0% { transform: translateX(-34px); }
+    50% { transform: translateX(96px); }
+    100% { transform: translateX(-34px); }
+  }
+
+  .animate-initial-loading {
+    animation: initial-loading 1.5s ease-in-out infinite;
+  }
 }
 
 /* Add custom styles for the MDX preview */

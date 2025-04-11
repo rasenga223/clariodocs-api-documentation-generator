@@ -1,8 +1,9 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { userService } from '@/services/api';
-import Image from 'next/image';
+import Image from "next/image";
+import { useEffect, useState } from "react";
+import { userService } from "@/services/api";
+import { Loader } from "@/components/elements/loader";
 
 interface UserProfile {
   id: string;
@@ -21,27 +22,27 @@ export default function ProfileInfo() {
       try {
         setLoading(true);
         const { data, error } = await userService.getProfile();
-        
+
         if (error) {
           setError(error);
         } else {
           setProfile(data);
         }
       } catch (err) {
-        setError('Failed to load profile data');
+        setError("Failed to load profile data");
         console.error(err);
       } finally {
         setLoading(false);
       }
     };
-    
+
     fetchProfile();
   }, []);
 
   if (loading) {
     return (
       <div className="flex h-40 items-center justify-center rounded-lg bg-gray-50 dark:bg-gray-800">
-        <div className="h-8 w-8 animate-spin rounded-full border-t-4 border-blue-500"></div>
+        <Loader />
       </div>
     );
   }
@@ -57,7 +58,9 @@ export default function ProfileInfo() {
   if (!profile) {
     return (
       <div className="rounded-lg bg-gray-50 p-4 dark:bg-gray-800">
-        <p className="text-gray-500 dark:text-gray-400">No profile data available</p>
+        <p className="text-gray-500 dark:text-gray-400">
+          No profile data available
+        </p>
       </div>
     );
   }
@@ -77,19 +80,21 @@ export default function ProfileInfo() {
               />
             </div>
           ) : (
-            <div className="mb-4 flex h-24 w-24 items-center justify-center rounded-full bg-gray-200 dark:bg-gray-700 sm:mb-0">
+            <div className="mb-4 flex h-24 w-24 items-center justify-center rounded-full bg-gray-200 sm:mb-0 dark:bg-gray-700">
               <span className="text-2xl font-medium text-gray-600 dark:text-gray-300">
-                {profile.name?.charAt(0) || profile.email?.charAt(0) || '?'}
+                {profile.name?.charAt(0) || profile.email?.charAt(0) || "?"}
               </span>
             </div>
           )}
-          
+
           <div>
             <h3 className="text-xl font-medium text-gray-900 dark:text-white">
-              {profile.name || 'User'}
+              {profile.name || "User"}
             </h3>
             {profile.email && (
-              <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">{profile.email}</p>
+              <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                {profile.email}
+              </p>
             )}
             <p className="mt-3 text-sm text-gray-500 dark:text-gray-400">
               User ID: <span className="font-mono">{profile.id}</span>

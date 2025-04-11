@@ -3,7 +3,7 @@
 import { useEffect } from 'react';
 import { useAuth } from '@/provider/auth';
 import { useRouter } from 'next/navigation';
-import ProfileInfo from '@/components/ProfileInfo';
+import ProfileInfo from '@/components/elements/profile-info';
 import Link from 'next/link';
 
 export default function Dashboard() {

@@ -21,7 +21,7 @@ export const SidebarItem = ({ icon, label }: SidebarItemProps) => {
       type="button"
       variant={"ghost"}
       className={cn(
-        "group h-auto w-full cursor-pointer justify-start gap-4 rounded-none p-2 hover:!bg-emerald-500",
+        "group h-auto w-full cursor-pointer justify-start gap-4 rounded-none p-2 hover:!bg-emerald-500/80",
         "focus-visible:ring-0 focus-visible:ring-offset-0",
       )}
       aria-label={label}
