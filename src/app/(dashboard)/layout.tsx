@@ -10,7 +10,7 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
       <main className="flex h-full flex-col">
         <DashboardHeader />
         <DashboardNotice />
-        <div className="scrollbar relative max-h-[calc(100dvh-3.25rem)] min-h-0 flex-1 overflow-y-auto">
+        <div className="no-scrollbar md:scrollbar relative max-h-[calc(100dvh-3.25rem)] min-h-0 flex-1 overflow-y-auto">
           <DecorativeSquare className="top-0 left-0 border-t border-l" />
           <DecorativeSquare className="bottom-0 left-0 border-b border-l" />
           <DecorativeSquare className="top-0 right-0 border-t border-r" />

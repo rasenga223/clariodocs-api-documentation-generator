@@ -43,7 +43,9 @@ const DashboardPage = () => {
               </CardTitle>
             </CardHeader>
             <CardContent className="mb-4">
-              <p className="text-zinc-700 dark:text-zinc-300">{description}</p>
+              <p className="text-pretty text-zinc-700 dark:text-zinc-300">
+                {description}
+              </p>
             </CardContent>
             <CardFooter>
               <Link href={link}>

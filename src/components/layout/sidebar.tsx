@@ -79,8 +79,10 @@ export const Sidebar = () => {
       variants={SIDEBAR_VARIANTS}
       role="navigation"
       aria-label="Main navigation"
-      onMouseEnter={openSidebar}
-      onMouseLeave={closeSidebar}
+      // To try to fix buggy toggle on mobile
+      {...(!isMobile
+        ? { onMouseEnter: openSidebar, onMouseLeave: closeSidebar }
+        : {})}
       tabIndex={-1}
     >
       <header className={cn("mr-1 grid place-content-end")}>

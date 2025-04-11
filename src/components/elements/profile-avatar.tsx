@@ -10,7 +10,7 @@ export const ProfileAvatar: React.FC<ProfileAvatarProps> = ({
   userName,
 }) => {
   return (
-    <div className="flex aspect-video size-full items-center justify-center overflow-visible border border-zinc-800 bg-zinc-950">
+    <div className="flex aspect-video size-full items-center justify-center overflow-hidden border border-zinc-800 bg-zinc-950">
       {userAvatar ? (
         <figure className="shadow-aura relative h-32 w-32 overflow-visible">
           <Image

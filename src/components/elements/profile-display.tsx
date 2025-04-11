@@ -27,7 +27,7 @@ export const ProfileDisplay: React.FC<ProfileDisplayProps> = ({
   return (
     <div className="mx-auto max-w-xl">
       <ProfileHeader onEdit={onEdit} />
-      <div className="mt-4 min-h-80 space-y-2 rounded-md border bg-zinc-900 p-2 pb-0">
+      <div className="mt-4 min-h-80 space-y-2 rounded-md border bg-zinc-900 p-1 pb-0">
         <ProfileAvatar userAvatar={userAvatar} userName={userName} />
         <ProfileDetails
           userName={userName}

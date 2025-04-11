@@ -25,7 +25,7 @@ export const ProfileDetails: React.FC<ProfileDetailsProps> = ({
       {details.map(({ label, value }, index) => (
         <div
           key={index}
-          className="border-b border-zinc-700/50 px-2 py-4 text-zinc-300 last:border-0"
+          className="border-b border-zinc-700/50 px-3 py-4 text-zinc-300 last:border-0"
         >
           <dt className="text-sm text-zinc-500 dark:text-zinc-400">{label}</dt>
           <dd
