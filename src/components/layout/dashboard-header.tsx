@@ -10,6 +10,7 @@ export const DashboardHeader = () => {
     "/dashboard": "Dashboard",
     "/profile": "Profile",
     "/editor": "Editor",
+    "/editor-test": "Editor",
   };
 
   const title = headerTitles[pathname] || "Dashboard Header";

@@ -40,11 +40,12 @@ export const SidebarItem = ({
         className={cn(
           "flex aspect-square min-w-8 items-center justify-center rounded-md bg-zinc-100 text-zinc-500 group-hover:text-zinc-100 dark:bg-zinc-800/50",
           isFocused && "text-zinc-100 ring-2 ring-emerald-500",
-          isActive && "bg-emerald-500 text-zinc-100 dark:bg-emerald-500/80",
+          isActive &&
+            "bg-emerald-500 text-zinc-100 ring-2 ring-emerald-500 dark:bg-emerald-500/80",
         )}
         aria-hidden="true"
       >
-        <Icon />
+        <Icon size={20} />
       </span>
 
       <AnimatePresence>

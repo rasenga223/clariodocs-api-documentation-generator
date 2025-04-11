@@ -1,7 +1,10 @@
+"use client";
 import { useAuth } from "@/provider/auth";
+import { usePathname } from "next/navigation";
 
 export const DashboardNotice = () => {
   const { user } = useAuth();
+  const pathname = usePathname();
 
   const userName =
     user?.user_metadata?.name ||
@@ -10,6 +13,10 @@ export const DashboardNotice = () => {
     user?.user_metadata?.user_name ||
     user?.email ||
     "Demo User";
+
+  if (pathname !== "/dashboard") {
+    return null;
+  }
 
   return (
     <header className="relative border-b px-4 py-2.5 pb-3 text-sm">
