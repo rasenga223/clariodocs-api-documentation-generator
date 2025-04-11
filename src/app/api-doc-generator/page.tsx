@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/provider/auth';
 import Link from 'next/link';
 import FileUploader from '@/components/api-doc-generator/FileUploader';
 import { apiDocumentationService } from '@/services/apiDocumentationService';

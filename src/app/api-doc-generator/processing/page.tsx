@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/provider/auth';
 import Link from 'next/link';
 import { apiDocumentationService } from '@/services/apiDocumentationService';
 

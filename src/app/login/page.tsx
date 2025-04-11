@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, Suspense } from 'react';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/provider/auth';
 import Link from 'next/link';
 import toast, { Toaster } from 'react-hot-toast';
 import SearchParamsHandler from '@/components/SearchParamsHandler';
