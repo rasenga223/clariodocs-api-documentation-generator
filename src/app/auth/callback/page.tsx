@@ -1,8 +1,9 @@
-'use client';
+"use client";
 
-import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { supabase } from '@/lib/supabase';
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { Loader } from "@/components/elements/loader";
+import { supabase } from "@/lib/supabase";
 
 export default function AuthCallbackPage() {
   const router = useRouter();
@@ -13,12 +14,12 @@ export default function AuthCallbackPage() {
       try {
         const { error } = await supabase.auth.getSession();
         if (error) throw error;
-        
+
         // Redirect to dashboard after successful authentication
-        router.push('/dashboard');
+        router.push("/dashboard");
       } catch (error) {
-        console.error('Error during auth callback:', error);
-        router.push('/login?error=Authentication failed');
+        console.error("Error during auth callback:", error);
+        router.push("/login?error=Authentication failed");
       }
     };
 
@@ -28,7 +29,7 @@ export default function AuthCallbackPage() {
   return (
     <div className="flex min-h-screen items-center justify-center">
       <div className="flex flex-col items-center space-y-4">
-        <div className="h-16 w-16 animate-spin rounded-full border-t-4 border-blue-500"></div>
+        <Loader />
         <h2 className="text-xl font-medium">Completing authentication...</h2>
       </div>
     </div>
