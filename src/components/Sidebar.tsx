@@ -47,9 +47,10 @@ export default function Sidebar({
   docOutline = null,
   collapsed = false,
   setCollapsed,
-  onSelectFile
+  onSelectFile,
+  currentVersionIndex = 0
 }: { 
-  history?: { code: string; timestamp: string }[];
+  history?: { code: string; timestamp: string; id?: string }[];
   revertToVersion?: (index: number) => void;
   toggleSidebar?: () => void;
   projectId?: string | null;
@@ -58,6 +59,7 @@ export default function Sidebar({
   collapsed?: boolean; 
   setCollapsed?: (val: boolean) => void;
   onSelectFile?: (filename: string) => void;
+  currentVersionIndex?: number;
 }) {
   const [expandedItems, setExpandedItems] = useState<Record<string, boolean>>({
     "getting-started": true,
@@ -140,19 +142,42 @@ export default function Sidebar({
         
         {expandedItems["history"] && (
           <div className="ml-2">
-            {history.map((version, index) => (
-              <div 
-                key={`version-${index}`} 
-                className="flex items-center px-3 py-2 pl-8 rounded-md cursor-pointer hover:bg-[#0A0A0A] text-foreground"
-                onClick={() => revertToVersion(index)}
-              >
-                <FileText size={16} className="mr-2" />
-                <div className="flex flex-col">
-                  <span className="text-xs">{new Date(version.timestamp).toLocaleString()}</span>
-                  <span className="text-xs text-muted-foreground truncate w-36">{version.code.substring(0, 25)}...</span>
+            {history.map((version, index) => {
+              // Format the date for better display
+              const date = new Date(version.timestamp);
+              const formattedDate = new Intl.DateTimeFormat('en-US', {
+                month: 'short',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+              }).format(date);
+              
+              return (
+                <div 
+                  key={`version-${index}`} 
+                  className={cn(
+                    "flex items-center px-3 py-2 pl-8 rounded-md cursor-pointer hover:bg-[#0A0A0A] text-foreground",
+                    index === currentVersionIndex && "bg-blue-50/10 border-l-2 border-primary"
+                  )}
+                  onClick={() => revertToVersion(index)}
+                >
+                  <FileText size={16} className="mr-2" />
+                  <div className="flex flex-col">
+                    <div className="flex items-center">
+                      <span className="text-xs">{formattedDate}</span>
+                      {index === 0 && (
+                        <span className="ml-2 px-1.5 py-0.5 text-[10px] bg-primary/10 text-primary rounded">
+                          Latest
+                        </span>
+                      )}
+                    </div>
+                    <span className="text-xs truncate text-muted-foreground w-36">
+                      {version.code.substring(0, 25)}...
+                    </span>
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </div>
@@ -167,12 +192,12 @@ export default function Sidebar({
         <div className="p-2 text-xs text-muted-foreground">
           <div>
             <span className="font-semibold">Project:</span> 
-            <span className="block ml-1 text-foreground truncate">{projectId.substring(0, 8)}...</span>
+            <span className="block ml-1 truncate text-foreground">{projectId.substring(0, 8)}...</span>
           </div>
           {filename && (
             <div className="mt-1">
               <span className="font-semibold">File:</span> 
-              <span className="block ml-1 text-foreground truncate">{filename}</span>
+              <span className="block ml-1 truncate text-foreground">{filename}</span>
             </div>
           )}
         </div>

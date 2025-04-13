@@ -18,7 +18,12 @@ import MdxComponents, {
   // UI Components
   Callout, CodeGroup, Card, CardGroup, Tabs, Tab, Accordion, AccordionItem,
   // Code component (pre formatting)
-  Code
+  Code,
+  // New technical documentation components
+  RateLimit, ApiResource, AuthMethod, StatusBadge, VersionHistory, 
+  Version, ApiAttribute, AttributesTable,
+  // Modern media components
+  Image, Video, LinkPreview, Terminal
 } from "@/components/mdx/MdxComponents"
 
 interface Props {
@@ -34,6 +39,7 @@ interface MDXComponentProps {
 }
 
 // Components available to MDX - use our comprehensive MDX components
+// This is crucial - the keys must match the component names used in MDX
 const mdxComponents = {
   // Basic text elements
   h1: H1,
@@ -48,38 +54,38 @@ const mdxComponents = {
   pre: Code,
   hr: Hr,
   
-  // Documentation components
-  Endpoint,
-  Param,
-  ParamsTable,
-  Response,
+  // Documentation components - note these need capital letters to match usage in MDX
+  Endpoint: Endpoint,
+  Param: Param,
+  ParamsTable: ParamsTable,
+  Response: Response,
   
-  // UI Components
-  Callout,
-  Code,
-  CodeGroup,
-  Card,
-  CardGroup,
-  Tabs,
-  Tab,
-  Accordion,
-  AccordionItem,
-}
-
-// Create a component that wraps MDX content and provides the components
-function MDXContentWrapper({ Content }: { Content: React.ComponentType<any> }) {
-  // We need to ensure the components are correctly named for MDX to use them
-  return (
-    <Content 
-      components={{
-        ...mdxComponents,
-        // Explicit mapping for CodeGroup to ensure it's properly used
-        CodeGroup: CodeGroup,
-        pre: Code, // Map pre elements to our Code component
-        code: InlineCode // Map inline code elements to InlineCode
-      }} 
-    />
-  );
+  // UI Components - again with capital letters
+  Callout: Callout,
+  Code: Code,
+  CodeGroup: CodeGroup,
+  Card: Card,
+  CardGroup: CardGroup,
+  Tabs: Tabs,
+  Tab: Tab,
+  Accordion: Accordion,
+  AccordionItem: AccordionItem,
+  
+  // New technical documentation components
+  RateLimit: RateLimit,
+  ApiResource: ApiResource,
+  AuthMethod: AuthMethod,
+  StatusBadge: StatusBadge,
+  VersionHistory: VersionHistory,
+  Version: Version,
+  ApiAttribute: ApiAttribute,
+  AttributesTable: AttributesTable,
+  
+  // Modern media components
+  Image: Image,
+  Video: Video,
+  LinkPreview: LinkPreview,
+  Terminal: Terminal,
 }
 
 export default function PreviewPane({ code, view }: Props) {
@@ -95,13 +101,13 @@ export default function PreviewPane({ code, view }: Props) {
       setError(null)
 
       try {
-        // Use evaluate (async version) to compile the MDX
-        // Pass only valid options
-        const { default: Component } = await evaluate(code, {
+        // Use evaluate with the runtime that includes our components
+        const evaluateOptions = {
           ...runtime,
           baseUrl: import.meta.url,
-          // No custom global variables in options
-        })
+        }
+        
+        const { default: Component } = await evaluate(code, evaluateOptions)
         
         if (isMounted) {
           setContent(() => Component)
@@ -110,12 +116,44 @@ export default function PreviewPane({ code, view }: Props) {
       } catch (err) {
         console.error("MDX Compile Error:", err)
         if (isMounted) {
-          setError((err as Error).message)
-          setIsLoading(false)
+          // Enhance the error message to be more helpful
+          let errorMessage = (err as Error).message;
+          
+          // Try to provide more specific guidance for common errors
+          if (errorMessage.includes("Could not parse expression with acorn")) {
+            // Extract line number if available
+            const lineMatch = errorMessage.match(/(\d+):(\d+):/);
+            if (lineMatch) {
+              const [, line, column] = lineMatch;
+              
+              // Get the line content from the code
+              const codeLines = code.split('\n');
+              const problematicLine = codeLines[parseInt(line) - 1] || '';
+              
+              errorMessage = `MDX Syntax Error at line ${line}, column ${column}:
+              
+${problematicLine}
+${' '.repeat(parseInt(column) - 1)}^
+
+This is likely caused by:
+- Unbalanced curly braces {} in JSX expressions
+- Invalid JavaScript inside curly braces
+- Mixing Markdown and JSX improperly
+- Using reserved characters without escaping them
+
+Try checking for:
+- Missing closing braces in expressions like {variable}
+- Quotes inside JSX attributes (use single quotes inside double quotes or vice versa)
+- Special characters that need to be escaped`;
+            }
+          }
+          
+          setError(errorMessage);
+          setIsLoading(false);
           setContent(() => () => (
             <div className="p-5 border border-red-200 shadow-sm rounded-2xl bg-red-50/90 dark:bg-red-900/30 dark:border-red-800/90 backdrop-blur-sm">
               <h3 className="mb-2 font-medium text-red-600 dark:text-red-400">MDX Compile Error</h3>
-              <pre className="text-sm text-red-500 whitespace-pre-wrap dark:text-red-300">{(err as Error).message}</pre>
+              <pre className="text-sm text-red-500 whitespace-pre-wrap dark:text-red-300">{errorMessage}</pre>
             </div>
           ))
         }
@@ -159,12 +197,19 @@ export default function PreviewPane({ code, view }: Props) {
     )
   }
 
-  // Otherwise, render the component with our wrapper that provides components
+  // Otherwise, render the component with our components explicitly passed
   return (
     <div className={cn("h-full transition-all duration-300 bg-background", view === "split" ? "w-1/2" : "w-full")}>
       <ScrollArea className="h-full">
-        <div className="max-w-3xl p-8 mx-auto prose dark:prose-invert prose-pre:bg-[#0A0A0A] prose-pre:text-muted-foreground">
-          {Content && <MDXContentWrapper Content={Content} />}
+        <div className="max-w-3xl p-8 mx-auto prose dark:prose-invert 
+          prose-pre:border prose-pre:border-gray-200/50 dark:prose-pre:border-gray-800/80 
+          prose-pre:bg-transparent dark:prose-pre:bg-transparent 
+          prose-pre:shadow-sm prose-pre:rounded-xl 
+          prose-code:text-gray-800 dark:prose-code:text-gray-300 
+          [&_.shiki]:!bg-transparent
+          [&_pre_code]:!border-0 [&_pre_code]:!p-0 [&_pre_code]:!m-0
+          [&_pre]:!bg-transparent [&_pre]:!overflow-x-auto">
+          {Content && <Content components={mdxComponents} />}
         </div>
       </ScrollArea>
     </div>

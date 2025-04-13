@@ -12,19 +12,21 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { cn } from "@/lib/utils"
 
 type Props = {
   view: "split" | "editor" | "preview"
   setView: (val: "split" | "editor" | "preview") => void
-  history: { code: string; timestamp: string }[]
+  history: { code: string; timestamp: string; id?: string }[]
   revertToVersion: (index: number) => void
   saveVersion: () => void
   code: string
   isSaving?: boolean
   hasProject?: boolean
+  currentVersionIndex?: number
 }
 
-export default function EditorHeader({ view, setView, history, revertToVersion, saveVersion, code, isSaving, hasProject }: Props) {
+export default function EditorHeader({ view, setView, history, revertToVersion, saveVersion, code, isSaving, hasProject, currentVersionIndex = 0 }: Props) {
 
   const exportMarkdown = () => {
     if (code.trim()) {
@@ -158,14 +160,43 @@ export default function EditorHeader({ view, setView, history, revertToVersion, 
             <DropdownMenuContent align="end" className="w-56 bg-popover border-border">
               <DropdownMenuLabel>Version History</DropdownMenuLabel>
               <DropdownMenuSeparator />
-              {history.map((commit, index) => (
-                <DropdownMenuItem key={index} onClick={() => revertToVersion(index)}>
-                  <div className="flex flex-col">
-                    <span className="text-sm text-foreground">{new Date(commit.timestamp).toLocaleString()}</span>
-                    <span className="text-xs text-muted-foreground">{commit.code.substring(0, 20)}...</span>
-                  </div>
-                </DropdownMenuItem>
-              ))}
+              {history.map((commit, index) => {
+                // Format the date for better display
+                const date = new Date(commit.timestamp);
+                const formattedDate = new Intl.DateTimeFormat('en-US', {
+                  month: 'short',
+                  day: 'numeric',
+                  hour: '2-digit',
+                  minute: '2-digit'
+                }).format(date);
+                
+                return (
+                  <DropdownMenuItem 
+                    key={index} 
+                    onClick={() => revertToVersion(index)}
+                    className={cn(
+                      index === currentVersionIndex && "bg-blue-50/10 border-l-2 border-primary"
+                    )}
+                  >
+                    <div className="flex flex-col w-full">
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm text-foreground">{formattedDate}</span>
+                        {index === 0 && (
+                          <span className="px-1.5 py-0.5 text-[10px] bg-primary/10 text-primary rounded">
+                            Latest
+                          </span>
+                        )}
+                        {index === currentVersionIndex && index !== 0 && (
+                          <span className="px-1.5 py-0.5 text-[10px] bg-yellow-50 text-yellow-700 rounded">
+                            Current
+                          </span>
+                        )}
+                      </div>
+                      <span className="text-xs truncate text-muted-foreground">{commit.code.substring(0, 25)}...</span>
+                    </div>
+                  </DropdownMenuItem>
+                );
+              })}
             </DropdownMenuContent>
           </DropdownMenu>
         )}

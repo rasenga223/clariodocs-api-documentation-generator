@@ -349,4 +349,28 @@ export async function getDocumentOutline(projectId: string): Promise<DocOutlineI
   }
   
   return outline;
+}
+
+/**
+ * Gets all versions of MDX content for a project
+ * 
+ * @param projectId - Project ID
+ * @returns Array of project MDX versions with timestamps or null if not found
+ */
+export async function getProjectMdxVersions(
+  projectId: string
+): Promise<{ full_mdx: string; generated_at: string; id: string }[] | null> {
+  // Get all MDX content versions ordered by generation time (newest first)
+  const { data, error } = await supabase
+    .from('project_mdx')
+    .select('id, full_mdx, generated_at')
+    .eq('project_id', projectId)
+    .order('generated_at', { ascending: false });
+  
+  if (error || !data) {
+    console.error('Error retrieving project MDX versions:', error);
+    return null;
+  }
+  
+  return data;
 } 
