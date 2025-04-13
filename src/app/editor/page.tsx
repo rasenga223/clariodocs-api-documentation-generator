@@ -6,7 +6,7 @@ import Sidebar from "@/components/Sidebar"
 import EditorHeader from "@/components/EditorHeader"
 import EditorPane from "@/components/EditorPane"
 import PreviewPane from "@/components/PreviewPane"
-import { saveMdxFiles, getProjectMdx, getDocumentOutline, DocOutlineItem } from "@/lib/docService"
+import { saveMdxFiles, getProjectMdx, getDocumentOutline, getProjectMdxVersions, DocOutlineItem } from "@/lib/docService"
 import { cn } from "@/lib/utils"
 import { ChevronRight } from "lucide-react"
 import { DEFAULT_MDX_CONTENT } from "./DefaultContent"
@@ -15,7 +15,7 @@ export default function EditorPage() {
   const router = useRouter()
   const [code, setCode] = useState<string>(DEFAULT_MDX_CONTENT)
   const [view, setView] = useState<"split" | "editor" | "preview">("split")
-  const [history, setHistory] = useState<{ code: string; timestamp: string }[]>([])
+  const [history, setHistory] = useState<{ code: string; timestamp: string; id?: string }[]>([])
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
   const [projectId, setProjectId] = useState<string | null>(null)
@@ -23,6 +23,7 @@ export default function EditorPage() {
   const [isSaving, setIsSaving] = useState(false)
   const [isLoaded, setIsLoaded] = useState(false)
   const [docOutline, setDocOutline] = useState<DocOutlineItem[] | null>(null)
+  const [currentVersionIndex, setCurrentVersionIndex] = useState(0) // Track which version we're on
   
   // Check if we're on mobile
   useEffect(() => {
@@ -38,6 +39,72 @@ export default function EditorPage() {
     }
   }, [])
 
+  // Add a function to load project versions from project_mdx table
+  const loadProjectVersions = async (id: string) => {
+    try {
+      const versions = await getProjectMdxVersions(id)
+      
+      if (versions && versions.length > 0) {
+        // Convert each full_mdx to code (first section if multiple)
+        const versionHistory = await Promise.all(versions.map(async version => {
+          // Split the MDX by sections
+          const mdxSections = version.full_mdx.split('\n\n---\n\n')
+          let content = ''
+          
+          // Extract content from the first section or the section matching current filename
+          if (filename) {
+            // Try to find the section with the matching filename
+            for (const section of mdxSections) {
+              const filenameMatch = section.match(/^# (.*?)$/m)
+              if (filenameMatch && filenameMatch[1] === filename) {
+                // Remove the filename heading and use this content
+                content = section.replace(/^# .*?$/m, '').trim()
+                break
+              }
+            }
+            
+            // If no matching section found, use the first section
+            if (!content && mdxSections.length > 0) {
+              const firstSection = mdxSections[0]
+              const filenameMatch = firstSection.match(/^# (.*?)$/m)
+              content = filenameMatch 
+                ? firstSection.replace(/^# .*?$/m, '').trim()
+                : firstSection.trim()
+            }
+          } else if (mdxSections.length > 0) {
+            // Default to first section if no filename specified
+            const firstSection = mdxSections[0]
+            const filenameMatch = firstSection.match(/^# (.*?)$/m)
+            content = filenameMatch 
+              ? firstSection.replace(/^# .*?$/m, '').trim()
+              : firstSection.trim()
+            
+            // If we find a filename here, update the filename state
+            if (filenameMatch) {
+              setFilename(filenameMatch[1])
+            }
+          }
+          
+          return { 
+            code: content, 
+            timestamp: version.generated_at,
+            id: version.id 
+          }
+        }))
+        
+        console.log(`Loaded ${versionHistory.length} versions from project_mdx`)
+        setHistory(versionHistory)
+        
+        // Set initial code to the most recent version if code is still default
+        if (code === DEFAULT_MDX_CONTENT && versionHistory.length > 0) {
+          setCode(versionHistory[0].code)
+        }
+      }
+    } catch (error) {
+      console.error('Error loading project versions:', error)
+    }
+  }
+
   // Load saved content and version history from sessionStorage
   useEffect(() => {
     async function loadEditor() {
@@ -52,15 +119,10 @@ export default function EditorPage() {
           setProjectId(editorProjectId)
           // Load document outline when we have a project ID
           loadDocumentOutline(editorProjectId)
+          // Load project versions when we have a project ID
+          loadProjectVersions(editorProjectId)
         }
         if (editorFilename) setFilename(editorFilename)
-        
-        // Add current content to history
-        const now = new Date().toISOString()
-        setHistory(prev => [
-          { code: editorCode, timestamp: now },
-          ...prev.filter(item => item.code !== editorCode)
-        ])
       } else {
         // If not from preview, check for previously saved editor state
         const savedCode = localStorage.getItem("mdxEditorCode")
@@ -72,13 +134,20 @@ export default function EditorPage() {
         }
     
         if (savedHistory) {
-          setHistory(JSON.parse(savedHistory))
+          try {
+            const parsedHistory = JSON.parse(savedHistory)
+            setHistory(parsedHistory)
+          } catch (error) {
+            console.error('Error parsing saved history:', error)
+          }
         }
         
         if (savedProjectId) {
           setProjectId(savedProjectId)
           // Load document outline when we have a project ID
           loadDocumentOutline(savedProjectId)
+          // Load project versions when we have a project ID
+          loadProjectVersions(savedProjectId)
         }
       }
       
@@ -194,21 +263,28 @@ export default function EditorPage() {
   /**
    * Save the current version of the code
    */
-  const saveVersion = () => {
+  const saveVersion = async () => {
     const now = new Date().toISOString()
-    
-    // Add to history if content is different from most recent
-    if (history.length === 0 || history[0].code !== code) {
-      setHistory(prev => [
-        { code, timestamp: now },
-        ...prev.slice(0, 9) // Keep only the 10 most recent versions
-      ])
-    }
     
     // If we have a project ID, save to the project
     if (projectId) {
-      saveToProject()
+      await saveToProject()
+      
+      // After saving to the project, reload the version history
+      await loadProjectVersions(projectId)
+      
+      // Reset the current version index to 0 (latest)
+      setCurrentVersionIndex(0)
     } else {
+      // For local-only saving, maintain history in state
+      // Add to history if content is different from most recent
+      if (history.length === 0 || history[0].code !== code) {
+        setHistory(prev => [
+          { code, timestamp: now },
+          ...prev.slice(0, 9) // Keep only the 10 most recent versions
+        ])
+      }
+      
       alert('Changes saved locally. Note: This is not connected to any project.')
     }
   }
@@ -218,7 +294,16 @@ export default function EditorPage() {
    */
   const revertToVersion = (index: number) => {
     if (index >= 0 && index < history.length) {
+      // Update the current version index
+      setCurrentVersionIndex(index)
+      
+      // Set the editor code to the selected version
       setCode(history[index].code)
+      
+      // If this is not the latest version, show a notification
+      if (index > 0) {
+        alert(`You are now viewing an older version. Click "Save" to make this the latest version.`)
+      }
     }
   }
 
@@ -276,6 +361,7 @@ export default function EditorPage() {
             collapsed={false}
             docOutline={docOutline}
             onSelectFile={handleFileSelect}
+            currentVersionIndex={currentVersionIndex}
           />
         ) : (
           <button
@@ -296,6 +382,7 @@ export default function EditorPage() {
           code={code}
           isSaving={isSaving}
           hasProject={!!projectId}
+          currentVersionIndex={currentVersionIndex}
         />
         <div className="flex flex-1 overflow-hidden">
           {view !== "preview" && (

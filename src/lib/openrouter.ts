@@ -135,11 +135,134 @@ IMPORTANT: Your response MUST be a valid JSON array of objects with the followin
   ...
 ]
 
-IMPORTANT FORMATTING INSTRUCTIONS:
-1. DO NOT wrap your response in any markdown code blocks (like \`\`\`json or \`\`\`).
-2. Return the raw JSON directly without any additional text before or after.
-3. Ensure all newlines in content fields are properly escaped as \\n.
-4. Make sure there are no control characters in your JSON response.
+CRITICAL RESPONSE FORMAT INSTRUCTIONS:
+1. Return ONLY the raw JSON array - DO NOT add any markdown symbols (like #) or explanatory text before or after the JSON
+2. DO NOT wrap your response in any markdown code blocks (like \`\`\`json or \`\`\`)
+3. Start your response with the opening square bracket [ and end with the closing square bracket ]
+4. Ensure all newlines in content fields are properly escaped as \\n
+5. Make sure there are no control characters in your JSON response
+6. Double-check that all quotation marks and escape sequences are properly formatted to avoid JSON parsing errors
+
+IMPORTANT MDX COMPONENT USAGE:
+Here are examples of properly formatted MDX components that you should follow exactly. Pay special attention to the syntax, nesting, and escape characters:
+
+1. For API endpoints:
+\`\`\`
+<Endpoint method="GET" path="/api/v1/users">
+  Get a list of all users.
+  
+  <ParamsTable>
+    <Param name="page" type="integer">
+      Page number for pagination. Defaults to 1.
+    </Param>
+    <Param name="limit" type="integer">
+      Number of results per page. Defaults to 20, maximum 100.
+    </Param>
+    <Param name="sort" type="string">
+      Field to sort by (e.g., 'created_at', 'name').
+    </Param>
+  </ParamsTable>
+  
+  <Response status={200} description="OK">
+    <Code title="Response">
+{\`{
+  "users": [
+    {
+      "id": "123456",
+      "name": "John Doe",
+      "email": "john@example.com",
+      "created_at": "2023-01-15T00:00:00Z"
+    },
+    {
+      "id": "789012",
+      "name": "Jane Smith",
+      "email": "jane@example.com",
+      "created_at": "2023-02-20T00:00:00Z"
+    }
+  ],
+  "meta": {
+    "total_count": 125,
+    "page": 1,
+    "limit": 20
+  }
+}\`}
+    </Code>
+  </Response>
+</Endpoint>
+\`\`\`
+
+2. For code examples:
+\`\`\`
+<CodeGroup>
+  <Code title="JavaScript">
+{\`const response = await fetch('/api/endpoint');
+const data = await response.json();\`}
+  </Code>
+  <Code title="Python">
+{\`import requests
+response = requests.get('/api/endpoint')
+data = response.json()\`}
+  </Code>
+</CodeGroup>
+\`\`\`
+
+3. For user object properties:
+\`\`\`
+<AttributesTable title="User Object Properties">
+  <ApiAttribute 
+    name="id" 
+    type="string" 
+    required={true} 
+    description="Unique identifier for the user." 
+  />
+  <ApiAttribute 
+    name="name" 
+    type="string" 
+    required={true} 
+    description="Full name of the user." 
+  />
+  <ApiAttribute 
+    name="email" 
+    type="string" 
+    required={true} 
+    description="Email address of the user." 
+  />
+</AttributesTable>
+\`\`\`
+
+4. For modern components:
+\`\`\`
+<Image 
+  src="https://images.unsplash.com/photo-1555952517-2e8e729e0b44?auto=format&fit=crop&w=1600&h=900"
+  alt="API Documentation"
+  caption="Modern API documentation with interactive components"
+  width={1600}
+  height={900}
+/>
+
+<Terminal title="Installation">npm install @example/api-client</Terminal>
+
+<Terminal title="Example Response" showPrompt={false} language="json">
+{\`{
+  "status": "success",
+  "data": {
+    "user": {
+      "id": "123",
+      "name": "John Doe"
+    }
+  }
+}\`}
+</Terminal>
+
+<LinkPreview 
+  url="https://github.com/example/api-client"
+  title="API Client SDK"
+  description="Official JavaScript client for the Example API. Features type-safe requests, automatic retries, and comprehensive documentation."
+  image="https://images.unsplash.com/photo-1618401471353-b98afee0b2eb?auto=format&fit=crop&w=1600&h=900"
+/>
+\`\`\`
+
+IMPORTANT: Note how the examples above use {\`...\`} for code blocks with JSON to properly escape content. Always follow this pattern exactly.
 
 The API specification is in ${options.fileType} format.
 ${options.template ? `Use the ${options.template} template style.` : ''}

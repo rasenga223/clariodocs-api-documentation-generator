@@ -1,10 +1,9 @@
 import React, { useState } from 'react'
 import { cn } from '@/lib/utils'
-import { Check, Copy } from 'lucide-react'
 
 /**
  * CodeGroup component for displaying multiple code blocks in tabs
- * Used for API documentation to show examples in different languages
+ * Modern, minimal design with border-only styling and no backgrounds
  */
 interface CodeProps {
   title?: string
@@ -15,7 +14,6 @@ interface CodeProps {
 
 interface CodeGroupProps {
   children: React.ReactNode
-  // Add any additional props needed for the code group
   className?: string
 }
 
@@ -25,6 +23,64 @@ interface ElementProps {
   className?: string;
   title?: string;
   [key: string]: any;
+}
+
+// Interface for processed code block
+interface ProcessedCodeBlockProps {
+  className?: string;
+  children?: React.ReactNode;
+  'data-type': 'processed';
+  'data-language': string;
+  'data-title': string;
+  [key: string]: any;
+}
+
+// Type guard for processed code blocks
+function isProcessedCodeBlock(props: any): props is ProcessedCodeBlockProps {
+  return (
+    typeof props === 'object' &&
+    props !== null &&
+    'data-type' in props &&
+    props['data-type'] === 'processed'
+  );
+}
+
+/**
+ * A reusable copy button component for copying content
+ */
+function CopyButton({ value, className }: { value: string; className?: string }) {
+  const [copied, setCopied] = useState(false)
+
+  const onCopy = () => {
+    navigator.clipboard.writeText(value)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
+  }
+
+  return (
+    <button
+      onClick={onCopy}
+      className={cn(
+        "absolute right-3 top-3 p-2 rounded-full transition-all duration-200",
+        "border border-gray-200/50 dark:border-gray-800/60",
+        "bg-white/60 dark:bg-black/60 backdrop-blur-sm",
+        "text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-50",
+        "focus:outline-none focus:ring-2 focus:ring-gray-300/40 dark:focus:ring-gray-700/40 shadow-sm",
+        className
+      )}
+    >
+      {copied ? (
+        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+        </svg>
+      ) : (
+        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+        </svg>
+      )}
+      <span className="sr-only">Copy</span>
+    </button>
+  )
 }
 
 // Language display names mapping
@@ -69,59 +125,66 @@ const LANGUAGE_NAMES: { [key: string]: string } = {
   md: 'Markdown',
   dockerfile: 'Dockerfile',
   docker: 'Dockerfile',
-}
-
-/**
- * A reusable copy button component for copying content
- */
-function CopyButton({ value, className }: { value: string; className?: string }) {
-  const [copied, setCopied] = useState(false)
-
-  const onCopy = () => {
-    navigator.clipboard.writeText(value)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
-  }
-
-  return (
-    <button
-      onClick={onCopy}
-      className={cn(
-        "absolute right-3 top-3 z-10 rounded-full p-2 transition-all duration-200",
-        "bg-gray-100/90 hover:bg-gray-200/90 dark:bg-gray-800/90 dark:hover:bg-gray-700/90",
-        "text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-50",
-        "focus:outline-none focus:ring-2 focus:ring-blue-500/40 shadow-sm",
-        className
-      )}
-    >
-      {copied ? (
-        <Check className="w-4 h-4" />
-      ) : (
-        <Copy className="w-4 h-4" />
-      )}
-      <span className="sr-only">Copy</span>
-    </button>
-  )
+  http: 'HTTP',
 }
 
 export function CodeGroup({ children, className }: CodeGroupProps) {
   const [activeTab, setActiveTab] = useState(0)
   const childrenArray = React.Children.toArray(children)
 
+  // Process children to handle both JSX components and markdown code blocks
+  const processedChildren = childrenArray.map((child, index) => {
+    // Handle markdown code blocks that are passed as string children
+    // These will come as strings with ```language Label\ncode```
+    if (typeof child === 'string') {
+      const match = child.trim().match(/^```([a-zA-Z0-9+#]+)(?:\s+([^\n]+))?\n([\s\S]*?)```$/);
+      if (match) {
+        const [, language, title, code] = match;
+        const displayTitle = title || LANGUAGE_NAMES[language.toLowerCase()] || language;
+        
+        // Create a styled version of the code block with properly typed props
+        return React.createElement('div', {
+          key: `${index}-${displayTitle}`,
+          className: "font-mono text-sm processed-code-block",
+          'data-type': 'processed',
+          'data-language': language,
+          'data-title': displayTitle,
+          children: code
+        });
+      }
+    }
+    
+    // Handle regular JSX components (likely our <Code> component)
+    if (React.isValidElement(child)) {
+      return child;
+    }
+    
+    // Return unchanged if not matching our patterns
+    return child;
+  });
+
   // Extract content to copy from the active tab
   const getContentToCopy = () => {
-    const activeChild = childrenArray[activeTab] as React.ReactElement<ElementProps>;
+    const activeChild = processedChildren[activeTab];
     
-    // Improved content extraction logic
-    if (activeChild && activeChild.props) {
+    // For processed markdown code blocks
+    if (React.isValidElement(activeChild) && 
+        isProcessedCodeBlock(activeChild.props)) {
+      return String(activeChild.props.children || '');
+    }
+    
+    // For JSX components
+    if (React.isValidElement(activeChild)) {
+      const activeElement = activeChild as React.ReactElement<ElementProps>;
+      
       // If direct string child
-      if (typeof activeChild.props.children === 'string') {
-        return activeChild.props.children;
+      if (typeof activeElement.props.children === 'string') {
+        return activeElement.props.children;
       }
       
       // If nested in a code element
-      if (React.isValidElement(activeChild.props.children)) {
-        const nestedElement = activeChild.props.children as React.ReactElement<ElementProps>;
+      if (React.isValidElement(activeElement.props.children)) {
+        const nestedElement = activeElement.props.children as React.ReactElement<ElementProps>;
         if (nestedElement.props?.children && typeof nestedElement.props.children === 'string') {
           return nestedElement.props.children;
         }
@@ -149,43 +212,57 @@ export function CodeGroup({ children, className }: CodeGroupProps) {
         return '';
       };
       
-      return extractNestedContent(activeChild.props.children);
+      return extractNestedContent(activeElement.props.children);
     }
     
     return '';
   };
 
-  // Extract language from className (e.g., "language-javascript" -> "JavaScript")
-  const getLanguageFromClassName = (className?: string) => {
-    if (!className) return '';
-    
-    // First, try to match language-* pattern
-    const match = className.match(/language-(\w+)/);
-    if (match) {
-      const lang = match[1].toLowerCase();
-      return LANGUAGE_NAMES[lang] || lang.charAt(0).toUpperCase() + lang.slice(1);
+  // Get language and title for tab display
+  const getTabInfo = (child: React.ReactNode, index: number) => {
+    // For processed markdown code blocks
+    if (React.isValidElement(child) && 
+        isProcessedCodeBlock(child.props)) {
+      return {
+        title: child.props['data-title'] || `Tab ${index + 1}`,
+        language: child.props['data-language'] || ''
+      };
     }
     
-    // For MDX-generated code blocks, check for direct language names in the className
-    for (const lang of Object.keys(LANGUAGE_NAMES)) {
-      if (className.toLowerCase().includes(lang.toLowerCase())) {
-        return LANGUAGE_NAMES[lang];
+    // For JSX components
+    if (React.isValidElement(child)) {
+      const element = child as React.ReactElement<ElementProps>;
+      
+      // Try to get language from className (e.g., "language-javascript")
+      let language = '';
+      if (element.props.className) {
+        const match = String(element.props.className).match(/language-(\w+)/);
+        if (match) {
+          language = match[1].toLowerCase();
+        }
       }
+      
+      // Get title from props or language
+      const title = element.props.title || 
+                   (language && LANGUAGE_NAMES[language]) || 
+                   `Tab ${index + 1}`;
+                   
+      return { title, language };
     }
     
-    return '';
+    return { title: `Tab ${index + 1}`, language: '' };
   };
 
   return (
     <div className={cn(
-      "relative my-6 overflow-hidden rounded-2xl border border-gray-800 shadow-sm backdrop-blur-sm dark:shadow-md dark:shadow-black/10", 
+      "relative my-6 overflow-hidden rounded-3xl border border-gray-200/50 dark:border-gray-800/80", 
+      "shadow-sm hover:shadow-md transition-all duration-300 backdrop-blur-sm",
       className
     )}>
       {/* Tabs */}
-      <div className="flex overflow-x-auto border-b border-gray-800 scrollbar-none rounded-t-2xl">
-        {childrenArray.map((child: any, index) => {
-          const language = getLanguageFromClassName(child.props?.className);
-          const title = child.props?.title || language || `Tab ${index + 1}`;
+      <div className="flex overflow-x-auto border-b border-gray-200/50 dark:border-gray-800/80 scrollbar-none">
+        {processedChildren.map((child, index) => {
+          const { title } = getTabInfo(child, index);
           
           return (
             <button
@@ -194,8 +271,8 @@ export function CodeGroup({ children, className }: CodeGroupProps) {
               className={cn(
                 'px-5 py-3 text-sm font-medium whitespace-nowrap transition-all duration-200',
                 activeTab === index
-                  ? 'border-b-2 border-blue-500 text-blue-400'
-                  : 'text-gray-400 hover:text-gray-200'
+                  ? 'border-b-2 border-gray-800 text-gray-900 dark:border-gray-200 dark:text-gray-100'
+                  : 'text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200'
               )}
             >
               {title}
@@ -204,9 +281,9 @@ export function CodeGroup({ children, className }: CodeGroupProps) {
         })}
       </div>
       
-      {/* Content */}
-      <div className="relative p-5">
-        {childrenArray[activeTab]}
+      {/* Content - clean minimal style */}
+      <div className="relative p-5 font-mono text-sm text-gray-800 dark:text-gray-200">
+        {processedChildren[activeTab]}
         <CopyButton value={getContentToCopy()} />
       </div>
     </div>
@@ -214,9 +291,6 @@ export function CodeGroup({ children, className }: CodeGroupProps) {
 }
 
 export function Code({ title, children, className }: CodeProps) {
-  // Determine if this is a code block inside a CodeGroup
-  const isInCodeGroup = React.useContext(React.createContext<boolean>(false));
-  
   return (
     <div className={cn("font-mono text-sm", className)}>
       {children}
