@@ -1,6 +1,6 @@
 "use client";
 
-import { DEFAULT_MDX_CONTENT } from "@/app/editor/DefaultContent";
+import { DEFAULT_MDX_CONTENT } from "@/app/(dashboard)/editor/DefaultContent";
 import PreviewPane from "@/components/PreviewPane";
 
 export default function DefaultPage() {

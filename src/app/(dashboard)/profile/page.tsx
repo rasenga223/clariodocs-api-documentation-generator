@@ -41,7 +41,7 @@ export default function ProfilePage() {
   const userPhone = user.user_metadata?.phone || "";
 
   return (
-    <div className="bg-[url(/static-image.webp)] p-4">
+    <div className="h-full bg-[url(/static-image.webp)] p-4">
       {isEditing ? (
         <ProfileEditForm
           initialData={{

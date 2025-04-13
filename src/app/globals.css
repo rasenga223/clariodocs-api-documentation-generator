@@ -258,17 +258,17 @@
   background-color: var(--tw-prose-pre-bg);
 }
 
-.scrollbar::-webkit-scrollbar {
+*::-webkit-scrollbar {
   width: 8px;
 }
-.scrollbar::-webkit-scrollbar-track {
+*::-webkit-scrollbar-track {
   background: transparent;
 }
-.scrollbar::-webkit-scrollbar-thumb {
+*::-webkit-scrollbar-thumb {
   @apply rounded-[100vw] bg-emerald-500/50;
   transition: all 200ms ease-in-out;
 }
-.scrollbar::-webkit-scrollbar-thumb:hover {
+*::-webkit-scrollbar-thumb:hover {
   @apply bg-emerald-500;
   cursor: pointer;
 }
