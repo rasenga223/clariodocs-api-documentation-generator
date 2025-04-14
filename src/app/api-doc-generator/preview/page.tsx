@@ -16,6 +16,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
+import { ChevronLeft, FileText, Download, ExternalLink, Menu, Code, Eye, Github, Copy } from 'lucide-react';
 
 // Define the structure of each MDX file
 interface MdxFile {
@@ -169,6 +170,7 @@ export default function PreviewDocumentationPage() {
   const [tableOfContents, setTableOfContents] = useState<TocItem[]>([]);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [activeSection, setActiveSection] = useState<string>('');
+  const [projectTitle, setProjectTitle] = useState<string>('API Documentation');
   
   /**
    * Load the generated MDX files from sessionStorage on component mount
@@ -466,225 +468,248 @@ export default function PreviewDocumentationPage() {
   // Update the return statement with new UI
   return (
     <div className="flex min-h-screen bg-white dark:bg-gray-900">
-      {/* Sidebar Toggle Button (Mobile) */}
-      <button
-        onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-        className="fixed z-50 p-2 bg-gray-200 rounded-md left-4 top-4 lg:hidden dark:bg-gray-800"
-        aria-label={isSidebarOpen ? 'Close sidebar' : 'Open sidebar'}
-      >
-        <svg
-          className="w-6 h-6"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          {isSidebarOpen ? (
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M6 18L18 6M6 6l12 12"
-            />
-          ) : (
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M4 6h16M4 12h16M4 18h16"
-            />
-          )}
-        </svg>
-      </button>
-
-      {/* Enhanced Sidebar */}
+      {/* Modern Sidebar */}
       <div
         className={cn(
-          'fixed inset-y-0 left-0 z-40 w-72 transform overflow-hidden bg-gray-50 transition-transform duration-200 ease-in-out dark:bg-gray-800',
+          'fixed inset-y-0 left-0 z-40 w-80 transform overflow-hidden bg-gray-50 transition-transform duration-200 ease-in-out dark:bg-gray-800/95 backdrop-blur-sm border-r border-gray-200 dark:border-gray-700',
           isSidebarOpen ? 'translate-x-0' : '-translate-x-full',
           'lg:relative lg:translate-x-0'
         )}
       >
         <div className="flex flex-col h-full">
           {/* Sidebar Header */}
-          <div className="sticky top-0 z-10 p-4 border-b bg-gray-50 dark:border-gray-700 dark:bg-gray-800">
+          <div className="sticky top-0 z-10 px-6 py-4 border-b border-gray-200 bg-gray-50/95 dark:bg-gray-800/95 backdrop-blur-sm dark:border-gray-700">
             <div className="flex items-center justify-between">
-              <h2 className="text-xl font-bold text-gray-900 dark:text-white">Documentation</h2>
+              <div>
+                <h2 className="text-xl font-bold text-gray-900 dark:text-white">{projectTitle}</h2>
+                <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">API Reference</p>
+              </div>
               <Button
-                onClick={handleDownloadAll}
-                variant="outline"
-                size="sm"
-                className="text-xs"
+                variant="ghost"
+                size="icon"
+                onClick={() => setIsSidebarOpen(false)}
+                className="lg:hidden"
               >
-                Download All
+                <ChevronLeft className="w-4 h-4" />
               </Button>
             </div>
             
-            {/* Enhanced File Navigation */}
-            <div className="mt-4">
-              <select
-                value={currentFileIndex}
-                onChange={handleFileChange}
-                className="w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
-              >
-                {mdxFiles.map((file, index) => (
-                  <option key={`file-${index}`} value={index}>
-                    {file.filename}
-                  </option>
-                ))}
-              </select>
+            {/* Version Badge */}
+            <div className="inline-flex items-center px-2.5 py-0.5 mt-4 text-xs font-medium rounded-full bg-blue-50 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300">
+              <span className="w-1 h-1 mr-1.5 rounded-full bg-blue-500"></span>
+              Latest Version
             </div>
           </div>
 
-          {/* Enhanced Table of Contents */}
-          <ScrollArea className="flex-1 px-4 py-6">
-            <nav>
-              <h3 className="mb-4 text-sm font-semibold text-gray-500 dark:text-gray-400">
-                On This Page
-              </h3>
-              <ul className="space-y-3">
-                {tableOfContents.map((item) => (
-                  <li
-                    key={item.id}
-                    style={{ paddingLeft: `${(item.level - 1) * 12}px` }}
-                  >
-                    <a
-                      href={`#${item.id}`}
+          {/* Enhanced Navigation */}
+          <ScrollArea className="flex-1">
+            <div className="px-4 py-6">
+              <nav className="space-y-1">
+                {mdxFiles.map((file, index) => {
+                  const isActive = index === currentFileIndex;
+                  const fileName = file.filename.replace(/\.mdx$/, '').replace(/-/g, ' ');
+                  
+                  return (
+                    <button
+                      key={file.filename}
+                      onClick={() => setCurrentFileIndex(index)}
                       className={cn(
-                        'block rounded-md py-1.5 text-sm transition-colors',
-                        activeSection === item.id
-                          ? 'bg-blue-50 text-blue-600 dark:bg-blue-900/50 dark:text-blue-400'
-                          : 'text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white'
+                        'w-full flex items-center px-4 py-2 text-sm font-medium rounded-lg transition-colors',
+                        isActive 
+                          ? 'bg-blue-50 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300'
+                          : 'text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700/50'
                       )}
                     >
-                      {item.text}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </nav>
+                      <FileText className={cn(
+                        'w-4 h-4 mr-3',
+                        isActive ? 'text-blue-500' : 'text-gray-400'
+                      )} />
+                      <span className="capitalize truncate">{fileName}</span>
+                    </button>
+                  );
+                })}
+              </nav>
+
+              {/* Table of Contents */}
+              {tableOfContents.length > 0 && (
+                <div className="mt-8">
+                  <h3 className="px-4 mb-3 text-sm font-semibold text-gray-500 dark:text-gray-400">
+                    On This Page
+                  </h3>
+                  <nav className="space-y-1">
+                    {tableOfContents.map((item) => (
+                      <a
+                        key={item.id}
+                        href={`#${item.id}`}
+                        style={{ paddingLeft: `${(item.level - 1) * 12 + 16}px` }}
+                        className={cn(
+                          'block py-2 pr-3 text-sm transition-colors rounded-lg',
+                          activeSection === item.id
+                            ? 'text-blue-700 bg-blue-50 dark:text-blue-300 dark:bg-blue-900/50'
+                            : 'text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700/50'
+                        )}
+                      >
+                        {item.text}
+                      </a>
+                    ))}
+                  </nav>
+                </div>
+              )}
+            </div>
           </ScrollArea>
+
+          {/* Footer with Links */}
+          <div className="p-4 border-t border-gray-200 dark:border-gray-700">
+            <div className="grid grid-cols-2 gap-2">
+              <Button variant="outline" size="sm" className="w-full">
+                <Download className="w-4 h-4 mr-2" />
+                Download
+              </Button>
+              <Button variant="outline" size="sm" className="w-full">
+                <ExternalLink className="w-4 h-4 mr-2" />
+                Share
+              </Button>
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* Enhanced Main Content */}
-      <div className="flex-1 overflow-auto">
-        <div className="max-w-4xl px-4 py-8 mx-auto">
-          {/* Enhanced Top Navigation Bar */}
-          <div className="flex items-center justify-between mb-8">
-            <div className="flex items-center space-x-4">
-              <Link
-                href="/api-doc-generator/generate"
-                className="flex items-center text-sm text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
+      {/* Main Content Area */}
+      <div className="flex-1">
+        {/* Top Navigation Bar */}
+        <header className="sticky top-0 z-30 w-full border-b border-gray-200 bg-white/95 backdrop-blur-sm dark:bg-gray-900/95 dark:border-gray-700">
+          <div className="flex items-center justify-between h-16 px-4 sm:px-6">
+            <div className="flex items-center">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setIsSidebarOpen(true)}
+                className="lg:hidden"
               >
-                <svg
-                  className="w-4 h-4 mr-2"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
+                <Menu className="w-5 h-5" />
+              </Button>
+              <nav className="items-center hidden ml-6 space-x-4 lg:flex">
+                <a
+                  href="#"
+                  className="px-3 py-2 text-sm font-medium text-gray-900 rounded-md dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
                 >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M10 19l-7-7m0 0l7-7m-7 7h18"
-                  />
-                </svg>
-                Back to Generator
-              </Link>
+                  Overview
+                </a>
+                <a
+                  href="#"
+                  className="px-3 py-2 text-sm font-medium text-gray-900 rounded-md dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
+                >
+                  API Reference
+                </a>
+                <a
+                  href="#"
+                  className="px-3 py-2 text-sm font-medium text-gray-900 rounded-md dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
+                >
+                  Examples
+                </a>
+              </nav>
             </div>
-            
-            <div className="flex items-center space-x-2">
-              <Button
-                onClick={handleEditInEditor}
-                variant="default"
-                size="sm"
-                className="text-white bg-purple-600 hover:bg-purple-700 dark:bg-purple-700 dark:hover:bg-purple-800"
-              >
-                Edit in MDX Editor
+            <div className="flex items-center space-x-4">
+              <Button variant="outline" size="sm" onClick={() => setViewMode(viewMode === 'preview' ? 'source' : 'preview')}>
+                {viewMode === 'preview' ? (
+                  <>
+                    <Code className="w-4 h-4 mr-2" />
+                    View Source
+                  </>
+                ) : (
+                  <>
+                    <Eye className="w-4 h-4 mr-2" />
+                    View Preview
+                  </>
+                )}
               </Button>
-              <Button
-                onClick={() => setViewMode(viewMode === 'preview' ? 'source' : 'preview')}
-                variant="outline"
-                size="sm"
-              >
-                {viewMode === 'preview' ? 'View Source' : 'View Preview'}
-              </Button>
-              <Button
-                onClick={handleCopyToClipboard}
-                variant="outline"
-                size="sm"
-                className="text-purple-700 bg-purple-50 hover:bg-purple-100 dark:bg-purple-900/50 dark:text-purple-300 dark:hover:bg-purple-900/70"
-              >
-                Copy
+              <Button variant="default" size="sm">
+                <Github className="w-4 h-4 mr-2" />
+                Edit on GitHub
               </Button>
             </div>
           </div>
+        </header>
 
-          {/* Enhanced Documentation Content */}
-          <article className={cn(
-            'prose prose-lg max-w-none dark:prose-invert',
-            'prose-headings:scroll-m-20',
-            'prose-a:text-blue-600 prose-a:no-underline hover:prose-a:underline dark:prose-a:text-blue-400',
-            'prose-code:rounded prose-code:bg-gray-100 prose-code:px-1.5 prose-code:py-0.5 prose-code:font-mono prose-code:text-sm dark:prose-code:bg-gray-800',
-            viewMode === 'preview' ? '' : 'hidden'
-          )}>
-            <ReactMarkdown
-              remarkPlugins={[remarkGfm]}
-              rehypePlugins={[rehypeHighlight]}
-              components={{
-                h1: CustomH1,
-                h2: CustomH2,
-                h3: ({node, ...props}) => (
-                  <h3
-                    id={props.children?.toString().toLowerCase().replace(/[^\w]+/g, '-')}
-                    className="mt-8 mb-4 text-2xl font-semibold tracking-tight scroll-m-20"
-                    {...props}
-                  />
-                ),
-                code({node, inline, className, children, ...props}: any) {
-                  const match = /language-(\w+)/.exec(className || '');
-                  return !inline && match ? (
-                    <CustomCodeBlock
-                      language={match[1]}
-                      code={String(children).replace(/\n$/, '')}
-                    />
-                  ) : (
-                    <code
-                      className={cn(
-                        'rounded bg-gray-100 px-1.5 py-0.5 font-mono text-sm dark:bg-gray-800',
-                        className
-                      )}
+        {/* Documentation Content */}
+        <main className="flex-1 px-4 sm:px-6 lg:px-8">
+          <div className="max-w-4xl py-8 mx-auto">
+            <article className={cn(
+              'prose prose-lg max-w-none dark:prose-invert',
+              'prose-headings:scroll-m-20 prose-headings:font-semibold',
+              'prose-a:text-blue-600 prose-a:no-underline hover:prose-a:underline dark:prose-a:text-blue-400',
+              'prose-code:rounded prose-code:bg-gray-100 prose-code:px-1.5 prose-code:py-0.5 prose-code:font-mono prose-code:text-sm dark:prose-code:bg-gray-800',
+              'prose-pre:rounded-lg prose-pre:border prose-pre:border-gray-200 dark:prose-pre:border-gray-700',
+              viewMode === 'preview' ? '' : 'hidden'
+            )}>
+              <ReactMarkdown
+                remarkPlugins={[remarkGfm]}
+                rehypePlugins={[rehypeHighlight]}
+                components={{
+                  h1: CustomH1,
+                  h2: CustomH2,
+                  h3: ({node, ...props}) => (
+                    <h3
+                      id={props.children?.toString().toLowerCase().replace(/[^\w]+/g, '-')}
+                      className="mt-8 mb-4 text-2xl font-semibold tracking-tight scroll-m-20"
                       {...props}
-                    >
-                      {children}
-                    </code>
-                  );
-                },
-                // Add support for API endpoint documentation
-                div({node, className, children, ...props}: any) {
-                  if (className === 'api-endpoint') {
-                    const endpoint = node.properties?.endpoint;
-                    if (endpoint) {
-                      return <ApiEndpointComponent {...endpoint} />;
+                    />
+                  ),
+                  code({node, inline, className, children, ...props}: any) {
+                    const match = /language-(\w+)/.exec(className || '');
+                    return !inline && match ? (
+                      <CustomCodeBlock
+                        language={match[1]}
+                        code={String(children).replace(/\n$/, '')}
+                      />
+                    ) : (
+                      <code
+                        className={cn(
+                          'rounded bg-gray-100 px-1.5 py-0.5 font-mono text-sm dark:bg-gray-800',
+                          className
+                        )}
+                        {...props}
+                      >
+                        {children}
+                      </code>
+                    );
+                  },
+                  // Add support for API endpoint documentation
+                  div({node, className, children, ...props}: any) {
+                    if (className === 'api-endpoint') {
+                      const endpoint = node.properties?.endpoint;
+                      if (endpoint) {
+                        return <ApiEndpointComponent {...endpoint} />;
+                      }
                     }
-                  }
-                  return <div className={className} {...props}>{children}</div>;
-                },
-              }}
-            >
-              {currentFile?.content || '# No content available'}
-            </ReactMarkdown>
-          </article>
+                    return <div className={className} {...props}>{children}</div>;
+                  },
+                }}
+              >
+                {currentFile?.content || '# No content available'}
+              </ReactMarkdown>
+            </article>
 
-          {/* Enhanced Source View */}
-          <div className={viewMode === 'source' ? '' : 'hidden'}>
-            <CustomCodeBlock
-              language="markdown"
-              code={currentFile?.content || '# No content available'}
-              title="Source Markdown"
-            />
+            {/* Source View */}
+            <div className={viewMode === 'source' ? '' : 'hidden'}>
+              <div className="border border-gray-200 rounded-lg dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50">
+                <div className="flex items-center justify-between px-4 py-2 border-b border-gray-200 dark:border-gray-700">
+                  <div className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                    Source Code
+                  </div>
+                  <Button variant="ghost" size="sm" onClick={() => navigator.clipboard.writeText(currentFile?.content || '')}>
+                    <Copy className="w-4 h-4 mr-2" />
+                    Copy
+                  </Button>
+                </div>
+                <CustomCodeBlock
+                  language="markdown"
+                  code={currentFile?.content || '# No content available'}
+                />
+              </div>
+            </div>
           </div>
-        </div>
+        </main>
       </div>
     </div>
   );

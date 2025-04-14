@@ -4,7 +4,7 @@
 
 @layer base {
   :root {
-    /* Modern black/white color scheme with blue accents */
+    /* Modern black/white color scheme with emerald accents */
     --background: 0 0% 100%;
     --foreground: 240 10% 3.9%;
 
@@ -14,7 +14,7 @@
     --popover: 0 0% 100%;
     --popover-foreground: 240 10% 3.9%;
 
-    --primary: 222 89% 55%;
+    --primary: 160 84% 39%;
     --primary-foreground: 0 0% 100%;
 
     --secondary: 240 4.8% 95.9%;
@@ -31,7 +31,7 @@
 
     --border: 240 5.9% 90%;
     --input: 240 5.9% 90%;
-    --ring: 222 89% 55%;
+    --ring: 160 84% 39%;
 
     --radius: 0.5rem;
 
@@ -39,7 +39,7 @@
     --tw-prose-body: hsl(240, 10%, 3.9%);
     --tw-prose-headings: hsl(240, 10%, 3.9%);
     --tw-prose-lead: hsl(240, 3.8%, 46.1%);
-    --tw-prose-links: hsl(222, 89%, 55%);
+    --tw-prose-links: hsl(160, 84%, 39%);
     --tw-prose-bold: hsl(240, 10%, 3.9%);
     --tw-prose-counters: hsl(240, 3.8%, 46.1%);
     --tw-prose-bullets: hsl(240, 5.9%, 76%);
@@ -56,7 +56,7 @@
   }
 
   .dark {
-    /* Pure black theme with sharp contrast */
+    /* Pure black theme with emerald accents */
     --background: 0 0% 0%;
     --foreground: 0 0% 98%;
 
@@ -66,7 +66,7 @@
     --popover: 0 0% 0%;
     --popover-foreground: 0 0% 98%;
 
-    --primary: 222 89% 55%;
+    --primary: 160 84% 45%;
     --primary-foreground: 0 0% 100%;
 
     --secondary: 0 0% 5%;
@@ -83,13 +83,13 @@
 
     --border: 0 0% 10%;
     --input: 0 0% 10%;
-    --ring: 222 89% 55%;
+    --ring: 160 84% 45%;
 
     /* Prose variables for dark mode */
     --tw-prose-body: hsl(0, 0%, 98%);
     --tw-prose-headings: hsl(0, 0%, 100%);
     --tw-prose-lead: hsl(240, 5%, 64.9%);
-    --tw-prose-links: hsl(222, 89%, 70%);
+    --tw-prose-links: hsl(160, 84%, 55%);
     --tw-prose-bold: hsl(0, 0%, 100%);
     --tw-prose-counters: hsl(240, 5%, 64.9%);
     --tw-prose-bullets: hsl(240, 3.7%, 25%);

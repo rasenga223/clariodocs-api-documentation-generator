@@ -24,6 +24,7 @@ export default function EditorPage() {
   const [isLoaded, setIsLoaded] = useState(false)
   const [docOutline, setDocOutline] = useState<DocOutlineItem[] | null>(null)
   const [currentVersionIndex, setCurrentVersionIndex] = useState(0) // Track which version we're on
+  const [selectedSection, setSelectedSection] = useState<string | undefined>(undefined)
   
   // Check if we're on mobile
   useEffect(() => {
@@ -307,46 +308,105 @@ export default function EditorPage() {
     }
   }
 
-  // Update the handleFileSelect function to handle anchor links
+  // Add handleSectionSelect function
+  const handleSectionSelect = (sectionId: string) => {
+    setSelectedSection(sectionId)
+    console.log(`Selected section: ${sectionId}`)
+    
+    // Scroll to the section in the preview pane if it exists
+    const sectionElement = document.querySelector(`[data-section-id="${sectionId}"]`)
+    if (sectionElement) {
+      sectionElement.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }
+  }
+
+  // Update handleFileSelect to also handle section IDs
   const handleFileSelect = async (selectedFilename: string) => {
-    if (!projectId) return;
+    if (!projectId) return
     
     try {
-      // Extract the base filename without the anchor
-      const [baseFilename] = selectedFilename.split('#');
+      // Extract the base filename and section ID if present
+      const [baseFilename, sectionId] = selectedFilename.split('#')
+      
+      // If there's a section ID, set it to be scrolled to
+      if (sectionId) {
+        setSelectedSection(sectionId)
+      } else {
+        // Reset selected section when changing files
+        setSelectedSection(undefined)
+      }
       
       // Get all MDX files for the project
-      const allFiles = await getProjectMdx(projectId);
+      const allFiles = await getProjectMdx(projectId)
       
       if (!allFiles) {
-        console.error('Could not load files for project');
-        return;
+        console.error('Could not load files for project')
+        return
       }
       
       // Find the file that matches the selected filename
-      const selectedFile = allFiles.find(file => file.filename === baseFilename);
+      const selectedFile = allFiles.find(file => file.filename === baseFilename)
       
       if (selectedFile) {
         // Update state with the selected file content and filename
-        setCode(selectedFile.content);
-        setFilename(selectedFile.filename);
-        console.log(`Loaded file: ${selectedFile.filename}`);
+        setCode(selectedFile.content)
+        setFilename(selectedFile.filename)
+        console.log(`Loaded file: ${selectedFile.filename}${sectionId ? ` with section: ${sectionId}` : ''}`)
         
         // Add to history if different from current code
         if (code !== selectedFile.content) {
-          const now = new Date().toISOString();
+          const now = new Date().toISOString()
           setHistory(prev => [
             { code: selectedFile.content, timestamp: now },
             ...prev.filter(item => item.code !== selectedFile.content).slice(0, 9)
-          ]);
+          ])
         }
       } else {
-        console.warn(`File not found: ${baseFilename}`);
+        console.warn(`File not found: ${baseFilename}`)
       }
     } catch (error) {
-      console.error('Error loading selected file:', error);
+      console.error('Error loading selected file:', error)
     }
-  };
+  }
+
+  // Add handler for project selection
+  const handleProjectSelect = async (selectedProjectId: string) => {
+    if (selectedProjectId === projectId) return
+    
+    try {
+      // Get the MDX files for the selected project
+      const mdxFiles = await getProjectMdx(selectedProjectId)
+      
+      if (!mdxFiles || mdxFiles.length === 0) {
+        console.error('No MDX files found for project')
+        return
+      }
+      
+      // Set the first file's content as the current code
+      setCode(mdxFiles[0].content)
+      
+      // Update project-related state
+      setProjectId(selectedProjectId)
+      setFilename(mdxFiles[0].filename)
+      
+      // Load document outline
+      loadDocumentOutline(selectedProjectId)
+      
+      // Load project versions
+      loadProjectVersions(selectedProjectId)
+      
+      // Reset version index
+      setCurrentVersionIndex(0)
+      
+      // Store the current project ID
+      localStorage.setItem("editorProjectId", selectedProjectId)
+      
+      console.log(`Loaded project: ${selectedProjectId}`)
+    } catch (error) {
+      console.error('Error loading project:', error)
+      alert('Failed to load project. Please try again.')
+    }
+  }
 
   return (
     <div className="flex h-screen overflow-hidden">
@@ -361,6 +421,8 @@ export default function EditorPage() {
             collapsed={false}
             docOutline={docOutline}
             onSelectFile={handleFileSelect}
+            onSelectSection={handleSectionSelect}
+            activeSection={selectedSection}
             currentVersionIndex={currentVersionIndex}
           />
         ) : (
@@ -383,6 +445,8 @@ export default function EditorPage() {
           isSaving={isSaving}
           hasProject={!!projectId}
           currentVersionIndex={currentVersionIndex}
+          onProjectSelect={handleProjectSelect}
+          currentProjectId={projectId || undefined}
         />
         <div className="flex flex-1 overflow-hidden">
           {view !== "preview" && (

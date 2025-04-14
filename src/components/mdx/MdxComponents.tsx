@@ -70,19 +70,28 @@ export function H1({ children, className, ...props }: React.HTMLAttributes<HTMLH
   )
 }
 
-export function H2({ children, className, ...props }: React.HTMLAttributes<HTMLHeadingElement>) {
+export const H2: React.FC<React.HTMLAttributes<HTMLHeadingElement>> = ({ children, className, ...props }) => {
+  // Convert children (assumed to be text) into a slug
+  const text = React.Children.toArray(children).reduce((acc: string, child) => {
+    if (typeof child === 'string') return acc + child;
+    if (typeof child === 'number') return acc + child.toString();
+    return acc;
+  }, "");
+  const slug = text.toLowerCase().trim().replace(/\s+/g, '-'); // simple slugify
   return (
     <h2 
+      id={slug} 
+      data-section-id={slug} 
       className={cn(
         "mt-10 scroll-m-20 border-b pb-1 text-3xl font-semibold tracking-tight first:mt-0",
         className
-      )} 
+      )}
       {...props}
     >
       {children}
     </h2>
-  )
-}
+  );
+};
 
 export function H3({ children, className, ...props }: React.HTMLAttributes<HTMLHeadingElement>) {
   return (
