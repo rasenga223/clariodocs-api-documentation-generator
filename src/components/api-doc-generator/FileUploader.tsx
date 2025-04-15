@@ -12,15 +12,15 @@ interface FileUploaderProps {
 /**
  * FileUploader Component
  * 
- * A reusable component for file uploads with drag and drop support.
- * Specifically designed for API specification files (OpenAPI, Postman).
+ * A modern, interactive file upload component with drag and drop support.
+ * Designed specifically for API specification files with visual feedback.
  */
 export default function FileUploader({
   onFileSelect,
   selectedFile,
   supportedFileTypes = ['application/json', 'text/yaml', 'application/yaml', 'text/x-yaml'],
   supportedExtensions = ['.json', '.yaml', '.yml', '.postman_collection'],
-  maxSizeMB = 10, // Default max size is 10MB
+  maxSizeMB = 10,
   errorMessage
 }: FileUploaderProps) {
   const [isDragging, setIsDragging] = useState(false);
@@ -51,36 +51,30 @@ export default function FileUploader({
    * Validate file type, size and set file state
    */
   const validateAndSetFile = (file: File) => {
-    // Check file size
     const fileSizeInMB = file.size / (1024 * 1024);
     if (fileSizeInMB > maxSizeMB) {
-      // File is too large - in a real app we would show an error
-      // However, since we're passing the error message through props,
-      // we'll let the parent component handle this
       return;
     }
     
-    // Check file type (MIME type)
     const fileTypeValid = supportedFileTypes.includes(file.type);
-    
-    // Also check file extension as a fallback for when MIME type is not reliable
     const fileName = file.name.toLowerCase();
     const fileExtensionValid = supportedExtensions.some(ext => fileName.endsWith(ext));
     
-    // Only proceed if the file is valid
     if (fileTypeValid || fileExtensionValid) {
       onFileSelect(file);
     }
   };
 
   return (
-    <div>
+    <div className="relative">
       <div
-        className={`mb-6 flex flex-col items-center justify-center rounded-lg border-2 border-dashed p-10 transition-colors ${
+        className={`group relative flex flex-col items-center justify-center p-10 border-2 border-dashed rounded-xl transition-all duration-200 ${
           isDragging
-            ? 'border-blue-500 bg-blue-50 dark:bg-gray-700'
-            : 'border-gray-300 dark:border-gray-600'
-        } ${selectedFile ? 'bg-green-50 dark:bg-gray-700' : ''}`}
+            ? 'border-primary bg-primary/5 scale-[1.02]'
+            : selectedFile
+            ? 'border-primary/40 bg-primary/5'
+            : 'border-border/60 hover:border-primary/40 hover:bg-secondary/40'
+        }`}
         onDragOver={(e) => {
           e.preventDefault();
           setIsDragging(true);
@@ -88,68 +82,121 @@ export default function FileUploader({
         onDragLeave={() => setIsDragging(false)}
         onDrop={handleDrop}
       >
+        {/* Background Pattern */}
+        <div className="absolute inset-0 pointer-events-none opacity-5">
+          <div className="absolute inset-0" style={{
+            backgroundImage: `radial-gradient(circle at 1px 1px, hsl(var(--primary)) 1px, transparent 0)`,
+            backgroundSize: '24px 24px'
+          }} />
+        </div>
+
         {!selectedFile ? (
           <>
-            <svg
-              className="mb-4 h-16 w-16 text-gray-400"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
-              ></path>
-            </svg>
-            <p className="mb-2 text-lg font-medium text-gray-700 dark:text-gray-300">
-              Drag and drop your file here, or
-            </p>
-            <label className="cursor-pointer rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700">
-              <span>Browse files</span>
-              <input
-                type="file"
-                className="hidden"
-                accept={supportedExtensions.join(',')}
-                onChange={handleFileChange}
-              />
-            </label>
+            {/* Upload Icon */}
+            <div className={`mb-6 p-4 rounded-full transition-all duration-200 ${
+              isDragging ? 'bg-primary/20 scale-110' : 'bg-secondary group-hover:bg-primary/10'
+            }`}>
+              <svg
+                className={`w-10 h-10 transition-colors duration-200 ${
+                  isDragging ? 'text-primary' : 'text-muted-foreground group-hover:text-primary'
+                }`}
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="1.5"
+                  d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+                ></path>
+              </svg>
+            </div>
+
+            {/* Upload Text */}
+            <div className="space-y-2 text-center">
+              <p className="text-lg font-medium">
+                Drop your API specification here
+              </p>
+              <p className="text-sm text-muted-foreground">
+                or
+              </p>
+              <label className="inline-flex items-center px-4 py-2.5 text-sm font-medium rounded-lg bg-primary text-primary-foreground cursor-pointer hover:bg-primary/90 transition-colors shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30">
+                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                </svg>
+                <span>Choose File</span>
+                <input
+                  type="file"
+                  className="hidden"
+                  accept={supportedExtensions.join(',')}
+                  onChange={handleFileChange}
+                />
+              </label>
+            </div>
+
+            {/* Supported Formats */}
+            <div className="flex items-center mt-6 space-x-2 text-xs text-muted-foreground">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <span>Supports {supportedExtensions.join(', ')} • Max {maxSizeMB}MB</span>
+            </div>
           </>
         ) : (
           <>
-            <svg
-              className="mb-4 h-16 w-16 text-green-500 dark:text-green-400"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M5 13l4 4L19 7"
-              ></path>
-            </svg>
-            <p className="mb-2 text-lg font-medium text-gray-700 dark:text-gray-300">
-              File selected: {selectedFile.name}
-            </p>
-            <button
-              type="button"
-              className="mt-2 rounded-md bg-gray-200 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
-              onClick={() => onFileSelect(null as any)} // Need to cast null to any due to the type definition
-            >
-              Change file
-            </button>
+            {/* Selected File State */}
+            <div className="text-center">
+              <div className="inline-flex items-center justify-center w-16 h-16 mb-4 rounded-full bg-primary/10">
+                <svg
+                  className="w-8 h-8 text-primary"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="1.5"
+                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                  ></path>
+                </svg>
+              </div>
+              
+              <div className="mb-6 space-y-1">
+                <p className="text-lg font-medium break-all">
+                  {selectedFile.name}
+                </p>
+                <p className="text-sm text-muted-foreground">
+                  {(selectedFile.size / 1024).toFixed(1)} KB
+                </p>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => onFileSelect(null as any)}
+                className="inline-flex items-center px-4 py-2 text-sm font-medium transition-colors rounded-lg bg-secondary text-secondary-foreground hover:bg-secondary/80"
+              >
+                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                </svg>
+                Change File
+              </button>
+            </div>
           </>
         )}
       </div>
 
+      {/* Error Message */}
       {errorMessage && (
-        <div className="mb-4 rounded-md bg-red-50 p-4 text-red-800 dark:bg-red-900/30 dark:text-red-300">
-          <p>{errorMessage}</p>
+        <div className="p-4 mt-4 border rounded-lg bg-destructive/10 border-destructive/20">
+          <div className="flex items-start">
+            <svg className="w-5 h-5 text-destructive" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+            </svg>
+            <p className="ml-3 text-sm text-destructive">{errorMessage}</p>
+          </div>
         </div>
       )}
     </div>

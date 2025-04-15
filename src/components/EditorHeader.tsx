@@ -2,7 +2,7 @@
 
 import { saveAs } from "file-saver"
 import { jsPDF } from "jspdf"
-import { Code, Download, Eye, FileText, History, SplitIcon as LayoutSplit, Save } from 'lucide-react'
+import { Code, Download, Eye, FileText, History, SplitIcon as LayoutSplit, Save, FolderOpen } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -13,6 +13,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { cn } from "@/lib/utils"
+import { useState, useEffect } from "react"
+import { getAvailableProjects, type ProjectSelectItem } from "@/lib/docService"
 
 type Props = {
   view: "split" | "editor" | "preview"
@@ -24,9 +26,41 @@ type Props = {
   isSaving?: boolean
   hasProject?: boolean
   currentVersionIndex?: number
+  onProjectSelect?: (projectId: string) => void
+  currentProjectId?: string
 }
 
-export default function EditorHeader({ view, setView, history, revertToVersion, saveVersion, code, isSaving, hasProject, currentVersionIndex = 0 }: Props) {
+export default function EditorHeader({ 
+  view, 
+  setView, 
+  history, 
+  revertToVersion, 
+  saveVersion, 
+  code, 
+  isSaving, 
+  hasProject, 
+  currentVersionIndex = 0,
+  onProjectSelect,
+  currentProjectId
+}: Props) {
+  const [projects, setProjects] = useState<ProjectSelectItem[]>([])
+  const [isLoadingProjects, setIsLoadingProjects] = useState(false)
+
+  // Load available projects
+  useEffect(() => {
+    async function loadProjects() {
+      setIsLoadingProjects(true)
+      try {
+        const availableProjects = await getAvailableProjects()
+        setProjects(availableProjects)
+      } catch (error) {
+        console.error('Error loading projects:', error)
+      } finally {
+        setIsLoadingProjects(false)
+      }
+    }
+    loadProjects()
+  }, [])
 
   const exportMarkdown = () => {
     if (code.trim()) {
@@ -95,6 +129,61 @@ export default function EditorHeader({ view, setView, history, revertToVersion, 
     <header className="flex items-center justify-between px-4 border-b h-14 bg-background border-border">
       <div className="flex items-center space-x-2">
         <h1 className="text-lg font-semibold text-foreground">MDX Editor</h1>
+        
+        {/* Project Selector */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline" size="sm" className="ml-4" disabled={isLoadingProjects}>
+              <FolderOpen className="w-4 h-4 mr-2" />
+              {isLoadingProjects ? (
+                <span>Loading...</span>
+              ) : (
+                <span>Select Project</span>
+              )}
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="start" className="w-[300px] bg-popover border-border">
+            <DropdownMenuLabel>Available Projects</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            {projects.length === 0 ? (
+              <div className="px-2 py-4 text-sm text-center text-muted-foreground">
+                No projects available
+              </div>
+            ) : (
+              projects.map((project) => (
+                <DropdownMenuItem
+                  key={project.id}
+                  onClick={() => onProjectSelect?.(project.id)}
+                  className={cn(
+                    "flex flex-col items-start py-3 cursor-pointer",
+                    currentProjectId === project.id && "bg-primary/10"
+                  )}
+                >
+                  <div className="flex items-center justify-between w-full">
+                    <span className="font-medium">{project.title}</span>
+                    <span className={cn(
+                      "px-2 py-1 text-xs rounded-full",
+                      project.status === 'ready' && "bg-green-100 text-green-800",
+                      project.status === 'processing' && "bg-yellow-100 text-yellow-800",
+                      project.status === 'failed' && "bg-red-100 text-red-800",
+                      project.status === 'draft' && "bg-gray-100 text-gray-800"
+                    )}>
+                      {project.status}
+                    </span>
+                  </div>
+                  {project.description && (
+                    <span className="mt-1 text-xs text-muted-foreground line-clamp-1">
+                      {project.description}
+                    </span>
+                  )}
+                  <span className="mt-1 text-xs text-muted-foreground">
+                    Updated {new Date(project.updated_at).toLocaleDateString()}
+                  </span>
+                </DropdownMenuItem>
+              ))
+            )}
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
 
       <div className="flex items-center space-x-2">

@@ -8,8 +8,8 @@ export interface MdxFile {
 }
 
 export interface DocProject {
-  id?: string;
-  title?: string;
+  id: string;
+  title: string;
   description?: string;
   slug?: string;
   user_id?: string;
@@ -19,6 +19,15 @@ export interface DocProject {
   created_at?: string;
   updated_at?: string;
   template?: string;
+}
+
+// Add a more specific type for project selection
+export interface ProjectSelectItem {
+  id: string;
+  title: string;
+  description?: string;
+  status: 'draft' | 'processing' | 'ready' | 'failed';
+  updated_at: string;
 }
 
 // Define the document outline types
@@ -373,4 +382,46 @@ export async function getProjectMdxVersions(
   }
   
   return data;
+}
+
+/**
+ * Gets all available projects for selection
+ * Returns a simplified version of projects with only necessary fields
+ */
+export async function getAvailableProjects(): Promise<ProjectSelectItem[]> {
+  const { data, error } = await supabase
+    .from('projects')
+    .select('id, title, description, status, updated_at')
+    .order('updated_at', { ascending: false });
+  
+  if (error) {
+    console.error('Error retrieving available projects:', error);
+    return [];
+  }
+  
+  return data || [];
+}
+
+// Function to fetch documentation outline for a project
+export async function fetchDocOutline(projectId: string): Promise<DocOutlineItem[]> {
+  // TODO: Implement actual API call to fetch doc outline
+  // This is a mock implementation
+  return [
+    {
+      id: 'introduction',
+      title: 'Introduction',
+      children: [
+        { id: 'getting-started', title: 'Getting Started' },
+        { id: 'installation', title: 'Installation' }
+      ]
+    },
+    {
+      id: 'features',
+      title: 'Features',
+      children: [
+        { id: 'core-features', title: 'Core Features' },
+        { id: 'advanced-features', title: 'Advanced Features' }
+      ]
+    }
+  ];
 } 

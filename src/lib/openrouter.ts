@@ -17,12 +17,15 @@ function safeJSONParse(str: string) {
   try {
     return JSON.parse(str);
   } catch (e) {
-    // If that fails, try to clean up the string
     console.warn('⚠️ Standard JSON.parse failed, attempting to clean string');
+    console.log('🔍 First 100 chars of problematic string:', str.substring(0, 100));
     
     try {
-      // Replace problematic control characters
-      const sanitized = str.replace(/[\u0000-\u001F]/g, match => {
+      // Step 1: Remove any BOM characters
+      let cleaned = str.replace(/^\uFEFF/, '');
+      
+      // Step 2: Replace problematic control characters
+      cleaned = cleaned.replace(/[\u0000-\u001F\u007F-\u009F]/g, match => {
         if (match === '\n') return '\\n';
         if (match === '\r') return '\\r';
         if (match === '\t') return '\\t';
@@ -31,8 +34,22 @@ function safeJSONParse(str: string) {
         return '';
       });
       
-      return JSON.parse(sanitized);
+      // Step 3: Handle escaped quotes and backslashes
+      cleaned = cleaned.replace(/\\/g, '\\\\').replace(/(?<!\\)"/g, '\\"');
+      
+      // Step 4: Ensure the string is proper JSON by wrapping non-JSON-starting content
+      if (!cleaned.trim().startsWith('{') && !cleaned.trim().startsWith('[')) {
+        cleaned = `{"content": "${cleaned}"}`;
+      }
+      
+      console.log('🧹 Cleaned string (first 100 chars):', cleaned.substring(0, 100));
+      
+      const parsed = JSON.parse(cleaned);
+      
+      // If we wrapped it earlier, unwrap it now
+      return parsed.content || parsed;
     } catch (e2) {
+      console.error('❌ Both parsing attempts failed:', e2);
       // If both methods fail, throw the original error
       throw e;
     }
@@ -336,33 +353,32 @@ Your MDX should be well-structured, use proper Markdown and React components, an
         throw jsonError;
       }
       
-      if (!Array.isArray(mdxFiles)) {
-        console.warn('⚠️ Response is not an array, wrapping in array');
-        mdxFiles = [{ 
-          filename: 'documentation.mdx',
-          content: mdxContent
-        }];
-      } else if (mdxFiles.length > 0 && (!mdxFiles[0].filename || !mdxFiles[0].content)) {
-        // Check if the array items have the correct structure
-        console.warn('⚠️ Array items missing filename/content, restructuring');
-        mdxFiles = mdxFiles.map((item, index) => {
-          if (typeof item === 'string') {
-            return {
-              filename: `part-${index + 1}.mdx`,
-              content: item
-            };
-          } else if (item && typeof item === 'object') {
-            return {
-              filename: item.filename || `part-${index + 1}.mdx`,
-              content: item.content || JSON.stringify(item)
-            };
-          }
-          return {
-            filename: `part-${index + 1}.mdx`,
-            content: JSON.stringify(item)
-          };
-        });
-      }
+      // Process and validate each MDX file
+      mdxFiles = mdxFiles.map((file: any) => {
+        let { filename, content } = file;
+        
+        // Ensure we have valid filename and content
+        filename = filename || 'documentation.mdx';
+        content = content || '';
+        
+        // Clean up MDX content
+        content = content
+          // Ensure proper escaping of curly braces in code blocks
+          .replace(/```([\s\S]*?)\n([\s\S]*?)```/g, (match: string, lang: string, code: string) => {
+            // Properly escape any JSX expressions in code blocks
+            const escapedCode = code.replace(/\{/g, '\\{').replace(/\}/g, '\\}');
+            return `\`\`\`${lang}\n${escapedCode}\`\`\``;
+          })
+          // Ensure JSX expressions are properly formatted
+          .replace(/\{([^}]+)\}/g, (match: string, expr: string) => {
+            // If it's already a template literal, leave it alone
+            if (expr.includes('`')) return match;
+            // Otherwise wrap in template literal
+            return `{\`${expr}\`}`;
+          });
+        
+        return { filename, content };
+      });
       
       console.log('📚 Final MDX files structure:', mdxFiles.map((f: any) => f.filename));
       return mdxFiles;

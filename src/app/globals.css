@@ -291,11 +291,11 @@
   background: transparent;
 }
 *::-webkit-scrollbar-thumb {
-  @apply rounded-[100vw] bg-emerald-500/50;
+  @apply rounded-[100vw] bg-green-500/50;
   transition: all 200ms ease-in-out;
 }
 *::-webkit-scrollbar-thumb:hover {
-  @apply bg-emerald-500;
+  @apply bg-green-500;
   cursor: pointer;
 }
 
