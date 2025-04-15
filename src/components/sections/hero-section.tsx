@@ -23,7 +23,7 @@ export const HeroSection = () => {
         <h1 className="mb-6 bg-gradient-to-r from-white to-zinc-500 bg-clip-text text-[clamp(2.25rem,5vw,4.5rem)] font-bold tracking-tighter text-transparent">
           One-Click API Documentation Generator
         </h1>
-        <p className="mb-4 max-w-[52rem] text-[clamp(0.875rem,2vw,1.25rem)] text-pretty text-zinc-500">
+        <p className="mb-8 max-w-[52rem] text-[clamp(0.875rem,2vw,1.25rem)] text-pretty text-zinc-500">
           Transform your API spec into a clean, branded, shareable documentation
           site instantly. Powered by AI for enhanced readability and developer
           experience.

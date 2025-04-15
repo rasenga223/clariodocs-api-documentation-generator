@@ -9,7 +9,7 @@ const linkVariants = cva(
   {
     variants: {
       variant: {
-        default: "w-fit px-0 h-fit rounded-none hover:underline",
+        default: "w-fit px-0 h-fit rounded-none",
         primary:
           "bg-foreground text-background border border-solid border-transparent hover:bg-[#383838] dark:hover:bg-[#ccc] sm:h-9",
         secondary:

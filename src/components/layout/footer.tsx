@@ -6,20 +6,22 @@ export const Footer = () => {
           <h2 className="-mt-4 text-[clamp(3rem,5vw,7rem)] leading-none font-black uppercase">
             Clario
           </h2>
-          <p className="text-zinc-700 text-sm pl-4">© 2025 API Docs Generator. All rights reserved.</p>
+          <p className="pl-1 text-sm text-zinc-700 md:pl-4">
+            © 2025 Clario. All rights reserved.
+          </p>
         </header>
 
-        <section className="flex w-full max-w-sm items-start justify-between gap-8 space-y-2">
+        <section className="flex w-full max-w-sm items-start gap-16 space-y-2 md:justify-between">
           {["Quick Links", "Application"].map((item) => (
             <div key={item}>
               <h3 className="mb-1 font-medium">{item}</h3>
               <ul className="space-y-1">
-                {[1, 2, 3].map((item) => (
+                {["features", "documentation", "dashboard"].map((item) => (
                   <li
                     key={item}
-                    className="cursor-pointer text-sm text-zinc-700 hover:font-medium"
+                    className="cursor-pointer text-sm text-zinc-700 capitalize hover:font-medium"
                   >
-                    Link {item}
+                    {item}
                   </li>
                 ))}
               </ul>
