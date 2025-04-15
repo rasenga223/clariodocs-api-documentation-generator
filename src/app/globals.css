@@ -60,7 +60,7 @@
 }
 
 @theme inline {
-  --shadow-aura: 0 0 60px 20px rgba(0, 255, 200, 0.1);
+  --shadow-aura: 0 0 60px 20px rgba(0, 255, 0, 0.1);
   --animate-spotlight: spotlight 2s ease 0.75s 1 forwards;
   --animate-radial-aura: auraMove 10s ease-in-out infinite;
 

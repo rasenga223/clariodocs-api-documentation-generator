@@ -30,7 +30,7 @@ const cardsData = [
 
 const DashboardPage = () => {
   return (
-    <div className="relative grid h-full bg-emerald-950/50 bg-[url(/static-image.webp)] p-4">
+    <div className="relative grid h-full bg-green-950/50 bg-[url(/static-image.webp)] p-4">
       <div className="grid sm:grid-cols-2 lg:grid-cols-3">
         {cardsData.map(({ id, title, description, link, cta }) => (
           <Card
@@ -38,7 +38,7 @@ const DashboardPage = () => {
             className="gap-0 rounded-none border-none bg-transparent"
           >
             <CardHeader>
-              <CardTitle className="text-xl font-semibold text-emerald-800 dark:text-emerald-300">
+              <CardTitle className="text-xl font-semibold text-green-800 dark:text-green-400">
                 {title}
               </CardTitle>
             </CardHeader>
@@ -51,7 +51,7 @@ const DashboardPage = () => {
               <Link href={link}>
                 <Button
                   variant="default"
-                  className="bg-emerald-600 text-white hover:bg-emerald-700 focus:ring-emerald-500 focus:ring-offset-2 focus:outline-none"
+                  className="bg-green-600 text-white hover:bg-green-700 focus:ring-green-500 focus:ring-offset-2 focus:outline-none"
                 >
                   {cta}
                 </Button>

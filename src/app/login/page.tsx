@@ -80,7 +80,7 @@ export default function LoginPage() {
           </div>
           <Button
             onClick={() => setEmailSent(false)}
-            className="w-full rounded-md bg-emerald-600 text-white hover:bg-emerald-700"
+            className="w-full rounded-md bg-green-600 text-white hover:bg-green-700"
           >
             Back to login
           </Button>
@@ -133,7 +133,7 @@ export default function LoginPage() {
               <Button
                 type="submit"
                 disabled={form.formState.isSubmitting}
-                className="w-full bg-emerald-600 text-white hover:bg-emerald-700"
+                className="w-full bg-green-600 text-white hover:bg-green-700"
               >
                 {form.formState.isSubmitting ? "Sending..." : "Send magic link"}
               </Button>
@@ -173,7 +173,7 @@ export default function LoginPage() {
 
         <Link
           href="/"
-          className="block text-center text-sm font-medium text-emerald-600 hover:text-emerald-500 dark:text-emerald-400"
+          className="block text-center text-sm font-medium"
         >
           Back to home
         </Link>
