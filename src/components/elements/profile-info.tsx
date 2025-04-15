@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { userService } from "@/services/api";
-import { Loader } from "@/components/elements/loader";
+import { Loader } from "@/components/ui/loader";
 
 interface UserProfile {
   id: string;

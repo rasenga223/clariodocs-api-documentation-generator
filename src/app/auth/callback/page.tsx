@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Loader } from "@/components/elements/loader";
+import { Loader } from "@/components/ui/loader";
 import { supabase } from "@/lib/supabase";
 
 export default function AuthCallbackPage() {

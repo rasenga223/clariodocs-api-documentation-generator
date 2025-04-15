@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { ProfileEditForm } from "@/components/elements/profile-edit-form";
 import { ProfileDisplay } from "@/components/elements/profile-display";
-import { Loader } from "@/components/elements/loader";
+import { Loader } from "@/components/ui/loader";
 import { useAuth } from "@/provider/auth";
 
 export default function ProfilePage() {

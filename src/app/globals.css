@@ -61,6 +61,8 @@
 
 @theme inline {
   --shadow-aura: 0 0 60px 20px rgba(0, 255, 200, 0.1);
+  --animate-spotlight: spotlight 2s ease 0.75s 1 forwards;
+  --animate-radial-aura: auraMove 10s ease-in-out infinite;
 
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -178,6 +180,30 @@
   }
 }
 
+/* animation keyframes */
+@keyframes spotlight {
+  0% {
+    opacity: 0;
+    transform: translate(-72%, -62%) scale(0.5);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(-50%, -40%) scale(1);
+  }
+}
+
+@keyframes auraMove {
+  0% {
+    background-position: 0% 0%;
+  }
+  50% {
+    background-position: 75% 75%;
+  }
+  100% {
+    background-position: 0% 0%;
+  }
+}
+
 /* Add custom styles for the MDX preview */
 .prose pre {
   @apply overflow-x-auto rounded-md p-4;
@@ -274,9 +300,9 @@
 }
 
 .no-scrollbar {
-  -ms-overflow-style: none;  /* IE and Edge */
-  scrollbar-width: none;     /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
 }
 .no-scrollbar::-webkit-scrollbar {
-  display: none;             /* Chrome, Safari and Opera */
+  display: none; /* Chrome, Safari and Opera */
 }
