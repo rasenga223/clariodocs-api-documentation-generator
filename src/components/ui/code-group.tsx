@@ -128,6 +128,28 @@ const LANGUAGE_NAMES: { [key: string]: string } = {
   http: 'HTTP',
 }
 
+// Add this function before the CodeGroup component
+/**
+ * Preprocesses code content to fix common MDX parsing issues:
+ * - Fixes backticks in object literals
+ * - Ensures proper escaping of problematic characters
+ */
+function preprocessCode(code: string): string {
+  if (!code) return code;
+  
+  return code
+    // Fix backticks in object literals by converting to single quotes
+    .replace(/({[^}]*)`([^`]*)`([^}]*})/g, (match, start, content, end) => {
+      // If it's an object literal property with backticks, convert to single quotes
+      return `${start}'${content}'${end}`;
+    })
+    // Fix any remaining unescaped backticks that aren't part of code blocks
+    .replace(/(?<!\\)`(?!`)/g, '\\`')
+    // Ensure proper escaping of curly braces in code blocks
+    .replace(/(?<!\\){(?!`)/g, '\\{')
+    .replace(/(?<!\\)}(?!`)/g, '\\}');
+}
+
 export function CodeGroup({ children, className }: CodeGroupProps) {
   const [activeTab, setActiveTab] = useState(0)
   const childrenArray = React.Children.toArray(children)
@@ -135,31 +157,53 @@ export function CodeGroup({ children, className }: CodeGroupProps) {
   // Process children to handle both JSX components and markdown code blocks
   const processedChildren = childrenArray.map((child, index) => {
     // Handle markdown code blocks that are passed as string children
-    // These will come as strings with ```language Label\ncode```
     if (typeof child === 'string') {
       const match = child.trim().match(/^```([a-zA-Z0-9+#]+)(?:\s+([^\n]+))?\n([\s\S]*?)```$/);
       if (match) {
         const [, language, title, code] = match;
         const displayTitle = title || LANGUAGE_NAMES[language.toLowerCase()] || language;
         
-        // Create a styled version of the code block with properly typed props
+        // Preprocess the code content
+        const processedCode = preprocessCode(code);
+        
         return React.createElement('div', {
           key: `${index}-${displayTitle}`,
           className: "font-mono text-sm processed-code-block",
           'data-type': 'processed',
           'data-language': language,
           'data-title': displayTitle,
-          children: code
+          children: processedCode
         });
       }
     }
     
     // Handle regular JSX components (likely our <Code> component)
     if (React.isValidElement(child)) {
-      return child;
+      const element = child as React.ReactElement<ElementProps>;
+      
+      // If the child has string content, preprocess it
+      if (typeof element.props.children === 'string') {
+        return React.cloneElement(element, {
+          ...element.props,
+          children: preprocessCode(element.props.children)
+        });
+      }
+      
+      // If the child has nested content, process it recursively
+      if (React.isValidElement(element.props.children)) {
+        const nestedElement = element.props.children as React.ReactElement<ElementProps>;
+        if (nestedElement.props?.children && typeof nestedElement.props.children === 'string') {
+          return React.cloneElement(element, {
+            ...element.props,
+            children: React.cloneElement(nestedElement, {
+              ...nestedElement.props,
+              children: preprocessCode(nestedElement.props.children)
+            })
+          });
+        }
+      }
     }
     
-    // Return unchanged if not matching our patterns
     return child;
   });
 

@@ -196,3 +196,34 @@
 .prose th {
   background-color: var(--tw-prose-pre-bg);
 }
+
+@layer components {
+  /* Chat window message prose styling */
+  .chat-message .prose-sm {
+    @apply text-sm;
+  }
+  
+  .chat-message .prose-sm p {
+    @apply mb-1 leading-normal;
+  }
+  
+  .chat-message .prose-sm ul {
+    @apply pl-5 mb-2 list-disc;
+  }
+  
+  .chat-message .prose-sm ol {
+    @apply pl-5 mb-2 list-decimal;
+  }
+  
+  .chat-message .prose-sm li {
+    @apply mb-1;
+  }
+  
+  .chat-message .prose-sm pre {
+    @apply p-2 my-2 overflow-x-auto text-xs bg-gray-100 rounded-md dark:bg-gray-800;
+  }
+  
+  .chat-message .prose-sm code {
+    @apply px-1 font-mono text-xs bg-gray-100 rounded dark:bg-gray-800;
+  }
+}

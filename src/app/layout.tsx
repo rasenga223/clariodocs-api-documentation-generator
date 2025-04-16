@@ -5,6 +5,8 @@ import { AuthProvider } from '@/contexts/AuthContext';
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { Suspense } from 'react';
 import type React from "react";
+import { ToastProvider } from "@/components/ui/use-toast"
+import { cn } from "@/lib/utils"
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-geist-sans' });
 
@@ -28,12 +30,14 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${inter.className} bg-background text-foreground`}>
+      <body className={cn("min-h-screen bg-background antialiased", inter.variable)}>
         <Suspense fallback={<Loading />}>
-          <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
-            <AuthProvider>
-              {children}
-            </AuthProvider>
+          <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+            <ToastProvider>
+              <AuthProvider>
+                {children}
+              </AuthProvider>
+            </ToastProvider>
           </ThemeProvider>
         </Suspense>
       </body>

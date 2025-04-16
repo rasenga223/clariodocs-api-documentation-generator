@@ -1112,6 +1112,78 @@ export function Terminal({ title = "Terminal", children, className, showPrompt =
   )
 }
 
+// Add Note component as an alias for Callout with type "info"
+export function Note({ children, className, ...props }: Omit<CalloutProps, 'type'>) {
+  return (
+    <Callout type="info" className={className} {...props}>
+      {children}
+    </Callout>
+  )
+}
+
+// Add RequestBody component for API request body documentation
+interface RequestBodyProps {
+  children: React.ReactNode;
+  className?: string;
+  required?: boolean;
+  contentType?: string;
+}
+
+export function RequestBody({ children, className, required = true, contentType = "application/json" }: RequestBodyProps) {
+  return (
+    <div className={cn(
+      "my-6 overflow-hidden rounded-3xl border border-gray-200/50 dark:border-gray-800/80 backdrop-blur-sm",
+      "shadow-sm",
+      className
+    )}>
+      <div className="flex items-center justify-between px-5 py-3 border-b border-gray-200/50 dark:border-gray-800/80">
+        <div className="flex items-center">
+          <div className="font-medium text-gray-700 dark:text-gray-300">Request Body</div>
+          {required && (
+            <div className="ml-2 px-2 py-0.5 text-xs rounded-full border border-red-200 dark:border-red-900/50 text-red-600 dark:text-red-400">
+              Required
+            </div>
+          )}
+        </div>
+        <div className="font-mono text-xs text-gray-500 dark:text-gray-400">
+          {contentType}
+        </div>
+      </div>
+      <div className="p-5">
+        {children}
+      </div>
+    </div>
+  );
+}
+
+// Add Description component for detailed endpoint/parameter descriptions
+interface DescriptionProps {
+  children: React.ReactNode;
+  className?: string;
+}
+
+export function Description({ children, className }: DescriptionProps) {
+  return (
+    <div className={cn(
+      "my-4 text-gray-600 dark:text-gray-400",
+      "prose-sm prose-gray dark:prose-invert",
+      "leading-relaxed",
+      className
+    )}>
+      {children}
+    </div>
+  );
+}
+
+// Add Warning component as an alias for Callout with type "warning"
+export function Warning({ children, className, ...props }: Omit<CalloutProps, 'type'>) {
+  return (
+    <Callout type="warning" className={className} {...props}>
+      {children}
+    </Callout>
+  )
+}
+
 // Add new components to the default export
 const MdxComponents = {
   // Basic text components
@@ -1132,6 +1204,10 @@ const MdxComponents = {
   Param,
   ParamsTable,
   Response,
+  Note,
+  Warning,
+  RequestBody,
+  Description,
   
   // UI Components
   Callout,

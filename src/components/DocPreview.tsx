@@ -12,7 +12,7 @@ import MdxComponents, {
   // Basic text components
   H1, H2, H3, P, Ul, Ol, Li, Blockquote, InlineCode, Hr,
   // API Documentation components
-  Endpoint, Param, ParamsTable, Response,
+  Endpoint, Param, ParamsTable, Response, Note, Warning, RequestBody, Description,
   // UI Components
   Callout, CodeGroup, Card, CardGroup, Tabs, Tab, Accordion, AccordionItem,
   // Code component (pre formatting)
@@ -62,6 +62,10 @@ const mdxComponents = {
   Param: Param,
   ParamsTable: ParamsTable,
   Response: Response,
+  Note: Note,
+  Warning: Warning,
+  RequestBody: RequestBody,
+  Description: Description,
   
   // UI Components - again with capital letters
   Callout: Callout,
