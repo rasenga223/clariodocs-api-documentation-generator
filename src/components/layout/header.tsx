@@ -10,7 +10,7 @@ import { cn } from "@/lib/utils";
 
 import { HeaderMobileNavMenu } from "@/components/elements/header-mobile-nav-menu";
 import { HeaderLogo } from "@/components/elements/header-logo";
-import { HeaderDesktopNavigation } from "@/components/elements/header-desktop-navigation";
+// import { HeaderDesktopNavigation } from "@/components/elements/header-desktop-navigation";
 import { HeaderMobileNavToggle } from "@/components/elements/header-mobile-nav-toggle";
 import { HeaderUserSection } from "@/components/elements/header-user-section";
 
@@ -33,18 +33,18 @@ export const Header = () => {
   );
 
   // Track mobile nav open state
-  const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
+  // const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
 
   useEffect(() => {
     setIsClient(true);
   }, []);
 
   // Define navigation links
-  const navigationLinks = [
-    { name: "Features", href: "/features" },
-    { name: "Pricing", href: "/pricing" },
-    { name: "Documentation", href: "/docs" },
-  ];
+  // const navigationLinks = [
+  //   { name: "Features", href: "/features" },
+  //   { name: "Pricing", href: "/pricing" },
+  //   { name: "Documentation", href: "/docs" },
+  // ];
 
   // Get user name with fallback
   const userName =
@@ -62,30 +62,28 @@ export const Header = () => {
       aria-label="Site header"
       // We set backgroundColor and borderColor dynamically based on scroll.
       style={{
-        width: "100%",
         backgroundColor: prefersReducedMotion
           ? "rgba(10,10,10,0.65)"
           : `rgba(10,10,10,${bgOpacity})`,
-        borderColor: borderColor, // dynamic border color for glassmorphism
+        borderColor: borderColor, 
       }}
       className={cn(
-        // Remove static border opacity from className.
-        "fixed inset-x-0 top-4 z-50 mx-auto max-w-7xl rounded-full border px-4 py-2 backdrop-blur-md transition-all duration-300",
+        "fixed inset-x-0 w-[calc(100%-2rem)] top-4 z-50 mx-auto max-w-7xl rounded-full border px-4 py-2 backdrop-blur-md transition-all duration-300",
         "grid grid-cols-3 items-center justify-items-center",
       )}
     >
-      <HeaderMobileNavToggle
+      {/* <HeaderMobileNavToggle
         isOpen={isMobileNavOpen}
         toggle={() => setIsMobileNavOpen((prev) => !prev)}
-      />
+      /> */}
 
-      <HeaderDesktopNavigation links={navigationLinks} />
+      {/* <HeaderDesktopNavigation links={navigationLinks} /> */}
 
       <HeaderLogo />
 
       <HeaderUserSection isLoggedIn={!!user} userName={userName} />
 
-      <HeaderMobileNavMenu isOpen={isMobileNavOpen} links={navigationLinks} />
+      {/* <HeaderMobileNavMenu isOpen={isMobileNavOpen} links={navigationLinks} /> */}
     </motion.header>
   );
 };

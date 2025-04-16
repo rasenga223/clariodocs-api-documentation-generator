@@ -75,7 +75,7 @@ export const Sidebar = () => {
         !isOpen && isMobile && "pointer-events-none",
       )}
       initial="closed"
-      animate={isOpen && hasMounted ? "open" : "closed"}
+      animate={isOpen ? "open" : "closed"}
       variants={SIDEBAR_VARIANTS}
       role="navigation"
       aria-label="Main navigation"
@@ -123,7 +123,7 @@ export const Sidebar = () => {
         {ITEMS.map((item) => {
           const isActive = pathname === item.link;
           return (
-            <li key={item.id} className="w-full">
+            <li key={item.id} onClick={toggleSidebar} className="w-full">
               <SidebarItem {...item} isActive={isActive} />
             </li>
           );

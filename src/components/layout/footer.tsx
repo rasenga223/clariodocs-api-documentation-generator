@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export const Footer = () => {
   return (
     <footer className="flex min-h-80 items-center bg-green-500 p-4 pb-2 text-zinc-950">
@@ -12,16 +14,19 @@ export const Footer = () => {
         </header>
 
         <section className="flex w-full max-w-sm items-start gap-16 space-y-2 md:justify-between">
-          {["Quick Links", "Application"].map((item) => (
+          {["Quick Links"].map((item) => (
             <div key={item}>
               <h3 className="mb-1 font-medium">{item}</h3>
               <ul className="space-y-1">
-                {["features", "documentation", "dashboard"].map((item) => (
+                {[
+                  { name: "sign up", link: "/login" },
+                  { name: "dashboard", link: "/dashboard" },
+                ].map(({ name, link }) => (
                   <li
-                    key={item}
+                    key={name}
                     className="cursor-pointer text-sm text-zinc-700 capitalize hover:font-medium"
                   >
-                    {item}
+                    <Link href={link}>{name}</Link>
                   </li>
                 ))}
               </ul>
