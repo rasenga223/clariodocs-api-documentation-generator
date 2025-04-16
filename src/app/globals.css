@@ -284,7 +284,7 @@
   background-color: var(--tw-prose-pre-bg);
 }
 
-<<<<<<< HEAD
+/* Scrollbar styles */
 *::-webkit-scrollbar {
   width: 8px;
 }
@@ -307,7 +307,7 @@
 .no-scrollbar::-webkit-scrollbar {
   display: none; /* Chrome, Safari and Opera */
 }
-=======
+
 @layer components {
   /* Chat window message prose styling */
   .chat-message .prose-sm {
@@ -338,4 +338,3 @@
     @apply px-1 font-mono text-xs bg-gray-100 rounded dark:bg-gray-800;
   }
 }
->>>>>>> origin/api-doc-generation
