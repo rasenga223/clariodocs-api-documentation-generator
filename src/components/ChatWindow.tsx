@@ -34,6 +34,8 @@ interface ChatWindowProps {
   mdxFiles: MDXFileInfo[];
   onMdxFileUpdate?: (filename: string, content: string) => void;
   className?: string;
+  isOpen?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
 interface SuggestionFix {
@@ -50,8 +52,22 @@ interface MdxUpdate {
   type: 'update' | 'add' | 'delete';
 }
 
-export default function ChatWindow({ projectId, mdxFiles, onMdxFileUpdate, className }: ChatWindowProps) {
-  const [isOpen, setIsOpen] = useState(false)
+export default function ChatWindow({ 
+  projectId, 
+  mdxFiles, 
+  onMdxFileUpdate, 
+  className,
+  isOpen: controlledIsOpen,
+  onOpenChange 
+}: ChatWindowProps) {
+  const [isOpenInternal, setIsOpenInternal] = useState(false)
+  
+  const isOpen = controlledIsOpen ?? isOpenInternal
+  const setIsOpen = (value: boolean) => {
+    setIsOpenInternal(value)
+    onOpenChange?.(value)
+  }
+
   const [inputValue, setInputValue] = useState('')
   const [messages, setMessages] = useState<ChatMessage[]>([
     { role: 'system', content: chatService.getSystemPrompt(mdxFiles) }

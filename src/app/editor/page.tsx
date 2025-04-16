@@ -28,6 +28,7 @@ export default function EditorPage() {
   const [currentVersionIndex, setCurrentVersionIndex] = useState(0) // Track which version we're on
   const [selectedSection, setSelectedSection] = useState<string | undefined>(undefined)
   const [allMdxFiles, setAllMdxFiles] = useState<MDXFileInfo[]>([])
+  const [isChatOpen, setIsChatOpen] = useState(false)  // Add this state for chat window
   
   // Check if we're on mobile
   useEffect(() => {
@@ -565,6 +566,20 @@ Add detailed reference documentation...
     }
   };
 
+  // Add keyboard shortcut handler
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Check for Cmd/Ctrl + K
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault(); // Prevent default browser behavior
+        setIsChatOpen(prev => !prev);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
   return (
     <div className="flex h-screen overflow-hidden">
       <div className={cn("flex transition-all duration-300", sidebarCollapsed ? "w-8" : "")}>
@@ -627,6 +642,8 @@ Add detailed reference documentation...
         <ChatWindow 
           projectId={projectId}
           mdxFiles={allMdxFiles}
+          isOpen={isChatOpen}
+          onOpenChange={setIsChatOpen}
           onMdxFileUpdate={(filename: string, newContent: string) => {
             // If this is the current file in the editor, update it
             if (filename === (filename || '')) {
