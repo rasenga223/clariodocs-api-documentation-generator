@@ -92,13 +92,13 @@ export const AVAILABLE_MODELS = [
   {
     id: 'gpt-4.1-mini',
     name: 'GPT-4.1 Mini',
-    description: 'fadt, and good for technical documentation with code examples',
+    description: 'Fast and good for technical documentation with code examples',
     maxTokens: 3000,
   },
   {
     id: 'gpt-4o',
     name: 'GPT-4o',
-    description: 'Open source model with strong technical understanding',
+    description: 'Fast and intelligent with strong technical understanding',
     maxTokens: 3000,
   },
 ];

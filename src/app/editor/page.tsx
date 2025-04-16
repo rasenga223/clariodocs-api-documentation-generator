@@ -574,11 +574,16 @@ Add detailed reference documentation...
         e.preventDefault(); // Prevent default browser behavior
         setIsChatOpen(prev => !prev);
       }
+      // Check for Cmd/Ctrl + S
+      if ((e.metaKey || e.ctrlKey) && e.key === 's') {
+        e.preventDefault(); // Prevent default browser behavior
+        saveVersion();
+      }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, []);
+  }, [saveVersion]); // Add saveVersion to dependencies
 
   return (
     <div className="flex h-screen overflow-hidden">
