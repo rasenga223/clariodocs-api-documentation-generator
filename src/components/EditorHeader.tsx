@@ -309,7 +309,7 @@ export default function EditorHeader({
             )}
           >
             <ExternalLink className="w-4 h-4 mr-2" />
-            <span className="hidden sm:inline">View Live</span>
+            <span className="hidden sm:inline">Preview Live</span>
           </Button>
         )}
       </div>
