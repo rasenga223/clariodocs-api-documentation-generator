@@ -1,0 +1,65 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+API Doc Generation Interface
+Goal: Create a user-friendly, AI-powered interface where users can upload an API file (OpenAPI or Postman), process it, and see the generated documentation preview.
+
+🟢 Phase 1: Upload UI & UX
+ Design file upload section (drag & drop + file picker)
+
+ Add supported file types (.json, .yaml, .yml, .postman_collection)
+
+ Show upload progress indicator (if needed)
+
+ Validate file on client-side before submitting
+
+ Trigger API call to backend/upload service on submit
+
+ Handle file upload errors (invalid format, size, etc.)
+
+🟡 Phase 2: AI Processing Status View
+ Display a “Processing your docs with AI…” screen or modal
+
+ Add loading animation or progress indicator
+
+ Poll backend for AI completion status (optional)
+
+ Redirect or update UI when generation is done
+
+ Handle processing failures gracefully
+
+🔵 Phase 3: Generated Documentation Preview UI
+ Create layout similar to Mintlify (sidebar + main content)
+
+ Populate sidebar with endpoint list grouped by tags/sections
+
+ Render AI-generated content: endpoint summary, parameters, responses, example requests
+
+ Add “Copy” buttons for endpoint paths and code snippets
+
+ Add light/dark mode toggle
+
+ Make it responsive and mobile-friendly
+
+🟣 Phase 4: User Interaction Features
+ Add “Regenerate with AI” button
+
+ Add “Edit Manually” (open text editor/modal to tweak content)
+
+ Save changes to Supabase (optional if backend ready)
+
+ Add “Download Markdown” or “Export Docs” option (if planned)
+
+⚪ Optional Enhancements (Post-MVP or Stretch Goals)
+ Multi-file upload support
+
+ Auto-detect file type and show file type badge
+
+ Inline comments on endpoints (team collaboration)
+
+ Animate sidebar transitions
+
+ Previews with different themes/branding
+
