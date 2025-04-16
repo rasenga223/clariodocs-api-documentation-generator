@@ -14,7 +14,7 @@ export default function GenerateDocumentationPage() {
   // Form state
   const [apiSpec, setApiSpec] = useState('');
   const [fileType, setFileType] = useState('openapi');
-  const [model, setModel] = useState('anthropic/claude-3-sonnet');
+  const [model, setModel] = useState('anthropic/claude-3.5-sonnet');
   const [template, setTemplate] = useState('minimal');
   const [extraInstructions, setExtraInstructions] = useState('');
   const [title, setTitle] = useState('My API Documentation');

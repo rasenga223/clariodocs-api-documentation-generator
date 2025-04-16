@@ -424,4 +424,111 @@ export async function fetchDocOutline(projectId: string): Promise<DocOutlineItem
       ]
     }
   ];
+}
+
+/**
+ * Creates a new MDX file in a project
+ * 
+ * @param projectId - Project ID
+ * @param filename - Name of the new file
+ * @param initialContent - Initial content for the file (optional)
+ * @returns Success flag
+ */
+export async function createMdxFile(
+  projectId: string,
+  filename: string,
+  initialContent: string = ''
+): Promise<boolean> {
+  try {
+    // Get existing MDX files
+    const existingFiles = await getProjectMdx(projectId);
+    if (!existingFiles) return false;
+    
+    // Add new file to the list
+    const newFiles = [
+      ...existingFiles,
+      { filename, content: initialContent }
+    ];
+    
+    // Save updated files
+    return await saveMdxFiles(projectId, newFiles);
+  } catch (error) {
+    console.error('Error creating new MDX file:', error);
+    return false;
+  }
+}
+
+/**
+ * Deletes an MDX file from a project
+ * 
+ * @param projectId - Project ID
+ * @param filename - Name of the file to delete
+ * @returns Success flag
+ */
+export async function deleteMdxFile(
+  projectId: string,
+  filename: string
+): Promise<boolean> {
+  try {
+    // Get existing MDX files
+    const existingFiles = await getProjectMdx(projectId);
+    if (!existingFiles) return false;
+    
+    // Filter out the file to delete
+    const updatedFiles = existingFiles.filter(file => file.filename !== filename);
+    
+    // If no files were removed, return false
+    if (updatedFiles.length === existingFiles.length) return false;
+    
+    // Save updated files
+    return await saveMdxFiles(projectId, updatedFiles);
+  } catch (error) {
+    console.error('Error deleting MDX file:', error);
+    return false;
+  }
+}
+
+/**
+ * Updates the order of MDX files in a project
+ * 
+ * @param projectId - Project ID
+ * @param fileOrder - Array of filenames in the desired order
+ * @returns Success flag
+ */
+export async function updateMdxFileOrder(
+  projectId: string,
+  fileOrder: string[]
+): Promise<boolean> {
+  try {
+    // Get existing MDX files
+    const existingFiles = await getProjectMdx(projectId);
+    if (!existingFiles) return false;
+    
+    // Create a map of filename to file content for quick lookup
+    const fileMap = existingFiles.reduce((map, file) => {
+      map[file.filename] = file.content;
+      return map;
+    }, {} as Record<string, string>);
+    
+    // Create a new array with files in the specified order
+    const orderedFiles = fileOrder
+      .filter(filename => fileMap[filename] !== undefined)
+      .map(filename => ({
+        filename,
+        content: fileMap[filename]
+      }));
+    
+    // Add any files that weren't in the order array to the end
+    existingFiles.forEach(file => {
+      if (!fileOrder.includes(file.filename)) {
+        orderedFiles.push(file);
+      }
+    });
+    
+    // Save the reordered files
+    return await saveMdxFiles(projectId, orderedFiles);
+  } catch (error) {
+    console.error('Error updating MDX file order:', error);
+    return false;
+  }
 } 

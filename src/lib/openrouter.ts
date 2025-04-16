@@ -78,33 +78,27 @@ export interface OpenRouterResponse {
 // Available models for documentation generation
 export const AVAILABLE_MODELS = [
   {
-    id: 'anthropic/claude-3-opus',
-    name: 'Claude 3 Opus',
-    description: 'Most powerful model for complex documentation generation',
-    maxTokens: 8000,
-  },
-  {
     id: 'anthropic/claude-3.5-sonnet',
     name: 'Claude 3.5 Sonnet',
     description: 'Balanced performance and cost for high-quality documentation',
     maxTokens: 4000,
   },
   {
-    id: 'anthropic/claude-3-haiku',
-    name: 'Claude 3 Haiku',
+    id: 'anthropic/claude-3.5-haiku',
+    name: 'Claude 3.5 Haiku',
     description: 'Faster responses for simpler documentation tasks',
     maxTokens: 2000,
   },
   {
-    id: 'google/gemini-pro',
-    name: 'Gemini Pro',
-    description: 'Good for technical documentation with code examples',
+    id: 'gpt-4.1-mini',
+    name: 'GPT-4.1 Mini',
+    description: 'Fast and good for technical documentation with code examples',
     maxTokens: 3000,
   },
   {
-    id: 'meta-llama/llama-3-70b-instruct',
-    name: 'Llama 3 70B',
-    description: 'Open source model with strong technical understanding',
+    id: 'gpt-4o',
+    name: 'GPT-4o',
+    description: 'Fast and intelligent with strong technical understanding',
     maxTokens: 3000,
   },
 ];
@@ -135,7 +129,7 @@ export async function generateDocumentation(
   console.log('🚀 Template:', options.template || 'None specified');
 
   // Construct the prompt for documentation generation
-  const systemPrompt = `You are an expert API documentation generator. Your task is to analyze the provided API specification and create beautiful, clear, and comprehensive documentation in MDX format.
+  const systemPrompt = `You are an expert API documentation generator and a senior MDX developer. Your task is to analyze the provided API specification and create beautiful, clear, and comprehensive documentation in MDX format.
 
 Format your output as an array of MDX components that will be used to build the documentation. Each component should be a complete MDX file.
 
@@ -159,6 +153,24 @@ CRITICAL RESPONSE FORMAT INSTRUCTIONS:
 4. Ensure all newlines in content fields are properly escaped as \\n
 5. Make sure there are no control characters in your JSON response
 6. Double-check that all quotation marks and escape sequences are properly formatted to avoid JSON parsing errors
+
+IMPORTANT MDX SYNTAX RULES:
+1. When using JSX expressions with curly braces {}, ensure:
+   - Boolean props use actual booleans, not strings (e.g., required={true} not required={"true"})
+   - Never use backticks inside JSX expressions
+   - Keep expressions simple and avoid complex JavaScript inside curly braces
+   - Always properly close JSX expressions with matching braces
+
+2. When using code blocks with backticks:
+   - Always use {\`...\`} syntax for code content inside MDX components
+   - Never use nested backticks inside code blocks
+   - If you need to show backticks in code examples, escape them properly
+   - Keep code blocks and their content properly aligned and formatted
+
+3. For code examples that include object literals with backticks:
+   - Format them as a single line without backticks: { algorithm: 'RS256' }
+   - Or break them into multiple lines with proper indentation
+   - Never mix backticks with object literal syntax
 
 IMPORTANT MDX COMPONENT USAGE:
 Here are examples of properly formatted MDX components that you should follow exactly. Pay special attention to the syntax, nesting, and escape characters:

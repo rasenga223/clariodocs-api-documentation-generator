@@ -1,12 +1,18 @@
 "use client"
 
-import { useState } from "react"
-import { ChevronDown, ChevronRight, FileText, FolderOpen, Home, Settings } from 'lucide-react'
+import { useState, useEffect } from "react"
+import { ChevronDown, ChevronRight, FileText, FolderOpen, Home, Settings, Plus, Trash2, AlertCircle, GripVertical } from 'lucide-react'
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Separator } from "@/components/ui/separator"
 import { DocOutlineItem } from "@/lib/docService"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter, DialogDescription } from "@/components/ui/dialog"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { createClient } from '@supabase/supabase-js'
+import { updateMdxFileOrder } from '@/lib/docService'
+import { toast } from '@/components/ui/use-toast'
 
 interface DocItem {
   id: string
@@ -38,6 +44,12 @@ const sampleDocs: DocItem[] = [
   },
 ]
 
+// Initialize Supabase client
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL || '',
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
+)
+
 export default function Sidebar({
   history = [],
   revertToVersion,
@@ -50,7 +62,10 @@ export default function Sidebar({
   onSelectFile,
   onSelectSection,
   activeSection,
-  currentVersionIndex = 0
+  currentVersionIndex = 0,
+  onCreateFile,
+  onDeleteFile,
+  onReorderFiles,
 }: { 
   history?: { code: string; timestamp: string; id?: string }[];
   revertToVersion?: (index: number) => void;
@@ -64,11 +79,29 @@ export default function Sidebar({
   onSelectSection?: (sectionId: string) => void;
   activeSection?: string;
   currentVersionIndex?: number;
+  onCreateFile?: (filename: string) => void;
+  onDeleteFile?: (filename: string) => void;
+  onReorderFiles?: (filenames: string[]) => void;
 }) {
   const [expandedItems, setExpandedItems] = useState<Record<string, boolean>>({
     "getting-started": true,
     "history": true,
   })
+  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
+  const [newFilename, setNewFilename] = useState("")
+  const [deleteConfirmFile, setDeleteConfirmFile] = useState<string | null>(null)
+  const [isReordering, setIsReordering] = useState(false);
+  
+  // Extract filenames from docOutline for reordering
+  const outlineFilenames = docOutline ? docOutline.map(item => `${item.id}.mdx`) : [];
+  const [orderedFiles, setOrderedFiles] = useState<string[]>(outlineFilenames);
+  
+  // Update orderedFiles when docOutline changes
+  useEffect(() => {
+    if (docOutline) {
+      setOrderedFiles(docOutline.map(item => `${item.id}.mdx`));
+    }
+  }, [docOutline]);
 
   const toggleExpand = (id: string) => {
     setExpandedItems((prev) => ({
@@ -85,6 +118,139 @@ export default function Sidebar({
       children: item.children?.map(convertToDocItem)
     }
   }
+
+  const handleCreateFile = () => {
+    if (!newFilename) return;
+    
+    // Format the filename
+    let filename = newFilename.toLowerCase()
+      // Replace spaces with dashes
+      .replace(/\s+/g, '-')
+      // Remove special characters
+      .replace(/[^a-z0-9-]/g, '')
+      // Add .mdx extension if not present
+      .replace(/\.mdx$|$/, '.mdx');
+    
+    onCreateFile?.(filename);
+    setNewFilename("");
+    setIsCreateDialogOpen(false);
+  }
+
+  const handleDeleteFile = (filename: string) => {
+    if (confirm(`Are you sure you want to delete ${filename}?`)) {
+      onDeleteFile?.(filename);
+    }
+  }
+
+  // Handle drag start
+  const handleDragStart = (e: React.DragEvent<HTMLDivElement>, index: number) => {
+    e.dataTransfer.setData('text/plain', index.toString());
+  };
+
+  // Handle drag over
+  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.currentTarget.style.opacity = '0.5';
+  };
+
+  // Handle drag leave
+  const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
+    e.currentTarget.style.opacity = '1';
+  };
+
+  // Handle drop
+  const handleDrop = async (e: React.DragEvent<HTMLDivElement>, dropIndex: number) => {
+    e.preventDefault();
+    e.currentTarget.style.opacity = '1';
+    
+    const dragIndex = parseInt(e.dataTransfer.getData('text/plain'));
+    if (dragIndex === dropIndex) return;
+
+    const items = Array.from(orderedFiles);
+    const [reorderedItem] = items.splice(dragIndex, 1);
+    items.splice(dropIndex, 0, reorderedItem);
+    
+    setOrderedFiles(items);
+    
+    try {
+      if (!projectId) return;
+      const success = await updateMdxFileOrder(projectId, items);
+      if (success) {
+        if (onReorderFiles) {
+          onReorderFiles(items);
+        }
+        toast({
+          title: "Files reordered",
+          description: "The sidebar order has been updated",
+          duration: 3000
+        });
+      }
+    } catch (error) {
+      console.error('Error reordering files:', error);
+      toast({
+        title: "Reordering failed",
+        description: "There was an error updating the file order",
+        variant: "destructive",
+        duration: 3000
+      });
+    }
+  };
+
+  // Toggle reordering mode
+  const toggleReordering = () => {
+    setIsReordering(!isReordering);
+  };
+
+  // Subscribe to real-time updates
+  useEffect(() => {
+    if (!projectId) return;
+
+    // Subscribe to project_mdx table changes
+    const mdxSubscription = supabase
+      .channel('project_mdx_changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'project_mdx',
+          filter: `project_id=eq.${projectId}`
+        },
+        (payload) => {
+          // Trigger a refresh of the document outline
+          if (onSelectFile) {
+            onSelectFile(filename || '');
+          }
+        }
+      )
+      .subscribe();
+
+    // Subscribe to project_versions table changes
+    const versionsSubscription = supabase
+      .channel('project_versions_changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'project_versions',
+          filter: `project_id=eq.${projectId}`
+        },
+        (payload) => {
+          // Refresh version history if the revertToVersion handler exists
+          if (revertToVersion) {
+            revertToVersion(currentVersionIndex);
+          }
+        }
+      )
+      .subscribe();
+
+    // Cleanup subscriptions
+    return () => {
+      mdxSubscription.unsubscribe();
+      versionsSubscription.unsubscribe();
+    };
+  }, [projectId, filename, currentVersionIndex]);
 
   const renderDocItem = (item: DocItem, depth = 0, parentId?: string) => {
     const hasChildren = item.children && item.children.length > 0
@@ -148,6 +314,19 @@ export default function Sidebar({
             "text-muted-foreground/90 group-hover:text-foreground",
             isActive && "text-primary"
           )}>{item.title}</span>
+          {!parentId && onDeleteFile && (
+            <Button
+              variant="ghost"
+              size="icon"
+              className="w-6 h-6 ml-auto opacity-0 group-hover:opacity-100"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleDeleteFile(`${item.id}.mdx`);
+              }}
+            >
+              <Trash2 className="w-4 h-4 text-muted-foreground hover:text-destructive" />
+            </Button>
+          )}
         </div>
         {hasChildren && isExpanded && (
           <div className="relative my-1 ml-3">
@@ -282,6 +461,52 @@ export default function Sidebar({
     );
   }
 
+  // Render doc items as normal or as draggable items
+  const renderDocItems = () => {
+    if (!docOutline) return null;
+    
+    if (isReordering) {
+      return (
+        <div className="space-y-1">
+          {orderedFiles.map((filename, index) => {
+            const item = docOutline.find(item => `${item.id}.mdx` === filename);
+            if (!item) return null;
+            
+            return (
+              <div
+                key={item.id}
+                draggable
+                onDragStart={(e) => handleDragStart(e, index)}
+                onDragOver={handleDragOver}
+                onDragLeave={handleDragLeave}
+                onDrop={(e) => handleDrop(e, index)}
+                className={cn(
+                  "group flex items-center py-2.5 px-3 my-0.5 rounded-md transition-all duration-200",
+                  "bg-gradient-to-r from-primary/5 to-transparent border border-primary/10",
+                  "relative cursor-move"
+                )}
+              >
+                <div 
+                  className="p-1 mr-2 text-muted-foreground hover:text-primary"
+                >
+                  <GripVertical size={14} />
+                </div>
+                <span className="mr-2 rounded-md p-0.5 bg-muted/80 group-hover:bg-primary/10">
+                  <FileText size={12} className="text-muted-foreground/70" />
+                </span>
+                <span className="truncate text-muted-foreground/90 group-hover:text-foreground">
+                  {item.title}
+                </span>
+              </div>
+            );
+          })}
+        </div>
+      );
+    }
+    
+    return docOutline.map(item => renderDocItem(convertToDocItem(item), 0));
+  };
+
   return (
     <aside
       className={cn(
@@ -292,15 +517,40 @@ export default function Sidebar({
     >
       <div className="flex items-center justify-between px-4 border-b border-border/50 h-14 bg-gradient-to-b from-background to-background/95">
         {!collapsed && (
-          <div className="flex items-center">
-            <h2 className="text-lg font-semibold tracking-tight text-transparent bg-gradient-to-br from-foreground to-foreground/70 bg-clip-text">
-              Docs
-            </h2>
-            {projectId && (
-              <div className="ml-2 px-2 py-0.5 text-[10px] bg-primary/10 text-primary rounded-full font-medium tracking-wide border border-primary/20">
-                Connected
-              </div>
-            )}
+          <div className="flex items-center justify-between w-full">
+            <div className="flex items-center">
+              <h2 className="text-lg font-semibold tracking-tight text-transparent bg-gradient-to-br from-foreground to-foreground/70 bg-clip-text">
+                Docs
+              </h2>
+              {projectId && (
+                <div className="ml-2 px-2 py-0.5 text-[10px] bg-primary/10 text-primary rounded-full font-medium tracking-wide border border-primary/20">
+                  Connected
+                </div>
+              )}
+            </div>
+            
+            <div className="flex items-center gap-1">
+              {projectId && docOutline && docOutline.length > 1 && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="ml-2 rounded-full hover:bg-primary/5 hover:text-primary"
+                  onClick={toggleReordering}
+                >
+                  <GripVertical className="w-4 h-4" />
+                </Button>
+              )}
+              {projectId && onCreateFile && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="ml-2 rounded-full hover:bg-primary/5 hover:text-primary"
+                  onClick={() => setIsCreateDialogOpen(true)}
+                >
+                  <Plus className="w-4 h-4" />
+                </Button>
+              )}
+            </div>
           </div>
         )}
         {(setCollapsed || toggleSidebar) && (
@@ -356,7 +606,19 @@ export default function Sidebar({
             <div className="p-3 space-y-1">
               {projectId ? (
                 docOutline ? (
-                  docOutline.map(item => renderDocItem(convertToDocItem(item), 0))
+                  isReordering ? (
+                    <>
+                      <div className="flex items-center justify-between px-3 mb-2">
+                        <span className="text-sm font-medium text-primary">Reorder Files</span>
+                        <Button variant="ghost" size="sm" className="h-8 px-2" onClick={toggleReordering}>
+                          Done
+                        </Button>
+                      </div>
+                      {renderDocItems()}
+                    </>
+                  ) : (
+                    renderDocItems()
+                  )
                 ) : (
                   <div className="w-full space-y-3">
                     <div className="flex items-center px-4 py-3 border rounded-lg bg-gradient-to-r from-primary/10 to-primary/5 border-primary/10">
@@ -385,6 +647,39 @@ export default function Sidebar({
           {renderProjectInfo()}
         </>
       )}
+
+      <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Create New Documentation Section</DialogTitle>
+            <DialogDescription className="text-sm text-muted-foreground mt-1.5">
+              This will create a new top-level section in your documentation.
+              Each section can contain multiple subsections and content.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-4">
+            <Label htmlFor="filename">Section Name</Label>
+            <Input
+              id="filename"
+              value={newFilename}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewFilename(e.target.value)}
+              placeholder="e.g. Getting Started"
+              className="mt-2"
+            />
+            <p className="mt-2 text-xs text-muted-foreground">
+              This will be converted to a filename like "getting-started.mdx"
+            </p>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsCreateDialogOpen(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleCreateFile}>
+              Create Section
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </aside>
   )
 }

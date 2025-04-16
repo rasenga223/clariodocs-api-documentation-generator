@@ -206,7 +206,7 @@
 
 /* Add custom styles for the MDX preview */
 .prose pre {
-  @apply overflow-x-auto rounded-md p-4;
+  @apply p-4 overflow-x-auto rounded-md;
   background-color: var(--tw-prose-pre-bg);
   border: 1px solid var(--tw-prose-pre-border);
 }
@@ -221,7 +221,7 @@
 .prose h2,
 .prose h3,
 .prose h4 {
-  @apply scroll-m-20 font-bold;
+  @apply font-bold scroll-m-20;
   color: var(--tw-prose-headings);
 }
 
@@ -260,7 +260,7 @@
 }
 
 .prose blockquote {
-  @apply my-4 pl-4 italic;
+  @apply pl-4 my-4 italic;
   border-left: 4px solid var(--tw-prose-quote-borders);
   color: var(--tw-prose-quotes);
 }
@@ -271,7 +271,7 @@
 }
 
 .prose table {
-  @apply my-4 w-full border-collapse;
+  @apply w-full my-4 border-collapse;
 }
 
 .prose th,
@@ -284,6 +284,7 @@
   background-color: var(--tw-prose-pre-bg);
 }
 
+<<<<<<< HEAD
 *::-webkit-scrollbar {
   width: 8px;
 }
@@ -306,3 +307,35 @@
 .no-scrollbar::-webkit-scrollbar {
   display: none; /* Chrome, Safari and Opera */
 }
+=======
+@layer components {
+  /* Chat window message prose styling */
+  .chat-message .prose-sm {
+    @apply text-sm;
+  }
+  
+  .chat-message .prose-sm p {
+    @apply mb-1 leading-normal;
+  }
+  
+  .chat-message .prose-sm ul {
+    @apply pl-5 mb-2 list-disc;
+  }
+  
+  .chat-message .prose-sm ol {
+    @apply pl-5 mb-2 list-decimal;
+  }
+  
+  .chat-message .prose-sm li {
+    @apply mb-1;
+  }
+  
+  .chat-message .prose-sm pre {
+    @apply p-2 my-2 overflow-x-auto text-xs bg-gray-100 rounded-md dark:bg-gray-800;
+  }
+  
+  .chat-message .prose-sm code {
+    @apply px-1 font-mono text-xs bg-gray-100 rounded dark:bg-gray-800;
+  }
+}
+>>>>>>> origin/api-doc-generation

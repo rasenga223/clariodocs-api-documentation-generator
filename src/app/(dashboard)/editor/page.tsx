@@ -6,10 +6,12 @@ import Sidebar from "@/components/Sidebar"
 import EditorHeader from "@/components/EditorHeader"
 import EditorPane from "@/components/EditorPane"
 import PreviewPane from "@/components/PreviewPane"
-import { saveMdxFiles, getProjectMdx, getDocumentOutline, getProjectMdxVersions, DocOutlineItem } from "@/lib/docService"
+import { saveMdxFiles, getProjectMdx, getDocumentOutline, getProjectMdxVersions, DocOutlineItem, createMdxFile, deleteMdxFile } from "@/lib/docService"
 import { cn } from "@/lib/utils"
 import { ChevronRight } from "lucide-react"
 import { DEFAULT_MDX_CONTENT } from "./DefaultContent"
+import ChatWindow from "@/components/ChatWindow"
+import { MDXFileInfo } from "@/lib/chatService"
 
 export default function EditorPage() {
   const router = useRouter()
@@ -25,6 +27,8 @@ export default function EditorPage() {
   const [docOutline, setDocOutline] = useState<DocOutlineItem[] | null>(null)
   const [currentVersionIndex, setCurrentVersionIndex] = useState(0) // Track which version we're on
   const [selectedSection, setSelectedSection] = useState<string | undefined>(undefined)
+  const [allMdxFiles, setAllMdxFiles] = useState<MDXFileInfo[]>([])
+  const [isChatOpen, setIsChatOpen] = useState(false)  // Add this state for chat window
   
   // Check if we're on mobile
   useEffect(() => {
@@ -408,6 +412,179 @@ export default function EditorPage() {
     }
   }
 
+  const getMdxFileInfo = async (): Promise<MDXFileInfo[]> => {
+    if (!projectId) return [];
+    
+    // If we have a current file, always include it
+    const currentFileInfo = filename && code ? [{ filename, content: code }] : [];
+    
+    try {
+      // Fetch all MDX files for the project
+      const allFiles = await getProjectMdx(projectId);
+      
+      if (!allFiles) return currentFileInfo;
+      
+      // Combine the current file with all project files, avoiding duplicates
+      const allFilesInfo: MDXFileInfo[] = allFiles.map(file => ({
+        filename: file.filename,
+        content: file.content
+      }));
+      
+      // If currentFileInfo exists, replace the matching file in allFilesInfo
+      if (currentFileInfo.length > 0) {
+        const fileIndex = allFilesInfo.findIndex(file => file.filename === filename);
+        if (fileIndex >= 0) {
+          allFilesInfo[fileIndex] = currentFileInfo[0];
+        } else {
+          allFilesInfo.push(currentFileInfo[0]);
+        }
+      }
+      
+      return allFilesInfo;
+    } catch (error) {
+      console.error('Error fetching project files:', error);
+      // Fall back to current file if there's an error
+      return currentFileInfo;
+    }
+  }
+
+  // Add useEffect to load all MDX files when projectId changes
+  useEffect(() => {
+    const loadAllFiles = async () => {
+      if (projectId) {
+        const files = await getMdxFileInfo();
+        setAllMdxFiles(files);
+      }
+    };
+    
+    loadAllFiles();
+  }, [projectId, filename, code]);
+
+  /**
+   * Handle creating a new MDX file
+   */
+  const handleCreateFile = async (newFilename: string) => {
+    if (!projectId) return;
+    
+    try {
+      // Create initial content with a section structure
+      const sectionTitle = newFilename.replace(/\.mdx$/, '').split('-').map(word => 
+        word.charAt(0).toUpperCase() + word.slice(1)
+      ).join(' ');
+      
+      const initialContent = `# ${sectionTitle}
+
+## Overview
+Add an overview of this section here...
+
+## Getting Started
+Start with the basics...
+
+## Features
+List the main features...
+
+## Examples
+Show some examples...
+
+## Reference
+Add detailed reference documentation...
+`;
+      
+      // Create the new file
+      const success = await createMdxFile(projectId, newFilename, initialContent);
+      
+      if (success) {
+        // Update the file list
+        const updatedFiles = await getProjectMdx(projectId);
+        if (updatedFiles) {
+          setAllMdxFiles(updatedFiles);
+        }
+        
+        // Switch to the new file
+        setFilename(newFilename);
+        setCode(initialContent);
+        
+        // Reload document outline
+        loadDocumentOutline(projectId);
+        
+        // Add to history
+        const now = new Date().toISOString();
+        setHistory(prev => [
+          { code: initialContent, timestamp: now },
+          ...prev.slice(0, 9)
+        ]);
+      }
+    } catch (error) {
+      console.error('Error creating new file:', error);
+      alert('Failed to create new file. Please try again.');
+    }
+  };
+
+  /**
+   * Handle deleting an MDX file
+   */
+  const handleDeleteFile = async (filenameToDelete: string) => {
+    if (!projectId) return;
+    
+    try {
+      // Delete the file
+      const success = await deleteMdxFile(projectId, filenameToDelete);
+      
+      if (success) {
+        // Update the file list
+        const updatedFiles = await getProjectMdx(projectId);
+        if (updatedFiles) {
+          setAllMdxFiles(updatedFiles);
+          
+          // If we deleted the current file, switch to another one
+          if (filename === filenameToDelete) {
+            if (updatedFiles.length > 0) {
+              setFilename(updatedFiles[0].filename);
+              setCode(updatedFiles[0].content);
+              
+              // Add to history
+              const now = new Date().toISOString();
+              setHistory(prev => [
+                { code: updatedFiles[0].content, timestamp: now },
+                ...prev.slice(0, 9)
+              ]);
+            } else {
+              // No files left
+              setFilename(null);
+              setCode('');
+              setHistory([]);
+            }
+          }
+        }
+        
+        // Reload document outline
+        loadDocumentOutline(projectId);
+      }
+    } catch (error) {
+      console.error('Error deleting file:', error);
+      alert('Failed to delete file. Please try again.');
+    }
+  };
+
+  // Add keyboard shortcut handler
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Check for Cmd/Ctrl + K
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault(); // Prevent default browser behavior
+        setIsChatOpen(prev => !prev);
+      }
+      // Check for Cmd/Ctrl + S
+      if ((e.metaKey || e.ctrlKey) && e.key === 's') {
+        e.preventDefault(); // Prevent default browser behavior
+        saveVersion();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [saveVersion]); // Add saveVersion to dependencies
+
   return (
     <div className="flex h-full overflow-hidden">
       <div className={cn("flex transition-all duration-300", sidebarCollapsed ? "w-8" : "")}>
@@ -424,6 +601,14 @@ export default function EditorPage() {
             onSelectSection={handleSectionSelect}
             activeSection={selectedSection}
             currentVersionIndex={currentVersionIndex}
+            onCreateFile={handleCreateFile}
+            onDeleteFile={handleDeleteFile}
+            onReorderFiles={(filenames) => {
+              // Refresh document outline after reordering
+              if (projectId) {
+                loadDocumentOutline(projectId);
+              }
+            }}
           />
         ) : (
           <button
@@ -457,6 +642,36 @@ export default function EditorPage() {
           )}
         </div>
       </div>
+      
+      {projectId && (
+        <ChatWindow 
+          projectId={projectId}
+          mdxFiles={allMdxFiles}
+          isOpen={isChatOpen}
+          onOpenChange={setIsChatOpen}
+          onMdxFileUpdate={(filename: string, newContent: string) => {
+            // If this is the current file in the editor, update it
+            if (filename === (filename || '')) {
+              setCode(newContent);
+              // Add to history if content is different
+              const now = new Date().toISOString();
+              setHistory(prev => [
+                { code: newContent, timestamp: now },
+                ...prev.filter(item => item.code !== newContent).slice(0, 9)
+              ]);
+            }
+            
+            // Update the file in allMdxFiles
+            setAllMdxFiles(prev => 
+              prev.map(file => 
+                file.filename === filename 
+                  ? { ...file, content: newContent } 
+                  : file
+              )
+            );
+          }}
+        />
+      )}
     </div>
   )
 }

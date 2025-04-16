@@ -6,6 +6,8 @@ import { DM_Sans } from "next/font/google";
 import { Toaster } from "@/components/ui/sonner";
 import { Loader } from "@/components/ui/loader";
 import { Providers } from "@/provider";
+import { ToastProvider } from "@/components/ui/use-toast";
+import { cn } from "@/lib/utils";
 
 const dmSans = DM_Sans({
   subsets: ["latin"],
@@ -65,7 +67,7 @@ export const metadata: Metadata = {
 
 function Loading() {
   return (
-    <div className="flex min-h-screen items-center justify-center">
+    <div className="flex items-center justify-center min-h-screen">
       <Loader />
     </div>
   );
@@ -78,11 +80,13 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body
-        className={`${dmSans.className} dark bg-background text-foreground antialiased`}
-      >
+      <body className={cn("min-h-screen bg-background antialiased", dmSans.variable)}>
         <Suspense fallback={<Loading />}>
-          <Providers>{children}</Providers>
+          <Providers>
+            <ToastProvider>
+              {children}
+            </ToastProvider>
+          </Providers>
         </Suspense>
         <Toaster position="top-center" />
       </body>

@@ -2,7 +2,7 @@
 
 import { saveAs } from "file-saver"
 import { jsPDF } from "jspdf"
-import { Code, Download, Eye, FileText, History, SplitIcon as LayoutSplit, Save, FolderOpen } from 'lucide-react'
+import { Code, Download, Eye, FileText, History, SplitIcon as LayoutSplit, Save, FolderOpen, ExternalLink } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -15,6 +15,7 @@ import {
 import { cn } from "@/lib/utils"
 import { useState, useEffect } from "react"
 import { getAvailableProjects, type ProjectSelectItem } from "@/lib/docService"
+import { useRouter } from "next/navigation"
 
 type Props = {
   view: "split" | "editor" | "preview"
@@ -45,6 +46,7 @@ export default function EditorHeader({
 }: Props) {
   const [projects, setProjects] = useState<ProjectSelectItem[]>([])
   const [isLoadingProjects, setIsLoadingProjects] = useState(false)
+  const router = useRouter()
 
   // Load available projects
   useEffect(() => {
@@ -288,6 +290,27 @@ export default function EditorHeader({
               })}
             </DropdownMenuContent>
           </DropdownMenu>
+        )}
+
+        {/* Preview Button - only show if we have a project */}
+        {currentProjectId && (
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => router.push(`/preview/${currentProjectId}`)}
+            className={cn(
+              "transition-all duration-300",
+              "bg-primary/5 border-primary/20",
+              "hover:bg-primary/10 hover:border-primary/30",
+              "text-primary hover:text-primary",
+              "shadow-[0_2px_10px_rgba(0,0,0,0.05)]",
+              "hover:shadow-[0_2px_15px_rgba(var(--primary),0.15)]",
+              "hover:scale-105 active:scale-95"
+            )}
+          >
+            <ExternalLink className="w-4 h-4 mr-2" />
+            <span className="hidden sm:inline">Preview Live</span>
+          </Button>
         )}
       </div>
     </header>
