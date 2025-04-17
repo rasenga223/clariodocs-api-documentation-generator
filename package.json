@@ -12,8 +12,7 @@
     "build:prod": "next build",
     "start": "next start",
     "lint": "next lint",
-    "lint:fix": "next lint --fix",
-    "postinstall": "npm rebuild"
+    "lint:fix": "next lint --fix"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
