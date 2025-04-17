@@ -31,6 +31,34 @@ const defaultContextValue: AuthContextType = {
 
 const AuthContext = createContext<AuthContextType>(defaultContextValue);
 
+// Helper function to ensure user exists in public.users table
+async function ensureUserInPublicTable(userData: UserData) {
+  if (!userData || !userData.id) return;
+  
+  // Check if user already exists in public.users table
+  const { data: existingUser, error: fetchError } = await supabase
+    .from('users')
+    .select('id')
+    .eq('id', userData.id)
+    .single();
+    
+  // If there's no existing user or an error (indicating no match), create the user
+  if (!existingUser || fetchError) {
+    // Create user in public.users table with only id and email
+    const { error: insertError } = await supabase
+      .from('users')
+      .insert({
+        id: userData.id,
+        email: userData.email,
+        created_at: new Date().toISOString()
+      });
+      
+    if (insertError) {
+      console.error('Error creating user in public table:', insertError);
+    }
+  }
+}
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<UserData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -41,6 +69,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       try {
         const userData = await getUser();
         setUser(userData);
+        
+        // Create user in public table if they don't exist
+        if (userData) {
+          await ensureUserInPublicTable(userData);
+        }
       } catch (error) {
         console.error("Error fetching user:", error);
       } finally {
@@ -54,7 +87,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const { data: authListener } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         if (session?.user) {
-          setUser(session.user as UserData);
+          const userData = session.user as UserData;
+          setUser(userData);
+          
+          // Ensure the user exists in public.users on auth state change
+          // This handles first logins and subsequent logins
+          await ensureUserInPublicTable(userData);
         } else {
           setUser(null);
         }
@@ -136,6 +174,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       // Refresh user data
       const updatedUser = await getUser();
       setUser(updatedUser);
+      
+      // Update the user in the public.users table as well
+      if (updatedUser) {
+        const { error: updatePublicError } = await supabase
+          .from('users')
+          .update({
+            full_name: updatedUser.user_metadata?.name || updatedUser.user_metadata?.full_name,
+            email: updatedUser.email,
+            ...(phone !== undefined && { phone })
+          })
+          .eq('id', updatedUser.id);
+          
+        if (updatePublicError) {
+          console.error('Error updating public user profile:', updatePublicError);
+        }
+      }
 
       return { error: null };
     } catch (error) {

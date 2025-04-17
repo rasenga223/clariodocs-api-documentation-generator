@@ -81,6 +81,16 @@ export default function ChatWindow({
   const [isSaving, setIsSaving] = useState(false)
 
   useEffect(() => {
+    // Auto-close success notification after 3 seconds
+    if (messages.length > 1 && messages[messages.length - 1].content.startsWith('✅')) {
+      const timer = setTimeout(() => {
+        setMessages(prev => prev.filter(m => !m.content.startsWith('✅')));
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [messages]);
+
+  useEffect(() => {
     // Update system message when mdxFiles change
     setMessages(prev => [
       { role: 'system', content: chatService.getSystemPrompt(mdxFiles) },
@@ -447,24 +457,13 @@ export default function ChatWindow({
           : "assistant-message flex"
       )}>
         <div className={cn(
-          "flex-none flex items-center justify-center w-8 h-8 rounded-full mr-3",
+          "flex-1 p-4 rounded-xl overflow-hidden break-words",
+          "max-w-[calc(100%-1rem)]", // Updated to account for removal of avatar
           message.role === 'user'
-            ? "bg-primary text-white ml-3 mr-0"
-            : "bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300"
+            ? "bg-emerald-600/90 text-emerald-50 dark:bg-emerald-700/90 dark:text-emerald-50"
+            : "text-gray-700 dark:text-gray-200"
         )}>
-          {message.role === 'user' ? (
-            <span className="text-xs font-semibold">You</span>
-          ) : (
-            <MessageSquare className="w-4 h-4" />
-          )}
-        </div>
-        <div className={cn(
-          "flex-1 p-4 rounded-xl max-w-[80%]",
-          message.role === 'user'
-            ? "bg-primary text-white"
-            : "bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-200"
-        )}>
-          <div className="prose-sm prose dark:prose-invert">
+          <div className="overflow-x-auto prose-sm prose dark:prose-invert">
             {message.role === 'user' ? (
               message.content
             ) : (
@@ -472,7 +471,7 @@ export default function ChatWindow({
                 components={{
                   pre: ({ node, ...props }) => (
                     <div className="relative my-2">
-                      <pre className="p-4 overflow-auto bg-gray-900 rounded-lg dark:bg-gray-800" {...props} />
+                      <pre className="p-4 overflow-x-auto bg-gray-900 rounded-lg dark:bg-gray-800" {...props} />
                     </div>
                   ),
                   code: ({ node, inline, className, ...props }: { node?: any; inline?: boolean; className?: string; children?: React.ReactNode }) => {
@@ -656,11 +655,77 @@ export default function ChatWindow({
               )}
             </CollapsibleContent>
           </Collapsible>
+
+          {/* MDX Update/Add/Delete Controls */}
+          {mdxUpdate && (
+            <div className="p-3 border-b border-border bg-muted/50">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-2">
+                  <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+                  <span className="text-sm font-medium text-primary">
+                    {mdxUpdate.type === 'update' && 'File Updated'}
+                    {mdxUpdate.type === 'add' && 'File Added'}
+                    {mdxUpdate.type === 'delete' && 'File Deleted'}
+                  </span>
+                  <span className="font-mono text-xs text-muted-foreground">{mdxUpdate.filename}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Button
+                    size="sm"
+                    onClick={applyMdxUpdate}
+                    disabled={isSaving}
+                    className="h-7"
+                  >
+                    {isSaving ? (
+                      <>
+                        <Loader2 className="w-3 h-3 mr-1 animate-spin" />
+                        Saving...
+                      </>
+                    ) : (
+                      mdxUpdate.type === 'delete' ? 'Delete' : 'Apply'
+                    )}
+                  </Button>
+                  <Button 
+                    variant="ghost" 
+                    size="icon"
+                    className="h-7 w-7" 
+                    onClick={() => setMdxUpdate(null)}
+                  >
+                    <X className="w-3 h-3" />
+                  </Button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Success Notification */}
+          {messages.length > 1 && messages[messages.length - 1].content.startsWith('✅') && (
+            <div className="p-3 border-b border-border bg-emerald-50/50 dark:bg-emerald-950/50">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-2">
+                  <Check className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                  <span className="text-sm text-emerald-600 dark:text-emerald-400">
+                    {messages[messages.length - 1].content}
+                  </span>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-7 w-7"
+                  onClick={() => {
+                    setMessages(messages.slice(0, -1));
+                  }}
+                >
+                  <X className="w-3 h-3" />
+                </Button>
+              </div>
+            </div>
+          )}
           
           {/* Messages */}
           <ScrollArea className="flex-1 px-4">
             <div className="py-4 space-y-6">
-              {messages.slice(1).map(renderChatMessage)}
+              {messages.filter(m => !m.content.startsWith('✅')).slice(1).map(renderChatMessage)}
               <div ref={messagesEndRef} />
               
               {isProcessing && (
@@ -700,48 +765,6 @@ export default function ChatWindow({
               </Button>
             </div>
           </div>
-          
-          {/* MDX Update/Add/Delete Notification */}
-          {mdxUpdate && (
-            <div className="p-3 border-t border-border bg-muted/50">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-2">
-                  <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-                  <span className="text-sm font-medium text-primary">
-                    {mdxUpdate.type === 'update' && 'File Updated'}
-                    {mdxUpdate.type === 'add' && 'File Added'}
-                    {mdxUpdate.type === 'delete' && 'File Deleted'}
-                  </span>
-                  <span className="font-mono text-xs text-muted-foreground">{mdxUpdate.filename}</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Button
-                    size="sm"
-                    onClick={applyMdxUpdate}
-                    disabled={isSaving}
-                    className="h-7"
-                  >
-                    {isSaving ? (
-                      <>
-                        <Loader2 className="w-3 h-3 mr-1 animate-spin" />
-                        Saving...
-                      </>
-                    ) : (
-                      mdxUpdate.type === 'delete' ? 'Delete' : 'Apply'
-                    )}
-                  </Button>
-                  <Button 
-                    variant="ghost" 
-                    size="icon"
-                    className="h-7 w-7" 
-                    onClick={() => setMdxUpdate(null)}
-                  >
-                    <X className="w-3 h-3" />
-                  </Button>
-                </div>
-              </div>
-            </div>
-          )}
         </>
       ) : (
         <Button

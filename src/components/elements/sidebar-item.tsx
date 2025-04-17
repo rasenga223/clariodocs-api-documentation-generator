@@ -38,7 +38,7 @@ export const SidebarItem = ({
     >
       <span
         className={cn(
-          "flex aspect-square min-w-8 items-center justify-center rounded-md bg-zinc-100 text-zinc-500 group-hover:text-zinc-100 dark:bg-zinc-800/50",
+          "flex aspect-square min-w-8 items-center justify-center rounded-md bg-zinc-100/80 text-zinc-600 group-hover:text-foreground group-hover:bg-accent dark:bg-zinc-800/50",
           isFocused && "text-zinc-100 ring-2 ring-green-500",
           isActive &&
             "bg-green-500 text-zinc-100 ring-2 ring-green-500 dark:bg-green-500/80",
@@ -63,7 +63,7 @@ export const SidebarItem = ({
               transition: { duration: 0.3 },
             }}
             className={cn(
-              "overflow-hidden whitespace-nowrap text-zinc-400 transition-colors group-hover:!text-white",
+              "overflow-hidden whitespace-nowrap text-zinc-600 transition-colors group-hover:text-foreground",
               (isFocused || isActive) &&
                 "font-semibold text-green-500 dark:text-green-500",
             )}

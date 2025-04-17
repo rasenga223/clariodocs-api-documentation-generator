@@ -21,7 +21,9 @@ import MdxComponents, {
   RateLimit, ApiResource, AuthMethod, StatusBadge, VersionHistory, 
   Version, ApiAttribute, AttributesTable,
   // Modern media components
-  Image, Video, LinkPreview, Terminal
+  Image, Video, LinkPreview, Terminal,
+  // FAQ components
+  FAQ, FAQItem
 } from '@/components/mdx/MdxComponents';
 
 interface DocPreviewProps {
@@ -93,6 +95,10 @@ const mdxComponents = {
   Video: Video,
   LinkPreview: LinkPreview,
   Terminal: Terminal,
+  
+  // FAQ components
+  FAQ: FAQ,
+  FAQItem: FAQItem,
 };
 
 // New types for search functionality

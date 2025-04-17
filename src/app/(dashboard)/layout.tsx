@@ -1,21 +1,78 @@
+"use client";
+
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { Sidebar } from "@/components/layout/sidebar";
-import { DashboardHeader } from "@/components/layout/dashboard-header";
-import { DecorativeSquare } from "@/components/elements/decorative-square";
-import { DashboardNotice } from "@/components/elements/dashboard-notice";
+import { useAuth } from "@/provider/auth";
 
 const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
+  const { user, loading } = useAuth();
+  const router = useRouter();
+
+  // Redirect to login if not authenticated
+  useEffect(() => {
+    if (!loading && !user) {
+      router.push("/login");
+    }
+  }, [user, loading, router]);
+
+  // Show loading state while checking authentication
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <div className="flex flex-col items-center space-y-4">
+          <div className="w-10 h-10 border-t-2 border-b-2 border-green-500 rounded-full animate-spin"></div>
+          <p className="text-sm text-zinc-500 dark:text-zinc-400">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Don't render content until we've confirmed the user is authenticated
+  if (!user) {
+    return null;
+  }
+
   return (
     <div className="grid h-screen md:grid-cols-[auto_1fr] md:[&>*:nth-child(2)]:col-start-2">
       <Sidebar />
-      <main className="flex h-full flex-col">
-        <DashboardHeader />
-        <DashboardNotice />
-        <div className="no-scrollbar md:scrollbar relative max-h-[calc(100dvh-3.25rem)] min-h-0 flex-1 overflow-y-auto">
-          <DecorativeSquare className="top-0 left-0 border-t border-l" />
-          <DecorativeSquare className="bottom-0 left-0 border-b border-l" />
-          <DecorativeSquare className="top-0 right-0 border-t border-r" />
-          <DecorativeSquare className="right-0 bottom-0 border-r border-b" />
-          {children}
+      <main className="flex flex-col h-full bg-zinc-100/80 dark:bg-[#0b0b0b]/60 backdrop-blur-xl">
+        <div className="relative max-h-[calc(100dvh)] min-h-0 flex-1 overflow-y-auto">
+          <div className="relative h-full p-2">
+            <div 
+              className="relative h-full p-2 overflow-y-auto border rounded-3xl border-border/40 bg-background"
+              style={{
+                scrollbarWidth: 'thin',
+                scrollbarColor: 'rgba(200, 200, 200, 0.3) transparent',
+              }}
+            >
+              <style jsx global>{`
+                /* For Webkit browsers (Chrome, Safari) */
+                ::-webkit-scrollbar {
+                  width: 8px;
+                  height: 8px;
+                }
+                ::-webkit-scrollbar-track {
+                  background: transparent;
+                }
+                ::-webkit-scrollbar-thumb {
+                  background-color: rgba(200, 200, 200, 0.3);
+                  border-radius: 20px;
+                  border: 2px solid transparent;
+                }
+                ::-webkit-scrollbar-thumb:hover {
+                  background-color: rgba(180, 180, 180, 0.5);
+                }
+                
+                /* For Firefox */
+                * {
+                  scrollbar-width: thin;
+                  scrollbar-color: rgba(200, 200, 200, 0.3) transparent;
+                }
+              `}</style>
+              {children}
+            </div>
+          </div>
         </div>
       </main>
     </div>

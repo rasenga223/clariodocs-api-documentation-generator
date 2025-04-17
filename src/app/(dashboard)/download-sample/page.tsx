@@ -2,6 +2,10 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { FileDown, ArrowLeft, Info, ExternalLink } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 // Sample Swagger JSON from 1Forge Finance API
 const sampleSwaggerJSON = {
@@ -120,76 +124,90 @@ export default function DownloadSamplePage() {
   };
 
   return (
-    <div className="min-h-screen p-6 md:p-12">
-      <div className="mx-auto max-w-4xl">
-        <div className="mb-8 flex items-center justify-between">
-          <h1 className="text-3xl font-bold md:text-4xl">Sample API Spec</h1>
-          <Link
-            href="/dashboard"
-            className="rounded-md bg-gray-200 px-4 py-2 text-sm font-medium text-gray-800 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
-          >
-            Back to Dashboard
+    <div className="flex flex-col h-full p-6">
+      <div className="w-full max-w-screen-xl mx-auto">
+        <div className="flex items-center justify-between mb-8">
+          <h1 className="text-3xl font-semibold text-foreground">
+            Sample API Files
+          </h1>
+          <Link href="/dashboard">
+            <Button variant="outline" size="sm" className="gap-2">
+              <ArrowLeft className="w-4 h-4" />
+              Back to Dashboard
+            </Button>
           </Link>
         </div>
 
-        <div className="rounded-lg bg-white p-6 shadow-md dark:bg-gray-800">
-          <h2 className="mb-4 text-2xl font-bold">1Forge Finance API Swagger</h2>
-          <p className="mb-6 text-gray-600 dark:text-gray-300">
-            This is a sample Swagger JSON file from the 1Forge Finance API. You can download it and use it for testing 
-            with our API documentation generator.
-          </p>
+        <Card className="border border-border/50 bg-card/50 backdrop-blur-sm">
+          <CardHeader>
+            <CardTitle className="text-2xl font-semibold">1Forge Finance API Swagger</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="mb-6 text-muted-foreground">
+              This is a sample Swagger JSON file from the 1Forge Finance API. You can download it and use it for testing 
+              with our API documentation generator.
+            </p>
 
-          <div className="mb-8">
-            <button
-              onClick={handleDownload}
-              className="inline-flex items-center rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
-            >
-              <svg
-                className="mr-2 h-5 w-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
+            <div className="mb-8">
+              <Button
+                onClick={handleDownload}
+                variant="default"
+                className="gap-2 transition-colors duration-200 bg-primary/90 hover:bg-primary"
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
-                ></path>
-              </svg>
-              Download Swagger JSON
-            </button>
-            
-            {downloadStatus && (
-              <div className="mt-4 rounded-md bg-green-50 p-4 text-green-800 dark:bg-green-900/30 dark:text-green-300">
-                <p>{downloadStatus}</p>
+                <FileDown className="w-5 h-5" />
+                Download Swagger JSON
+              </Button>
+              
+              {downloadStatus && (
+                <div className="p-4 mt-4 text-green-500 border border-green-200 rounded-md bg-green-500/10 dark:bg-green-500/20 dark:text-green-400 dark:border-green-900/50">
+                  <p>{downloadStatus}</p>
+                </div>
+              )}
+            </div>
+
+            <div className="mt-6">
+              <h3 className="mb-2 text-xl font-semibold text-foreground">Next Steps</h3>
+              <p className="mb-4 text-muted-foreground">
+                After downloading the file, you can:
+              </p>
+              <ol className="ml-6 space-y-2 list-decimal text-muted-foreground">
+                <li>Go to the <Link href="/api-doc-generator/generate" className="text-primary hover:text-primary/80 hover:underline">API Documentation Generator</Link></li>
+                <li>Upload the downloaded Swagger JSON file</li>
+                <li>Generate beautiful documentation with AI</li>
+              </ol>
+            </div>
+
+            <div className="p-4 mt-8 border rounded-lg border-border/50 bg-secondary/50">
+              <div className="flex items-center gap-2 mb-2">
+                <Info className="w-5 h-5 text-muted-foreground" />
+                <h3 className="text-lg font-medium text-foreground">About this API</h3>
               </div>
-            )}
-          </div>
-
-          <div className="mt-6">
-            <h3 className="mb-2 text-xl font-semibold">Next Steps</h3>
-            <p className="mb-4 text-gray-600 dark:text-gray-300">
-              After downloading the file, you can:
-            </p>
-            <ol className="ml-6 list-decimal space-y-2 text-gray-600 dark:text-gray-300">
-              <li>Go to the <Link href="/dashboard/api-doc-generator" className="text-blue-600 hover:underline dark:text-blue-400">API Documentation Generator</Link></li>
-              <li>Upload the downloaded Swagger JSON file</li>
-              <li>Generate beautiful documentation with AI</li>
-            </ol>
-          </div>
-
-          <div className="mt-8 rounded-lg bg-gray-50 p-4 dark:bg-gray-700">
-            <h3 className="mb-2 text-lg font-medium">About this API</h3>
-            <p className="text-gray-600 dark:text-gray-300">
-              <strong>Title:</strong> {sampleSwaggerJSON.info.title}<br />
-              <strong>Description:</strong> {sampleSwaggerJSON.info.description}<br />
-              <strong>Version:</strong> {sampleSwaggerJSON.info.version}<br />
-              <strong>Contact:</strong> <a href={`mailto:${sampleSwaggerJSON.info.contact.email}`} className="text-blue-600 hover:underline dark:text-blue-400">{sampleSwaggerJSON.info.contact.email}</a>
-            </p>
-          </div>
-        </div>
+              <div className="space-y-2 text-muted-foreground">
+                <p><span className="font-medium">Title:</span> {sampleSwaggerJSON.info.title}</p>
+                <p><span className="font-medium">Description:</span> {sampleSwaggerJSON.info.description}</p>
+                <p><span className="font-medium">Version:</span> {sampleSwaggerJSON.info.version}</p>
+                <p>
+                  <span className="font-medium">Contact:</span>{" "}
+                  <a 
+                    href={`mailto:${sampleSwaggerJSON.info.contact.email}`} 
+                    className="inline-flex items-center gap-1 text-primary hover:text-primary/80 hover:underline"
+                  >
+                    {sampleSwaggerJSON.info.contact.email}
+                    <ExternalLink className="w-3 h-3" />
+                  </a>
+                </p>
+              </div>
+            </div>
+          </CardContent>
+          <CardFooter className="flex justify-end pt-4 border-t border-border/30">
+            <Link href="/api-doc-generator/generate">
+              <Button variant="default" className="gap-2 transition-colors duration-200 bg-primary/90 hover:bg-primary">
+                Generate Documentation
+                <ExternalLink className="w-4 h-4" />
+              </Button>
+            </Link>
+          </CardFooter>
+        </Card>
       </div>
     </div>
   );

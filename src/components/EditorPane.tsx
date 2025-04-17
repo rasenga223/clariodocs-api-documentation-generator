@@ -4,6 +4,8 @@ import Editor, { BeforeMount } from "@monaco-editor/react"
 import { Loader2 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import type * as Monaco from 'monaco-editor'
+import { useTheme } from "next-themes"
+import React from "react"
 
 type Props = {
   code: string
@@ -12,6 +14,14 @@ type Props = {
 }
 
 export default function EditorPane({ code, setCode, view }: Props) {
+  const { theme } = useTheme()
+  const [mounted, setMounted] = React.useState(false)
+
+  // Handle mounted state
+  React.useEffect(() => {
+    setMounted(true)
+  }, [])
+
   // Define the theme configuration
   const handleEditorWillMount: BeforeMount = (monaco: typeof Monaco) => {
     monaco.editor.defineTheme('custom-dark', {
@@ -33,20 +43,51 @@ export default function EditorPane({ code, setCode, view }: Props) {
         'editorSuggestWidget.border': '#202020',
         'editorSuggestWidget.selectedBackground': '#202020',
       }
-    })
+    });
+
+    monaco.editor.defineTheme('custom-light', {
+      base: 'vs',
+      inherit: true,
+      rules: [],
+      colors: {
+        'editor.background': '#F5F5F5',
+        'editor.foreground': '#1A1A1A',
+        'editor.lineHighlightBackground': '#EAEAEA',
+        'editor.selectionBackground': '#E0E0E0',
+        'editorCursor.foreground': '#000000',
+        'editor.inactiveSelectionBackground': '#EAEAEA',
+        'editorLineNumber.foreground': '#A0A0A0',
+        'editorLineNumber.activeForeground': '#606060',
+        'editor.findMatchBackground': '#D0D0D0',
+        'editor.findMatchHighlightBackground': '#E5E5E5',
+        'editorSuggestWidget.background': '#F5F5F5',
+        'editorSuggestWidget.border': '#E0E0E0',
+        'editorSuggestWidget.selectedBackground': '#E0E0E0',
+      }
+    });
+  }
+
+  // Prevent hydration mismatch
+  if (!mounted) {
+    return (
+      <div className="flex items-center justify-center h-full">
+        <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
+      </div>
+    )
   }
 
   return (
     <div
       className={cn(
-        "h-full border-r border-border overflow-hidden transition-all duration-300 bg-[#0A0A0A]",
+        "h-full border-r border-border overflow-hidden transition-all duration-300",
+        theme === "dark" ? "bg-[#0A0A0A]" : "bg-[#F5F5F5]",
         view === "split" ? "w-1/2" : "w-full",
       )}
     >
       <Editor
         height="100%"
         defaultLanguage="markdown"
-        theme="custom-dark"
+        theme={theme === "dark" ? "custom-dark" : "custom-light"}
         beforeMount={handleEditorWillMount}
         value={code}
         onChange={(value) => setCode(value || "")}

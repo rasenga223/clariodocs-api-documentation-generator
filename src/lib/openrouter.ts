@@ -291,6 +291,26 @@ data = response.json()\`}
 />
 \`\`\`
 
+5. For FAQ sections:
+<FAQ title="Frequently Asked Questions">
+  <FAQItem question="How do I authenticate API requests?">
+    Authentication requires passing your API key in the Authorization header:
+    \`Authorization: Bearer your-api-key\`
+  </FAQItem>
+  
+  <FAQItem question="What are the rate limits?">
+    The API has the following rate limits:
+    - Free tier: 100 requests per hour
+    - Pro tier: 1000 requests per hour
+    - Enterprise tier: Custom limits
+  </FAQItem>
+  
+  <FAQItem question="How do I handle errors?">
+    All API errors follow a standard format with an error code and message.
+    Check the error handling section for detailed examples.
+  </FAQItem>
+</FAQ>
+
 IMPORTANT: Note how the examples above use {\`...\`} for code blocks with JSON to properly escape content. Always follow this pattern exactly.
 
 The API specification is in ${options.fileType} format.

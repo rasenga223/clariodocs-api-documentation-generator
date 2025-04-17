@@ -16,10 +16,9 @@ export const DashboardHeader = () => {
   const title = headerTitles[pathname] || "Dashboard Header";
 
   return (
-    <header className="flex items-center justify-between border-b px-4 py-3">
+    <header className="flex items-center justify-between px-4 py-3 border-b">
       <h1 className="font-bold text-zinc-300">{title}</h1>
       <DashboardHeaderAuth />
-      <SidebarMobileToggle />
     </header>
   );
 };

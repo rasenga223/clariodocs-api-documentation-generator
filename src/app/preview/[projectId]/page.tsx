@@ -2,16 +2,19 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { Loader2, ChevronRight } from 'lucide-react';
 import { getProject, getProjectMdx, getDocumentOutline } from '@/lib/docService';
 import { DocOutlineItem, MdxFile } from '@/lib/docService';
 import { DefaultSidebar } from '@/components/sidebars/DefaultSidebar';
 import { DocPreview } from '@/components/DocPreview';
 import { cn } from '@/lib/utils';
+import { useAuth } from '@/provider/auth';
 
 export default function PreviewPage() {
   const { projectId } = useParams();
+  const { user, loading: authLoading } = useAuth();
+  const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [projectTitle, setProjectTitle] = useState<string>('');
@@ -22,7 +25,17 @@ export default function PreviewPage() {
   const [filename, setFilename] = useState<string | null>(null);
   const [selectedSection, setSelectedSection] = useState<string | undefined>(undefined);
 
+  // Check authentication and redirect if necessary
   useEffect(() => {
+    if (!authLoading && !user) {
+      router.push('/login');
+    }
+  }, [authLoading, user, router]);
+
+  useEffect(() => {
+    // Only load project data if user is authenticated
+    if (authLoading || !user) return;
+    
     async function loadProjectData() {
       if (!projectId) return;
 
@@ -65,7 +78,7 @@ export default function PreviewPage() {
     }
 
     loadProjectData();
-  }, [projectId]);
+  }, [projectId, authLoading, user]);
 
   // Handle file selection
   const handleFileSelect = (selectedFilename: string) => {
@@ -97,6 +110,23 @@ export default function PreviewPage() {
     setSelectedSection(sectionId);
     console.log(`Selected section: ${sectionId}`);
   };
+
+  // Authentication loading state
+  if (authLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="flex flex-col items-center space-y-4">
+          <div className="w-10 h-10 border-t-2 border-b-2 border-green-500 rounded-full animate-spin"></div>
+          <p className="text-sm text-zinc-500 dark:text-zinc-400">Verifying authentication...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Don't render anything if not authenticated
+  if (!user) {
+    return null;
+  }
 
   // Loading state
   if (isLoading) {

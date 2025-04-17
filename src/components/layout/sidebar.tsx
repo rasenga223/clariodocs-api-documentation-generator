@@ -3,11 +3,18 @@ import { useRef, useEffect, useState } from "react";
 import { motion } from "motion/react";
 import { usePathname } from "next/navigation";
 import {
-  FileSliders,
-  LayoutDashboard,
-  SidebarIcon,
-  UserRound,
+  FileText,
+  Home,
+  User as UserIcon,
+  LogOut,
+  BookOpen,
+  Sun,
+  Moon,
 } from "lucide-react";
+import { useTheme } from "next-themes";
+import type { User } from "@/types/user";
+import Link from "next/link";
+import { useAuth } from "@/provider/auth";
 
 import { Button } from "@/components/ui/button";
 import { SidebarItem } from "@/components/elements/sidebar-item";
@@ -16,9 +23,9 @@ import { useIsMobile } from "@/hooks/use-ismobile";
 import { cn } from "@/lib/utils";
 
 const ITEMS = [
-  { id: 1, label: "Dashboard", Icon: LayoutDashboard, link: "/dashboard" },
-  { id: 2, label: "Editor", Icon: FileSliders, link: "/editor" },
-  { id: 3, label: "Profile", Icon: UserRound, link: "/profile" },
+  { id: 1, label: "Dashboard", Icon: Home, link: "/dashboard" },
+  { id: 2, label: "Generate Docs", Icon: BookOpen, link: "/api-doc-generator/generate" },
+  { id: 3, label: "Editor", Icon: FileText, link: "/editor" },
 ];
 
 export const Sidebar = () => {
@@ -27,6 +34,13 @@ export const Sidebar = () => {
   const sidebarRef = useRef<HTMLDivElement>(null);
   const [hasMounted, setHasMounted] = useState(false);
   const { isOpen, openSidebar, closeSidebar, toggleSidebar } = useSidebar();
+  const { theme, setTheme } = useTheme();
+  const { user } = useAuth();
+
+  // Get first initial of email
+  const getInitial = (email?: string) => {
+    return email ? email.charAt(0).toUpperCase() : "U";
+  };
 
   // Set the Component has mounted
   useEffect(() => {
@@ -46,6 +60,11 @@ export const Sidebar = () => {
       sidebar.removeAttribute("inert");
     }
   }, [isOpen, isMobile]);
+
+  // Prevent hydration mismatch
+  if (!hasMounted) {
+    return null;
+  }
 
   // SIDEBAR MOTION VARIANTS
   const SIDEBAR_VARIANTS = {
@@ -71,7 +90,8 @@ export const Sidebar = () => {
     <motion.aside
       ref={sidebarRef}
       className={cn(
-        "dark:bg-background z-50 h-svh min-w-20 space-y-8 border-r bg-white p-4 max-md:absolute md:z-50 md:space-y-4",
+        "z-50 h-svh min-w-20 space-y-8 p-4 max-md:absolute md:z-50 md:space-y-4",
+        "bg-zinc-100/80 dark:bg-[#0b0b0b]/60 backdrop-blur-xl",
         !isOpen && isMobile && "pointer-events-none",
       )}
       initial="closed"
@@ -79,56 +99,155 @@ export const Sidebar = () => {
       variants={SIDEBAR_VARIANTS}
       role="navigation"
       aria-label="Main navigation"
-      // To try to fix buggy toggle on mobile
       {...(!isMobile
         ? { onMouseEnter: openSidebar, onMouseLeave: closeSidebar }
         : {})}
       tabIndex={-1}
     >
-      <header className={cn("mr-1 grid place-content-end")}>
-        <Button
-          size={"icon"}
-          variant={"ghost"}
-          onClick={toggleSidebar}
-          className="aspect-square cursor-pointer shadow-sm max-lg:hidden"
-          aria-label={isOpen ? "Close sidebar" : "Open sidebar"}
-          aria-expanded={isOpen}
+      <div className="flex flex-col h-full">
+        {/* User Profile */}
+        <Link 
+          href="/profile"
+          className={cn(
+            "mb-6 relative group",
+            "transition-all duration-300 ease-in-out",
+          )}
         >
-          <SidebarIcon />
-        </Button>
-      </header>
+          <div className={cn(
+            "flex items-center gap-3 p-2 rounded-xl",
+            "transition-all duration-300 ease-in-out",
+            "hover:bg-accent/50",
+            !isOpen && "justify-center"
+          )}>
+            <div className={cn(
+              "flex items-center justify-center shrink-0",
+              "w-10 h-10 rounded-full",
+              "bg-gradient-to-br from-primary/80 to-primary",
+              "text-sm font-medium text-primary-foreground",
+              "ring-2 ring-border/50 shadow-sm",
+              "transition-all duration-300 ease-in-out",
+              "group-hover:shadow-md group-hover:ring-border"
+            )}>
+              {getInitial(user?.email)}
+            </div>
+            {isOpen && (
+              <motion.div
+                initial={{ opacity: 0, width: 0 }}
+                animate={{ opacity: 1, width: "auto" }}
+                exit={{ opacity: 0, width: 0 }}
+                className="flex flex-col overflow-hidden"
+              >
+                <span className={cn(
+                  "text-sm font-medium truncate transition-colors duration-300",
+                  "text-foreground/80 group-hover:text-foreground"
+                )}>
+                  {user?.email}
+                </span>
+                <span className={cn(
+                  "text-xs truncate transition-colors duration-300",
+                  "text-muted-foreground/70 group-hover:text-muted-foreground"
+                )}>
+                  {user?.email}
+                </span>
+              </motion.div>
+            )}
+          </div>
+        </Link>
 
-      <menu
-        className={cn(
-          "flex flex-col items-start justify-start gap-2",
-          isOpen && "md:items-start",
-        )}
-        role="menu"
-      >
-        {/* SHOW a header only when open */}
-        {/* <motion.li
-          initial={{ opacity: 0, width: 0 }}
-          animate={{
-            opacity: isOpen ? 1 : 0,
-            width: isOpen ? "auto" : 0,
-            height: isOpen ? "2rem" : 0,
-            transition: { duration: 0.3, delay: isOpen ? 0.5 : 0 },
-          }}
-          className="ml-2 overflow-hidden whitespace-nowrap"
-          aria-hidden={!isOpen}
+        <menu
+          className={cn(
+            "flex flex-col items-start justify-start gap-2 font-medium tracking-wide",
+            isOpen && "md:items-start",
+          )}
+          role="menu"
         >
-          {isOpen && hasMounted && "example@email.com"}
-        </motion.li> */}
+          {ITEMS.map((item) => {
+            const isActive = pathname === item.link;
+            return (
+              <li key={item.id} onClick={toggleSidebar} className="w-full">
+                <SidebarItem {...item} isActive={isActive} />
+              </li>
+            );
+          })}
+        </menu>
 
-        {ITEMS.map((item) => {
-          const isActive = pathname === item.link;
-          return (
-            <li key={item.id} onClick={toggleSidebar} className="w-full">
-              <SidebarItem {...item} isActive={isActive} />
-            </li>
-          );
-        })}
-      </menu>
+        {/* Theme Switcher */}
+        <div className="flex justify-center pt-4 mt-auto">
+          <button
+            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+            className={cn(
+              "relative flex items-center rounded-full transition-all duration-300 overflow-hidden",
+              isOpen ? "w-[120px] p-1" : "w-10 p-1",
+              "bg-secondary border border-border/50"
+            )}
+            aria-label="Toggle theme"
+          >
+            {/* Sliding background */}
+            <div
+              className={cn(
+                "absolute top-0 bottom-0 w-[60px] rounded-full bg-accent transition-all duration-300 z-0",
+                isOpen ? (
+                  hasMounted && theme === "dark" ? "left-0" : "left-[60px]"
+                ) : "w-full left-0"
+              )}
+            />
+            
+            {isOpen ? (
+              // Expanded state with both icons
+              <>
+                <span className={cn(
+                  "flex h-8 w-[60px] items-center justify-center transition-colors duration-300 relative z-10",
+                  hasMounted && theme === "dark" ? "text-primary-foreground font-medium" : "text-muted-foreground"
+                )}>
+                  <Moon className="w-4 h-4" />
+                </span>
+                <span className={cn(
+                  "flex h-8 w-[60px] items-center justify-center transition-colors duration-300 relative z-10",
+                  hasMounted && theme === "light" ? "text-foreground font-medium" : "text-muted-foreground"
+                )}>
+                  <Sun className="w-4 h-4" />
+                </span>
+              </>
+            ) : (
+              // Collapsed state with active icon
+              <div className="relative z-10 flex items-center justify-center w-8 h-8">
+                {hasMounted && theme === "dark" ? (
+                  <Moon className="w-4 h-4 text-primary-foreground" />
+                ) : (
+                  <Sun className="w-4 h-4 text-foreground" />
+                )}
+              </div>
+            )}
+          </button>
+        </div>
+
+        {/* Logout button */}
+        <div className="flex justify-center pt-2">
+          <Button
+            variant="ghost"
+            className={cn(
+              "flex items-center gap-4 p-3 text-muted-foreground/70 hover:text-foreground hover:bg-accent/50 rounded-lg transition-colors font-medium tracking-wide",
+              !isOpen && "justify-center",
+              isOpen ? "w-full" : "w-12"
+            )}
+            onClick={() => {
+              // Add logout logic here
+            }}
+          >
+            <LogOut className="w-4 h-4" />
+            {isOpen && (
+              <motion.span
+                initial={{ opacity: 0, width: 0 }}
+                animate={{ opacity: 1, width: "auto" }}
+                exit={{ opacity: 0, width: 0 }}
+                className="overflow-hidden font-medium tracking-wide whitespace-nowrap"
+              >
+                Logout
+              </motion.span>
+            )}
+          </Button>
+        </div>
+      </div>
     </motion.aside>
   );
 };

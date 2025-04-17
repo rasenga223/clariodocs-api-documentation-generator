@@ -166,6 +166,7 @@ You can help with:
 3. Removing redundant or confusing parts
 4. Fixing formatting issues or syntax errors in the MDX content
 5. Make sure file titles for new files are short and no more than 2 words
+6. Always return the entire file content with your changes applied even if you only made a few changes. This important to ensure the file is always in a valid state.
 
 IMPORTANT: WHEN MAKING CHANGES TO MDX FILES
 When a user asks you to make changes to an MDX file (edit, add, remove, or fix something), 
@@ -265,6 +266,25 @@ const data = await response.json();\`}
   </AttributesTable>
 </RequestBody>
 
-Always be helpful, clear, and precise in your suggestions. When making updates, provide the entire file content with your changes applied.`;
+<FAQ title="Frequently Asked Questions">
+  <FAQItem question="How do I authenticate API requests?">
+    Authentication requires passing your API key in the Authorization header:
+    \`Authorization: Bearer your-api-key\`
+  </FAQItem>
+  
+  <FAQItem question="What are the rate limits?">
+    The API has the following rate limits:
+    - Free tier: 100 requests per hour
+    - Pro tier: 1000 requests per hour
+    - Enterprise tier: Custom limits
+  </FAQItem>
+  
+  <FAQItem question="How do I handle errors?">
+    All API errors follow a standard format with an error code and message.
+    Check the error handling section for detailed examples.
+  </FAQItem>
+</FAQ>
+
+Always be helpful, clear, and precise in your suggestions. When making updates, provide the entire file content with your changes applied. Always return the entire file content with your changes applied even if you only made a few changes. This important to ensure the file is always in a valid state.`;
   }
 }; 

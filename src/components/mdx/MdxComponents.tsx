@@ -3,6 +3,8 @@ import { cn } from '@/lib/utils'
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { CodeGroup } from '@/components/ui/code-group'
 import { Check, Copy, Clipboard } from 'lucide-react'
+import Link from "next/link"
+import { Prism as SyntaxHighlighter } from "react-syntax-highlighter"
 
 /**
  * A collection of Mintlify-style MDX components for API documentation
@@ -889,6 +891,79 @@ export function Version({ version, date, children, className }: VersionProps) {
   )
 }
 
+// =============================================================================
+// FAQ COMPONENTS
+// =============================================================================
+
+interface FAQItemProps {
+  question: string;
+  children: React.ReactNode;
+  className?: string;
+}
+
+interface FAQProps {
+  title?: string;
+  children: React.ReactNode;
+  className?: string;
+}
+
+export function FAQ({ title = "Frequently Asked Questions", children, className }: FAQProps) {
+  return (
+    <div className={cn(
+      "my-6 overflow-hidden rounded-3xl border border-gray-200/50 dark:border-gray-800/80 backdrop-blur-sm",
+      "shadow-sm hover:shadow-md transition-all duration-300",
+      className
+    )}>
+      <div className="px-5 py-4 border-b border-gray-200/50 dark:border-gray-800/80">
+        <h3 className="text-lg font-medium text-gray-800 dark:text-gray-200">{title}</h3>
+      </div>
+      <div className="divide-y divide-gray-200/50 dark:divide-gray-800/80">
+        {children}
+      </div>
+    </div>
+  )
+}
+
+export function FAQItem({ question, children, className }: FAQItemProps) {
+  const [isOpen, setIsOpen] = useState(false)
+
+  return (
+    <div className={cn("transition-all duration-200", className)}>
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className={cn(
+          "flex items-center justify-between w-full px-5 py-4 text-left transition-colors duration-200",
+          "hover:bg-gray-50/50 dark:hover:bg-gray-800/30",
+          isOpen && "bg-gray-50/80 dark:bg-gray-800/50"
+        )}
+      >
+        <span className="text-sm font-medium text-gray-900 dark:text-gray-100">{question}</span>
+        <svg
+          className={cn(
+            "w-5 h-5 text-gray-500 transition-transform duration-200 dark:text-gray-400",
+            isOpen ? "rotate-180 transform" : ""
+          )}
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+        </svg>
+      </button>
+      <div
+        className={cn(
+          "overflow-hidden transition-all duration-200 ease-in-out",
+          isOpen ? "max-h-96" : "max-h-0"
+        )}
+      >
+        <div className="px-5 pt-2 pb-4 text-sm text-gray-600 dark:text-gray-400">
+          {children}
+        </div>
+      </div>
+    </div>
+  )
+}
+
 interface ApiAttributeProps {
   name: string;
   type: string;
@@ -1234,6 +1309,10 @@ const MdxComponents = {
   Video,
   LinkPreview,
   Terminal,
+  
+  // New FAQ components
+  FAQ,
+  FAQItem,
 }
 
 export default MdxComponents 

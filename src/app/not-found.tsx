@@ -1,25 +1,38 @@
 "use client";
 
 import Link from "next/link";
-// import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui/button";
 import { motion } from "motion/react";
+import { useTheme } from "next-themes";
+import { useEffect, useState } from "react";
 
 export default function NotFoundPage() {
-  return (
-    <div className="flex min-h-screen items-center justify-center bg-green-500 p-4">
-      <div className="relative w-full max-w-4xl">
-        {/* Decorative grid background */}
-        <div className="bg-grid-white bg-grid-8 absolute inset-0 opacity-10" />
+  const { theme } = useTheme();
+  const [mounted, setMounted] = useState(false);
 
+  // Only show the UI after mounted to prevent hydration mismatch
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) return null;
+
+  return (
+    <div className="flex items-center justify-center min-h-screen p-4 bg-background">
+      <div className="relative w-full max-w-4xl">
+        {/* Decorative radial gradient */}
+        <div className="absolute -z-10 h-[50%] w-[50%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary/20 blur-[100px]" />
+        <div className="absolute right-0 top-0 -z-10 h-[30%] w-[30%] rounded-full bg-primary/30 blur-[60px]" />
+        
         <motion.div
-          className="relative z-10 overflow-hidden rounded-lg bg-zinc-950 shadow-2xl"
+          className="relative z-10 overflow-hidden border rounded-lg shadow-lg border-border bg-card"
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.5 }}
         >
           <div className="grid md:grid-cols-2">
             {/* Visual section */}
-            <div className="relative flex items-center justify-center overflow-hidden bg-zinc-900 p-8">
+            <div className="relative flex items-center justify-center p-8 overflow-hidden bg-muted">
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -35,13 +48,15 @@ export default function NotFoundPage() {
                       stiffness: 100,
                       delay: 0.4,
                     }}
+                    className="relative"
                   >
+                    <div className="absolute rounded-full -inset-10 -z-10 animate-pulse bg-primary/10 blur-xl"></div>
                     <svg
                       viewBox="0 0 24 24"
                       fill="none"
                       stroke="currentColor"
                       strokeWidth="1.5"
-                      className="mx-auto h-32 w-32 text-green-500"
+                      className="w-32 h-32 mx-auto text-primary"
                       aria-hidden="true"
                     >
                       <path
@@ -51,7 +66,7 @@ export default function NotFoundPage() {
                       />
                     </svg>
                   </motion.div>
-                  <h2 className="mt-4 text-center text-2xl font-bold text-white">
+                  <h2 className="mt-4 text-2xl font-bold text-center text-foreground">
                     Page not found
                   </h2>
                 </div>
@@ -65,11 +80,11 @@ export default function NotFoundPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.3 }}
               >
-                <h1 className="mb-6 text-3xl font-bold text-white md:text-4xl">
-                  Oops! You've ventured too far
+                <h1 className="mb-6 text-3xl font-bold text-foreground md:text-4xl">
+                  404 - That page doesn't exist
                 </h1>
 
-                <p className="mb-8 text-zinc-400">
+                <p className="mb-8 text-muted-foreground">
                   The page you're looking for doesn't exist or has been moved.
                   Here are some helpful links to get you back on track:
                 </p>
@@ -78,8 +93,6 @@ export default function NotFoundPage() {
                   {[
                     { text: "Return to home page", href: "/" },
                     { text: "Go back to dashboard", href: "/dashboard" },
-                    // { text: "View API reference", href: "/api" },
-                    // { text: "Contact support", href: "/support" },
                   ].map((link, index) => (
                     <motion.li
                       key={index}
@@ -89,12 +102,12 @@ export default function NotFoundPage() {
                     >
                       <Link
                         href={link.href}
-                        className="group flex items-center text-green-400 hover:text-green-600"
+                        className="flex items-center group text-primary hover:text-primary/80"
                       >
                         <svg
                           viewBox="0 0 20 20"
                           fill="currentColor"
-                          className="mr-2 h-4 w-4 transform transition-transform group-hover:translate-x-1"
+                          className="w-4 h-4 mr-2 transition-transform transform group-hover:translate-x-1"
                         >
                           <path
                             fillRule="evenodd"
@@ -108,14 +121,18 @@ export default function NotFoundPage() {
                   ))}
                 </ul>
 
-                {/* <div className="flex flex-col sm:flex-row gap-4">
+                <div className="flex flex-col gap-4 sm:flex-row">
                   <Link href="/" passHref>
-                    <Button className="bg-green-600 hover:bg-green-700 text-white">Back to home</Button>
+                    <Button className="w-full sm:w-auto">
+                      Back to home
+                    </Button>
                   </Link>
-                  <Button variant="outline" className="border-zinc-700 text-white hover:bg-zinc-800">
-                    Report this issue
-                  </Button>
-                </div> */}
+                  <Link href="/dashboard" passHref>
+                    <Button variant="outline" className="w-full sm:w-auto">
+                      View dashboard
+                    </Button>
+                  </Link>
+                </div>
               </motion.div>
             </div>
           </div>

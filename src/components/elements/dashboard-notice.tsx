@@ -21,10 +21,10 @@ export const DashboardNotice = () => {
   return (
     <header className="relative border-b px-4 py-2.5 pb-3 text-sm">
       <div>
-        <h2 className="text-lg font-medium">Welcome, {userName}! 👋</h2>
+        <h2 className="text-lg font-medium">Hey there 👋</h2>
         <p className="text-zinc-600 dark:text-zinc-300">
           {user
-            ? "You've successfully logged in to your account."
+            ? "Welcome back to your API documentation dashboard."
             : "You're viewing in demo mode."}
         </p>
       </div>

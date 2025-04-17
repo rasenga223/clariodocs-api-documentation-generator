@@ -23,7 +23,9 @@ import MdxComponents, {
   RateLimit, ApiResource, AuthMethod, StatusBadge, VersionHistory, 
   Version, ApiAttribute, AttributesTable,
   // Modern media components
-  Image, Video, LinkPreview, Terminal
+  Image, Video, LinkPreview, Terminal,
+  // FAQ components
+  FAQ, FAQItem
 } from "@/components/mdx/MdxComponents"
 
 interface Props {
@@ -90,6 +92,10 @@ const mdxComponents = {
   Video: Video,
   LinkPreview: LinkPreview,
   Terminal: Terminal,
+  
+  // FAQ components
+  FAQ: FAQ,
+  FAQItem: FAQItem,
 }
 
 export default function PreviewPane({ code, view }: Props) {
