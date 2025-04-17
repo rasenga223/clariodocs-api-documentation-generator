@@ -15,7 +15,7 @@ const dmSans = DM_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "Clario | API Documentation Generator",
+  title: "Clariodocs | API Documentation Generator",
   description:
     "Transform your API spec into a clean, branded, shareable documentation site instantly",
   openGraph: {
