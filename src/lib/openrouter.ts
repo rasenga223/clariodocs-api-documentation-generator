@@ -4,7 +4,7 @@
  */
 
 // Environment variables should be set in your .env.local file
-const OPENROUTER_API_KEY = process.env.NEXT_PUBLIC_OPENROUTER_API_KEY || '';
+const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY || '';
 const OPENROUTER_BASE_URL = 'https://openrouter.ai/api/v1';
 
 /**
@@ -121,7 +121,7 @@ export async function generateDocumentation(
   }
 ): Promise<Array<{filename: string; content: string}>> {
   if (!OPENROUTER_API_KEY) {
-    throw new Error('OpenRouter API key is not set. Please set NEXT_PUBLIC_OPENROUTER_API_KEY in your .env.local file.');
+    throw new Error('OpenRouter API key is not set. Please set OPENROUTER_API_KEY in your .env.local file.');
   }
 
   console.log('🚀 Generating documentation with model:', model);
@@ -336,22 +336,17 @@ Your MDX should be well-structured, use proper Markdown and React components, an
   console.log('🚀 Sending request to OpenRouter API...');
   
   try {
-    const response = await fetch(`${OPENROUTER_BASE_URL}/chat/completions`, {
+    const response = await fetch(`${window.location.origin}/api/ai`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
-        'HTTP-Referer': window.location.origin,
-        'X-Title': 'API Documentation Generator',
       },
       body: JSON.stringify({
         model: model,
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: userPrompt }
-        ],
-        max_tokens: 4000,
-        temperature: 0.7,
+        ]
       }),
     });
 

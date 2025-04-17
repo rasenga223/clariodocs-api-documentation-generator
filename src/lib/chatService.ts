@@ -59,12 +59,6 @@ export const chatService = {
     model: string = 'anthropic/claude-3.5-sonnet',
     mdxFiles: MDXFileInfo[] = []
   ): Promise<ChatMessage> {
-    const OPENROUTER_API_KEY = process.env.NEXT_PUBLIC_OPENROUTER_API_KEY || '';
-    
-    if (!OPENROUTER_API_KEY) {
-      throw new Error('OpenRouter API key is not set. Please set NEXT_PUBLIC_OPENROUTER_API_KEY in your .env.local file.');
-    }
-    
     try {
       console.log('Sending request to OpenRouter:', { model, fileCount: mdxFiles.length });
       
@@ -89,19 +83,14 @@ ${fileContents}`;
       const sanitizedMessages = this.sanitizeMessages(messages, model);
       console.log('Sanitized message count:', sanitizedMessages.length);
       
-      const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+      const response = await fetch(`${window.location.origin}/api/ai`, {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
           'Content-Type': 'application/json',
-          'HTTP-Referer': window.location.origin,
-          'X-Title': 'API Documentation Editor',
         },
         body: JSON.stringify({
           model,
           messages: sanitizedMessages,
-          max_tokens: 4000, // Increased to handle larger responses with file content
-          temperature: 0.7,
         }),
       });
       
