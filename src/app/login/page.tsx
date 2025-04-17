@@ -26,7 +26,8 @@ const formSchema = z.object({
 type LoginFormValues = z.infer<typeof formSchema>;
 
 export default function LoginPage() {
-  const { signInWithGitHub, signInWithEmail } = useAuth();
+  const { signInWithGitHub, signInWithEmail, signInWithDemo } = useAuth();
+  const [isLoading, setIsLoading] = useState(false);
 
   // Create the form instance with all methods.
   const form = useForm<LoginFormValues>({
@@ -65,9 +66,21 @@ export default function LoginPage() {
     }
   };
 
+  const handleDemoLogin = async () => {
+    try {
+      setIsLoading(true);
+      await signInWithDemo();
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to sign in with demo account");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   if (emailSent) {
     return (
-      <div className="flex min-h-dvh flex-col items-center justify-center p-6">
+      <div className="flex flex-col items-center justify-center p-6 min-h-dvh">
         <div className="w-full max-w-md space-y-8">
           <div className="text-center">
             <h2 className="text-2xl font-bold text-zinc-900 dark:text-white">
@@ -80,7 +93,7 @@ export default function LoginPage() {
           </div>
           <Button
             onClick={() => setEmailSent(false)}
-            className="w-full rounded-md bg-green-600 text-white hover:bg-green-700"
+            className="w-full text-white bg-green-600 rounded-md hover:bg-green-700"
           >
             Back to login
           </Button>
@@ -90,7 +103,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-dvh flex-col items-center justify-center p-6">
+    <div className="flex flex-col items-center justify-center p-6 min-h-dvh">
       <Suspense fallback={<div>Loading...</div>}>
         <SearchParamsHandler />
       </Suspense>
@@ -104,6 +117,38 @@ export default function LoginPage() {
             to continue to the application
           </p>
         </header>
+
+        <Button
+          onClick={handleDemoLogin}
+          disabled={isLoading || form.formState.isSubmitting}
+          className="group relative flex w-full items-center justify-center overflow-hidden rounded-lg bg-gradient-to-br from-purple-600 to-blue-500 p-0.5 text-white hover:bg-gradient-to-bl focus:outline-none focus:ring-4 focus:ring-blue-300 dark:focus:ring-blue-800"
+        >
+          <span className="relative flex w-full items-center justify-center gap-2 rounded-md bg-white px-5 py-2.5 transition-all duration-75 ease-in group-hover:bg-opacity-0 dark:bg-zinc-900">
+            <svg
+              className="w-5 h-5 transition-transform group-hover:scale-110"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M14 5l7 7m0 0l-7 7m7-7H3"
+              />
+            </svg>
+            <span className="font-semibold">Try Demo Account</span>
+          </span>
+        </Button>
+
+        <div className="relative">
+          <div className="absolute inset-0 flex items-center w-full border-t border-zinc-300 dark:border-zinc-600" />
+          <div className="relative flex justify-center text-sm">
+            <span className="-mt-2.5 bg-white px-2 text-zinc-500 dark:bg-zinc-950 dark:text-zinc-400">
+              Or sign in with
+            </span>
+          </div>
+        </div>
 
         <section className="space-y-6">
           <Form {...form}>
@@ -133,7 +178,7 @@ export default function LoginPage() {
               <Button
                 type="submit"
                 disabled={form.formState.isSubmitting}
-                className="w-full bg-green-600 text-white hover:bg-green-700"
+                className="w-full text-white bg-green-600 hover:bg-green-700"
               >
                 {form.formState.isSubmitting ? "Sending..." : "Send magic link"}
               </Button>
@@ -141,7 +186,7 @@ export default function LoginPage() {
           </Form>
 
           <div className="relative">
-            <div className="absolute inset-0 flex w-full items-center border-t border-zinc-300 dark:border-zinc-600" />
+            <div className="absolute inset-0 flex items-center w-full border-t border-zinc-300 dark:border-zinc-600" />
             <div className="relative flex justify-center text-sm">
               <span className="-mt-2.5 bg-white px-2 text-zinc-500 dark:bg-zinc-950 dark:text-zinc-400">
                 Or continue with
@@ -151,12 +196,12 @@ export default function LoginPage() {
 
           <Button
             onClick={handleGitHubLogin}
-            disabled={form.formState.isSubmitting}
+            disabled={isLoading || form.formState.isSubmitting}
             variant={"secondary"}
             className="w-full"
           >
             <svg
-              className="h-5 w-5"
+              className="w-5 h-5"
               fill="currentColor"
               viewBox="0 0 24 24"
               aria-hidden="true"
@@ -173,7 +218,7 @@ export default function LoginPage() {
 
         <Link
           href="/"
-          className="block text-center text-sm font-medium"
+          className="block text-sm font-medium text-center"
         >
           Back to home
         </Link>

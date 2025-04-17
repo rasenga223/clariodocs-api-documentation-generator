@@ -9,12 +9,14 @@ import {
 } from "react";
 import { supabase, UserData, getUser } from "@/lib/supabase";
 import { useRouter } from "next/navigation";
+import { toast } from "react-hot-toast";
 
 interface AuthContextType {
   user: UserData | null;
   loading: boolean;
   signInWithGitHub: () => Promise<void>;
   signInWithEmail: (email: string) => Promise<{ error: Error | null }>;
+  signInWithDemo: () => Promise<void>;
   signOut: () => Promise<void>;
   updateUserProfile: (data: { name?: string; email?: string; phone?: string }) => Promise<{ error: Error | null }>;
 }
@@ -25,6 +27,7 @@ const defaultContextValue: AuthContextType = {
   loading: true,
   signInWithGitHub: async () => {},
   signInWithEmail: async () => ({ error: null }),
+  signInWithDemo: async () => {},
   signOut: async () => {},
   updateUserProfile: async () => ({ error: null }),
 };
@@ -134,6 +137,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const signInWithDemo = async () => {
+    try {
+      // Sign in with a demo account
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: process.env.NEXT_PUBLIC_DEMO_EMAIL || 'demo@example.com',
+        password: process.env.NEXT_PUBLIC_DEMO_PASSWORD || 'demo123',
+      });
+      
+      if (error) throw error;
+      
+      // Create demo user in public table if needed
+      if (data.user) {
+        await ensureUserInPublicTable(data.user as UserData);
+      }
+      
+      router.push('/dashboard');
+    } catch (error) {
+      console.error("Error signing in with demo account:", error);
+      toast.error("Failed to sign in with demo account");
+    }
+  };
+
   const signOut = async () => {
     try {
       await supabase.auth.signOut();
@@ -203,6 +228,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     loading,
     signInWithGitHub,
     signInWithEmail,
+    signInWithDemo,
     signOut,
     updateUserProfile,
   };
