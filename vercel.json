@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "buildCommand": "next build",
+  "buildCommand": "npm run build",
   "devCommand": "next dev",
-  "installCommand": "npm install",
+  "installCommand": "npm install && npm rebuild",
   "framework": "nextjs",
   "regions": ["iad1"],
   "git": {
