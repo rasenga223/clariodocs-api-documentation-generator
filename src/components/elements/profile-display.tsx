@@ -1,7 +1,5 @@
-import { ProfileHeader } from "./profile-header";
-import { ProfileAvatar } from "./profile-avatar";
-import { ProfileDetails } from "./profile-details";
 import { User } from "@/types/user";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 
 interface ProfileDisplayProps {
   user: User;
@@ -12,30 +10,26 @@ export const ProfileDisplay: React.FC<ProfileDisplayProps> = ({
   user,
   onEdit,
 }) => {
-  const userName =
-    user.user_metadata?.name ||
-    user.user_metadata?.full_name ||
-    user.user_metadata?.preferred_username ||
-    user.user_metadata?.user_name ||
-    user.email ||
-    "there";
-
-  const userAvatar = user.user_metadata?.avatar_url;
+  // Use only email for simplicity as requested
   const userEmail = user.email || "";
-  const userPhone = user.user_metadata?.phone || "";
-
+  
   return (
-    <div className="mx-auto max-w-xl">
-      <ProfileHeader onEdit={onEdit} />
-      <div className="mt-4 min-h-80 space-y-2 rounded-md border bg-zinc-900 p-1 pb-0">
-        <ProfileAvatar userAvatar={userAvatar} userName={userName} />
-        <ProfileDetails
-          userName={userName}
-          userEmail={userEmail}
-          userPhone={userPhone}
-          userId={user.id}
-        />
-      </div>
-    </div>
+    <Card className="overflow-hidden border border-border/50 bg-card/50 backdrop-blur-sm">
+      <CardHeader className="pb-2">
+        <h2 className="text-xl font-semibold">Account Information</h2>
+      </CardHeader>
+      
+      <CardContent>
+        <div className="flex flex-col items-center justify-center py-6 space-y-4">
+          <div className="flex items-center justify-center w-20 h-20 text-2xl font-medium rounded-full bg-gradient-to-br from-primary/80 to-primary text-primary-foreground ring-2 ring-border/50">
+            {userEmail.charAt(0).toUpperCase()}
+          </div>
+          
+          <div className="text-center">
+            <p className="text-lg font-medium text-foreground">{userEmail}</p>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
   );
 };

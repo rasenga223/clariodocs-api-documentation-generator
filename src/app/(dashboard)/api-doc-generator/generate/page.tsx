@@ -219,22 +219,13 @@ export default function GenerateDocumentationPage() {
                 Transform your API specification into beautiful, interactive documentation
               </p>
             </div>
-            <Link
-              href="/api-doc-generator/generate"
-              className="inline-flex items-center px-4 py-2 text-sm font-medium transition-colors rounded-lg bg-secondary text-secondary-foreground hover:bg-secondary/80"
-            >
-              <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-              </svg>
-              Back
-            </Link>
           </div>
         </div>
       </div>
 
       {/* Main Content */}
       <div className="px-6 py-12 mx-auto max-w-7xl">
-        <div className="grid gap-8 lg:grid-cols-[2fr,1fr]">
+        <div className="grid grid-cols-1 gap-8 sm:grid-cols-[60%_40%]">
           {/* Left Column - Main Form */}
           <div>
             <form onSubmit={handleSubmit} className="space-y-8">

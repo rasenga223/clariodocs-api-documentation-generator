@@ -41,26 +41,37 @@ export default function ProfilePage() {
   const userPhone = user.user_metadata?.phone || "";
 
   return (
-    <div className="h-full bg-[url(/static-image.webp)] p-4">
-      {isEditing ? (
-        <ProfileEditForm
-          initialData={{
-            name: userName,
-            email: userEmail || "",
-            phone: userPhone,
-          }}
-          onCancel={() => setIsEditing(false)}
-          onSuccess={() => {
-            setIsEditing(false);
-            toast.success("Profile updated successfully!");
-          }}
-        />
-      ) : (
-        <ProfileDisplay
-          user={{ ...user, email: user.email || "" }} // Fallback for email here
-          onEdit={() => setIsEditing(true)}
-        />
-      )}
+    <div className="flex flex-col h-full p-6">
+      <div className="w-full max-w-screen-md mx-auto">
+        <div className="mb-8">
+          <h1 className="text-3xl font-semibold text-foreground">
+            Profile
+          </h1>
+          <p className="mt-2 text-muted-foreground">
+            View and manage your account information
+          </p>
+        </div>
+        
+        {isEditing ? (
+          <ProfileEditForm
+            initialData={{
+              name: userName,
+              email: userEmail || "",
+              phone: userPhone,
+            }}
+            onCancel={() => setIsEditing(false)}
+            onSuccess={() => {
+              setIsEditing(false);
+              toast.success("Profile updated successfully!");
+            }}
+          />
+        ) : (
+          <ProfileDisplay
+            user={{ ...user, email: user.email || "" }}
+            onEdit={() => setIsEditing(true)}
+          />
+        )}
+      </div>
     </div>
   );
 }

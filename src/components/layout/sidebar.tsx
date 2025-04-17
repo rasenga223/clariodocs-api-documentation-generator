@@ -72,16 +72,16 @@ export const Sidebar = () => {
       x: 0,
       width: "16rem",
       transition: {
-        x: { duration: 0.5, ease: "easeInOut" },
-        width: { delay: isMobile ? 0.3 : 0, duration: 0.5, ease: "easeInOut" },
+        x: { duration: 0.2, ease: "easeOut" },
+        width: { delay: isMobile ? 0.1 : 0, duration: 0.2, ease: "easeOut" },
       },
     },
     closed: {
       x: isMobile ? "-100%" : 0,
       width: isMobile ? "0rem" : "5rem",
       transition: {
-        x: { duration: 0.5, ease: "easeInOut" },
-        width: { duration: 0.5, ease: "easeInOut" },
+        x: { duration: 0.2, ease: "easeIn" },
+        width: { duration: 0.2, ease: "easeIn" },
       },
     },
   };

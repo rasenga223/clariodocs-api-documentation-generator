@@ -1,81 +1,104 @@
-import { Link } from "@/components/ui/link";
+"use client";
 
-const FeatureCard: React.FC<Feature> = ({ title, description }) => {
-  return (
-    <li className="group cursor-pointer space-y-4 p-4">
-      <span className="animate-radial-aura flex aspect-square flex-col justify-end rounded bg-radial-[at_0%_-75%] via-green-500 via-70% to-emerald-500 bg-[175%_175%] p-4">
-        <h3 className="bg-gradient-to-r from-zinc-950 to-zinc-800 bg-clip-text text-2xl text-transparent transition-all duration-200 group-hover:border-l-4 group-hover:border-zinc-950 group-hover:px-3">
-          {title}
-        </h3>
-      </span>
-
-      <p className="text-[clamp(0.875rem,2vw,1rem)] leading-[150%] text-zinc-400">
-        {description}
-      </p>
-
-      <Link href="/login" className="text-green-500">
-        Get Started
-      </Link>
-    </li>
-  );
-};
+import { 
+  FileText, 
+  Zap, 
+  Code, 
+  Layout, 
+  FileJson 
+} from "lucide-react";
+import { GlowingEffect } from "@/components/ui/glowing-effect";
 
 export const FeaturesSection = () => {
   return (
-    <section className="space-y-8 bg-zinc-950 p-4 py-10 pb-40">
-      <h2 className="text-center text-3xl">
-        Transform Your{" "}
-        <span className="inline-block bg-green-500 px-2 text-zinc-950">
-          API
-        </span>{" "}
-        Specs Instantly
-      </h2>
+    <section className="px-4 py-20 bg-zinc-950">
+      <div className="mx-auto max-w-7xl">
+        {/* Section Header */}
+        <div className="max-w-3xl mx-auto mb-16 space-y-4 text-center">
+          <h2 className="mb-4 text-3xl font-bold text-white md:text-5xl">
+            <span className="text-transparent bg-gradient-to-r from-green-400 to-green-600 bg-clip-text">Features</span> designed for developers
+          </h2>
+          <p className="max-w-2xl mx-auto text-lg text-zinc-400">
+            Transform your API specifications into beautiful, comprehensive documentation with our powerful features.
+          </p>
+        </div>
+        
+        {/* Grid Layout for Features */}
+        <ul className="grid grid-cols-1 grid-rows-none gap-6 md:grid-cols-12 md:grid-rows-3 lg:gap-6 xl:max-h-[36rem] xl:grid-rows-2">
+          <GridItem
+            area="md:[grid-area:1/1/2/7] xl:[grid-area:1/1/2/5]"
+            icon={<FileJson className="w-5 h-5 text-green-500" />}
+            title="Easy API Spec Upload"
+            description="Upload your OpenAPI or Postman collection in seconds. We support JSON and YAML formats to make getting started effortless."
+          />
 
-      <ul className="mx-auto grid max-w-7xl divide-x border md:grid-cols-2 lg:grid-cols-4">
-        {FEATURES.map((feature) => (
-          <FeatureCard key={feature.id} {...feature} />
-        ))}
-      </ul>
+          <GridItem
+            area="md:[grid-area:1/7/2/13] xl:[grid-area:2/1/3/5]"
+            icon={<Zap className="w-5 h-5 text-green-500" />}
+            title="AI-Powered Enhancement"
+            description="Our AI technology automatically generates clear descriptions, code examples, and usage patterns from your API specification."
+          />
+
+          <GridItem
+            area="md:[grid-area:2/1/3/7] xl:[grid-area:1/5/3/8]"
+            icon={<Layout className="w-5 h-5 text-green-500" />}
+            title="Beautiful Documentation UI"
+            description="Get a modern, responsive documentation interface that makes your API easy to understand and implement. Complete with dark mode support."
+          />
+
+          <GridItem
+            area="md:[grid-area:2/7/3/13] xl:[grid-area:1/8/2/13]"
+            icon={<Code className="w-5 h-5 text-green-500" />}
+            title="Code Examples That Work"
+            description="AI-generated examples in multiple languages that developers can copy and paste directly into their projects. No more guesswork."
+          />
+
+          <GridItem
+            area="md:[grid-area:3/1/4/13] xl:[grid-area:2/8/3/13]"
+            icon={<FileText className="w-5 h-5 text-green-500" />}
+            title="Custom Domain Support"
+            description="Host your documentation on our platform or use your own domain for a seamless experience that matches your brand."
+          />
+        </ul>
+      </div>
     </section>
   );
 };
 
-// Define the feature data structure
-type Feature = {
-  id: string;
+interface GridItemProps {
+  area: string;
+  icon: React.ReactNode;
   title: string;
-  description: string;
-  bgColor?: string;
-};
+  description: React.ReactNode;
+}
 
-// Create a structured array of features
-const FEATURES: Feature[] = [
-  {
-    id: "ai-enhanced",
-    title: "AI-Enhanced Docs",
-    description:
-      "Our AI engine automatically generates endpoint summaries, usage examples, and code snippets from your raw API specs, saving hours of manual documentation work.",
-    bgColor: "bg-green-500",
-  },
-  {
-    id: "one-click",
-    title: "One-Click Deploy",
-    description:
-      "Get a branded documentation site on your own subdomain instantly. No configuration needed - upload your OpenAPI or Postman Collection and we handle the rest.",
-    bgColor: "bg-green-500",
-  },
-  {
-    id: "custom-domains",
-    title: "Custom Domains",
-    description:
-      "Seamlessly connect your own domain with simple DNS configuration. Present a professional image with documentation that lives on your own branded URL.",
-    bgColor: "bg-green-500",
-  },
-  {
-    id: "developer-first",
-    title: "Developer-First",
-    description:
-      "Built by developers for developers. Clean, responsive interface with searchable navigation, syntax highlighting, and interactive examples that accelerate API adoption.",
-    bgColor: "bg-green-500",
-  },
-];
+const GridItem = ({ area, icon, title, description }: GridItemProps) => {
+  return (
+    <li className={`min-h-[14rem] list-none ${area}`}>
+      <div className="relative h-full p-2 transition-all duration-300 border rounded-2xl border-zinc-800 md:rounded-3xl md:p-3 hover:border-green-500/30">
+        <GlowingEffect
+          spread={40}
+          glow={true}
+          disabled={false}
+          proximity={64}
+          inactiveZone={0.01}
+        />
+        <div className="relative flex h-full flex-col justify-between gap-6 overflow-hidden rounded-xl border-0 border-zinc-800 bg-zinc-900/90 p-6 md:p-6 backdrop-blur-sm dark:shadow-[0px_0px_27px_0px_#2D2D2D] transition-all duration-300 group">
+          <div className="relative flex flex-col justify-between flex-1 gap-3">
+            <div className="w-fit rounded-lg border border-zinc-700 bg-zinc-800 p-2.5 transition-all duration-300 group-hover:border-green-500/50 group-hover:bg-zinc-800/90">
+              {icon}
+            </div>
+            <div className="space-y-3">
+              <h3 className="font-sans text-xl/[1.375rem] font-semibold text-balance text-white md:text-2xl/[1.875rem] group-hover:text-green-400 transition-colors duration-300">
+                {title}
+              </h3>
+              <p className="font-sans text-sm/[1.125rem] text-zinc-400 md:text-base/[1.375rem]">
+                {description}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </li>
+  );
+};
