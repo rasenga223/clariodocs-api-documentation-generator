@@ -2,7 +2,7 @@
   "version": 2,
   "buildCommand": "npm run build",
   "devCommand": "next dev",
-  "installCommand": "npm install && npm rebuild",
+  "installCommand": "npm ci --no-optional --prefer-offline",
   "framework": "nextjs",
   "regions": ["iad1"],
   "git": {
@@ -14,7 +14,13 @@
   },
   "build": {
     "env": {
-      "NODE_VERSION": "20.x"
+      "NODE_VERSION": "20.x",
+      "NEXT_TELEMETRY_DISABLED": "1"
+    }
+  },
+  "functions": {
+    "api/*": {
+      "memory": 1024
     }
   }
 } 

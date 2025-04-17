@@ -17,13 +17,14 @@ const nextConfig = {
   // Set the output directory (optional)
   distDir: '.next',
   
-  // Enable experimental features to handle platform-specific modules better
+  // Optimize build for Vercel
+  swcMinify: true,
+  
+  // Use stable options for Vercel deployment
   experimental: {
-    // This helps with issues related to native modules like lightningcss
-    esmExternals: 'loose',
-    // Ensure we use the correct architecture for binary dependencies
-    platformArchitecture: process.env.PLATFORM_ARCHITECTURE || process.arch,
-  },
+    // Set to true instead of 'loose' for better compatibility
+    esmExternals: true
+  }
 };
 
 module.exports = nextConfig; 
