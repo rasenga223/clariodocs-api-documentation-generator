@@ -84,7 +84,7 @@ export const HeroSection = () => {
         >
           <div className="w-full overflow-hidden border border-gray-300 rounded-xl dark:border-gray-700">
             <img
-              src="/images/docs-screenshot.png"
+              src="/images/hero-bg.png"
               alt="API Documentation Preview"
               className="aspect-[16/9] h-auto w-full object-cover"
               height={1000}
