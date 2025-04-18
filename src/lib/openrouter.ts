@@ -4,7 +4,6 @@
  */
 
 // Environment variables should be set in your .env.local file
-const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY || '';
 const OPENROUTER_BASE_URL = 'https://openrouter.ai/api/v1';
 
 /**
@@ -120,10 +119,6 @@ export async function generateDocumentation(
     extraInstructions?: string;
   }
 ): Promise<Array<{filename: string; content: string}>> {
-  if (!OPENROUTER_API_KEY) {
-    throw new Error('OpenRouter API key is not set. Please set OPENROUTER_API_KEY in your .env.local file.');
-  }
-
   console.log('🚀 Generating documentation with model:', model);
   console.log('🚀 File type:', options.fileType);
   console.log('🚀 Template:', options.template || 'None specified');
