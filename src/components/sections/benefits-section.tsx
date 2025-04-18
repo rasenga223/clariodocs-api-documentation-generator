@@ -1,136 +1,105 @@
 "use client";
 
-import { GlareCard } from "@/components/ui/glare-card";
+import { cn } from "@/lib/utils";
+import {
+  IconAdjustmentsBolt,
+  IconCloud,
+  IconCurrencyDollar,
+  IconEaseInOut,
+  IconHeart,
+  IconHelp,
+  IconRouteAltLeft,
+  IconTerminal2,
+} from "@tabler/icons-react";
 
-// Skeleton components for API doc visualizations
-const ApiEndpointSkeleton = () => (
-  <div className="flex flex-col w-full h-full p-6 space-y-4">
-    <div className="flex items-center space-x-2">
-      <div className="px-2 py-1 text-xs font-bold text-green-400 rounded-md bg-green-900/30">GET</div>
-      <div className="font-mono text-sm text-slate-300">/api/v1/users</div>
-    </div>
-    <div className="space-y-2">
-      <div className="w-3/4 h-2 rounded-full bg-slate-700"></div>
-      <div className="w-1/2 h-2 rounded-full bg-slate-700"></div>
-    </div>
-    <div className="flex-1 p-3 rounded-md">
-      <div className="space-y-1.5">
-        <div className="h-1.5 w-full bg-slate-700 rounded-full"></div>
-        <div className="h-1.5 w-4/5 bg-slate-700 rounded-full"></div>
-        <div className="h-1.5 w-2/3 bg-slate-700 rounded-full"></div>
+const features = [
+  {
+    title: "Built for developers",
+    description: "Transform your API specifications into beautiful, comprehensive documentation with our powerful features.",
+    icon: <IconTerminal2 className="w-6 h-6" />,
+  },
+  {
+    title: "Easy to use",
+    description: "Upload your OpenAPI or Postman collection in seconds. We support JSON and YAML formats.",
+    icon: <IconEaseInOut className="w-6 h-6" />,
+  },
+  {
+    title: "AI-Powered",
+    description: "Our AI technology automatically generates clear descriptions, code examples, and usage patterns.",
+    icon: <IconAdjustmentsBolt className="w-6 h-6" />,
+  },
+  {
+    title: "Cloud-hosted",
+    description: "Host your documentation on our platform or use your own domain for a seamless experience.",
+    icon: <IconCloud className="w-6 h-6" />,
+  },
+  {
+    title: "Multi-format Support",
+    description: "Support for OpenAPI, Swagger, and Postman Collections out of the box.",
+    icon: <IconRouteAltLeft className="w-6 h-6" />,
+  },
+  {
+    title: "24/7 Support",
+    description: "Get help when you need it with our responsive support team and comprehensive guides.",
+    icon: <IconHelp className="w-6 h-6" />,
+  },
+  {
+    title: "Customizable",
+    description: "Customize your documentation with your brand colors, logo, and domain.",
+    icon: <IconCurrencyDollar className="w-6 h-6" />,
+  },
+  {
+    title: "Developer-first",
+    description: "Built by developers, for developers, with features you'll actually use.",
+    icon: <IconHeart className="w-6 h-6" />,
+  },
+];
+
+const Feature = ({
+  title,
+  description,
+  icon,
+  index,
+}: {
+  title: string;
+  description: string;
+  icon: React.ReactNode;
+  index: number;
+}) => {
+  return (
+    <div
+      className={cn(
+        "flex flex-col lg:border-r py-10 relative group/feature border-zinc-800",
+        (index === 0 || index === 4) && "lg:border-l border-zinc-800",
+        index < 4 && "lg:border-b border-zinc-800"
+      )}
+    >
+      {index < 4 && (
+        <div className="opacity-0 group-hover/feature:opacity-100 transition duration-200 absolute inset-0 h-full w-full bg-gradient-to-t from-[#0d0d0d] to-transparent pointer-events-none" />
+      )}
+      {index >= 4 && (
+        <div className="opacity-0 group-hover/feature:opacity-100 transition duration-200 absolute inset-0 h-full w-full bg-gradient-to-b from-[#0d0d0d] to-transparent pointer-events-none" />
+      )}
+      <div className="mb-4 relative z-10 px-10 text-zinc-400">
+        {icon}
       </div>
-    </div>
-    <div className="flex items-center space-x-2">
-      <div className="px-2 py-1 text-xs font-bold text-yellow-400 rounded-md bg-yellow-900/30">UPDATE</div>
-      <div className="font-mono text-sm text-slate-300">/api/v1/users/{"{"}"id{"}"}</div>
-    </div>
-    <div className="space-y-2">
-      <div className="w-2/3 h-2 rounded-full bg-slate-700"></div>
-      <div className="w-1/2 h-2 rounded-full bg-slate-700"></div>
-    </div>
-    <div className="flex-1 p-3 rounded-md">
-      <div className="space-y-1.5">
-        <div className="h-1.5 w-full bg-slate-700 rounded-full"></div>
-        <div className="h-1.5 w-3/4 bg-slate-700 rounded-full"></div>
+      <div className="text-lg font-bold mb-2 relative z-10 px-10">
+        <div className="absolute left-0 inset-y-0 h-6 group-hover/feature:h-8 w-1 rounded-tr-full rounded-br-full bg-zinc-700 group-hover/feature:bg-green-500 transition-all duration-200 origin-center" />
+        <span className="group-hover/feature:translate-x-2 transition duration-200 inline-block text-white">
+          {title}
+        </span>
       </div>
-    </div>
+      <p className="text-sm text-zinc-400 max-w-xs relative z-10 px-10">
+        {description}
+      </p>
   </div>
 );
-
-const CodeExampleSkeleton = () => (
-  <div className="flex flex-col w-full h-full p-6">
-    <div className="flex items-center mb-3 space-x-2">
-      <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-      <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
-      <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-    </div>
-    <div className="flex-1 p-4 font-mono text-xs rounded-md text-slate-300">
-      <div className="space-y-2">
-        <div className="flex items-center space-x-2">
-          <span className="text-purple-400">const</span>
-          <span className="text-blue-400">response</span>
-          <span className="text-slate-400">=</span>
-          <span className="text-green-400">await</span>
-          <span className="text-yellow-400">fetch</span>
-          <span className="text-slate-400">(</span>
-          <span className="text-orange-400">'/api/v1/users'</span>
-          <span className="text-slate-400">);</span>
-        </div>
-        <div className="flex items-center space-x-2">
-          <span className="text-purple-400">const</span>
-          <span className="text-blue-400">users</span>
-          <span className="text-slate-400">=</span>
-          <span className="text-green-400">await</span>
-          <span className="text-blue-400">response</span>
-          <span className="text-yellow-400">.json</span>
-          <span className="text-slate-400">();</span>
-        </div>
-        <div className="flex items-center space-x-2">
-          <span className="text-purple-400">const</span>
-          <span className="text-blue-400">updatedUser</span>
-          <span className="text-slate-400">=</span>
-          <span className="text-green-400">await</span>
-          <span className="text-yellow-400">fetch</span>
-          <span className="text-slate-400">(</span>
-          <span className="text-orange-400">'/api/v1/users/123'</span>
-          <span className="text-slate-400">,</span>
-        </div>
-        <div className="flex items-center pl-4 space-x-2">
-          <span className="text-slate-400">{"{"}</span>
-          <span className="text-blue-400">method</span>
-          <span className="text-slate-400">:</span>
-          <span className="text-orange-400">'PUT'</span>
-          <span className="text-slate-400">{"}"}</span>
-          <span className="text-slate-400">);</span>
-        </div>
-      </div>
-    </div>
-  </div>
-);
-
-const ResponseSchemaSkeleton = () => (
-  <div className="flex flex-col items-center justify-center w-full h-full p-6">
-    <div className="w-full p-4 font-mono text-xs rounded-md">
-      <div className="mb-1 text-green-400">{"{"}</div>
-      <div className="pl-4 text-blue-400">
-        <span className="text-yellow-400">"users"</span>: [
-      </div>
-      <div className="pl-8 text-green-400">{"{"}</div>
-      <div className="pl-12">
-        <div><span className="text-yellow-400">"id"</span>: <span className="text-purple-400">1</span>,</div>
-        <div><span className="text-yellow-400">"name"</span>: <span className="text-orange-400">"John Doe"</span>,</div>
-        <div><span className="text-yellow-400">"email"</span>: <span className="text-orange-400">"john@example.com"</span></div>
-      </div>
-      <div className="pl-8 text-green-400">{"}"}</div>
-      <div className="pl-4 text-blue-400">]</div>
-      <div className="text-green-400">{"}"}</div>
-    </div>
-  </div>
-);
-
-const CustomDomainSkeleton = () => (
-  <div className="flex flex-col w-full h-full p-6">
-    <div className="flex items-center px-3 py-2 mb-4 font-mono text-xs rounded-md bg-slate-800">
-      <span className="mr-1 text-green-400">https://</span>
-      <span className="text-white">api-docs</span>
-      <span className="text-slate-400">.yourdomain.com</span>
-    </div>
-    <div className="flex flex-col items-center justify-center flex-1 space-y-3">
-      <div className="flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-green-500 to-blue-500">
-        <svg xmlns="http://www.w3.org/2000/svg" className="w-8 h-8 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-        </svg>
-      </div>
-      <div className="w-24 h-3 rounded-full bg-slate-700"></div>
-      <div className="h-2 rounded-full w-36 bg-slate-700"></div>
-    </div>
-  </div>
-);
+};
 
 export const BenefitsSection = () => {
   return (
     <section className="px-4 py-20 bg-zinc-950">
-      <div className="mx-auto max-w-[1400px]">
+      <div className="mx-auto max-w-7xl">
         {/* Section header */}
         <div className="max-w-3xl mx-auto mb-12 text-center">
           <h2 className="mb-4 text-3xl font-bold text-white md:text-5xl">
@@ -141,47 +110,11 @@ export const BenefitsSection = () => {
           </p>
         </div>
         
-        {/* Benefits grid with glare cards - improved layout */}
-        <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          <div className="flex justify-center w-full">
-            <GlareCard className="flex flex-col items-stretch justify-start bg-zinc-950/90 border-zinc-900 w-full max-w-[280px] sm:max-w-full [aspect-ratio:15/16]">
-              <div className="flex flex-col items-start justify-between h-full">
-                <ApiEndpointSkeleton />
-                <div className="p-6 pt-0">
-                </div>
-              </div>
-            </GlareCard>
-          </div>
-          
-          <div className="flex justify-center w-full">
-            <GlareCard className="flex flex-col items-stretch justify-start bg-zinc-950/90 border-zinc-900 w-full max-w-[280px] sm:max-w-full [aspect-ratio:15/16]">
-              <div className="flex flex-col items-start justify-between h-full">
-                <CodeExampleSkeleton />
-                <div className="p-6 pt-0">
-                </div>
-              </div>
-            </GlareCard>
-          </div>
-          
-          <div className="flex justify-center w-full">
-            <GlareCard className="flex flex-col items-stretch justify-start bg-zinc-950/90 border-zinc-900 w-full max-w-[280px] sm:max-w-full [aspect-ratio:15/16]">
-              <div className="flex flex-col items-start justify-between h-full">
-                <ResponseSchemaSkeleton />
-                <div className="p-6 pt-0">
-                </div>
-              </div>
-            </GlareCard>
-          </div>
-          
-          <div className="flex justify-center w-full">
-            <GlareCard className="flex flex-col items-stretch justify-start bg-zinc-950/90 border-zinc-900 w-full max-w-[280px] sm:max-w-full [aspect-ratio:15/16]">
-              <div className="flex flex-col items-start justify-between h-full">
-                <CustomDomainSkeleton />
-                <div className="p-6 pt-0">
-                </div>
-              </div>
-            </GlareCard>
-          </div>
+        {/* Features grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 relative z-10 py-10">
+          {features.map((feature, index) => (
+            <Feature key={feature.title} {...feature} index={index} />
+          ))}
         </div>
       </div>
     </section>

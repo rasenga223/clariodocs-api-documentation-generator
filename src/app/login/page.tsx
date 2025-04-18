@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { z } from "zod";
 import { toast } from "sonner";
-import { useState, Suspense } from "react";
+import { useState, Suspense, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SearchParamsHandler } from "@/components/elements/searchparams-handler";
@@ -18,6 +18,7 @@ import {
   FormControl,
   FormMessage,
 } from "@/components/ui/form";
+import { useRouter } from "next/navigation";
 
 const formSchema = z.object({
   email: z.string().email("Invalid email address"),
@@ -26,8 +27,17 @@ const formSchema = z.object({
 type LoginFormValues = z.infer<typeof formSchema>;
 
 export default function LoginPage() {
-  const { signInWithGitHub, signInWithEmail, signInWithDemo } = useAuth();
+  const { signInWithGitHub, signInWithEmail, signInWithDemo, user, loading } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
+
+  // Add redirect effect for authenticated users
+  useEffect(() => {
+    // Only redirect after initial auth check is complete and user exists
+    if (!loading && user) {
+      router.push('/dashboard');
+    }
+  }, [user, loading, router]);
 
   // Create the form instance with all methods.
   const form = useForm<LoginFormValues>({
@@ -121,24 +131,18 @@ export default function LoginPage() {
         <Button
           onClick={handleDemoLogin}
           disabled={isLoading || form.formState.isSubmitting}
-          className="group relative flex w-full items-center justify-center overflow-hidden rounded-lg bg-gradient-to-br from-purple-600 to-blue-500 p-0.5 text-white hover:bg-gradient-to-bl focus:outline-none focus:ring-4 focus:ring-blue-300 dark:focus:ring-blue-800"
+          className="w-full flex items-center justify-center gap-3 px-6 py-3 bg-indigo-500 text-white font-medium rounded-lg shadow-sm ring-1 ring-black/5 transition-all duration-200 hover:bg-indigo-600 hover:shadow-md active:transform active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-indigo-600 dark:hover:bg-indigo-700"
         >
-          <span className="relative flex w-full items-center justify-center gap-2 rounded-md bg-white px-5 py-2.5 transition-all duration-75 ease-in group-hover:bg-opacity-0 dark:bg-zinc-900">
-            <svg
-              className="w-5 h-5 transition-transform group-hover:scale-110"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M14 5l7 7m0 0l-7 7m7-7H3"
-              />
-            </svg>
-            <span className="font-semibold">Try Demo Account</span>
-          </span>
+          <svg
+            className="w-5 h-5"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth={2}
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+          </svg>
+          Try Demo Account
         </Button>
 
         <div className="relative">

@@ -19,9 +19,9 @@ export const HeroSection = () => {
         <div className="absolute w-40 h-px mx-auto bg-gradient-to-r from-transparent via-green-500 to-transparent" />
       </div>
       
-      <div className="px-4 py-10 md:py-20">
+      <div className="px-4 py-10 max-[500px]:pt-20 md:py-20">
         {/* Animated heading */}
-        <h1 className="relative z-10 max-w-4xl mx-auto text-2xl font-bold text-center text-slate-700 md:text-4xl lg:text-7xl dark:text-slate-300">
+        <h1 className="relative z-10 max-w-4xl mx-auto text-3xl max-[500px]:text-4xl font-bold text-center text-slate-700 md:text-4xl lg:text-7xl dark:text-slate-300">
           {"Transform Your API Specs into Beautiful Docs"
             .split(" ")
             .map((word, index) => (
@@ -52,24 +52,24 @@ export const HeroSection = () => {
           comprehensive, beautiful documentation in seconds. No coding required.
         </motion.p>
         
-        {/* Animated buttons */}
+        {/* Enhanced buttons */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.3, delay: 1 }}
-          className="relative z-10 flex flex-wrap items-center justify-center gap-4 mt-8"
+          className="relative z-10 flex flex-col max-[500px]:w-full sm:flex-row items-center justify-center gap-4 mt-8"
         >
           <Link
             href="/login"
             variant="primary"
-            className="w-60 transform rounded-xl bg-green-500 px-6 py-3 font-medium text-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:bg-green-600 hover:shadow-lg hover:shadow-green-500/20 focus:outline-none focus:ring-2 focus:ring-green-500/50 active:scale-[0.98] dark:bg-green-600 dark:hover:bg-green-500"
+            className="w-60 max-[500px]:w-full max-[500px]:text-lg max-[500px]:py-4 transform rounded-xl bg-green-500 px-6 py-3 font-medium text-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:bg-green-600 hover:shadow-lg hover:shadow-green-500/20 focus:outline-none focus:ring-2 focus:ring-green-500/50 active:scale-[0.98] dark:bg-green-600 dark:hover:bg-green-500 max-[500px]:rounded-2xl max-[500px]:backdrop-blur-xl max-[500px]:bg-gradient-to-r max-[500px]:from-green-500 max-[500px]:to-emerald-500"
           >
             Generate Documentation
           </Link>
           <Link
             href="/demo"
             variant="secondary"
-            className="w-60 transform rounded-xl border border-gray-200 bg-white/20 px-6 py-3 font-medium text-gray-800 backdrop-blur-md transition-all duration-300 hover:-translate-y-1 hover:bg-white/40 hover:shadow-lg hover:shadow-gray-200/10 focus:outline-none focus:ring-2 focus:ring-gray-400/20 active:scale-[0.98] dark:border-gray-800 dark:bg-gray-900/30 dark:text-gray-200 dark:hover:bg-gray-800/40 dark:hover:border-gray-700"
+            className="w-60 max-[500px]:w-full max-[500px]:text-lg max-[500px]:py-4 transform rounded-xl border border-gray-200 bg-white/20 px-6 py-3 font-medium text-gray-800 backdrop-blur-md transition-all duration-300 hover:-translate-y-1 hover:bg-white/40 hover:shadow-lg hover:shadow-gray-200/10 focus:outline-none focus:ring-2 focus:ring-gray-400/20 active:scale-[0.98] dark:border-gray-800 dark:bg-gray-900/30 dark:text-gray-200 dark:hover:bg-gray-800/40 dark:hover:border-gray-700 max-[500px]:rounded-2xl max-[500px]:backdrop-blur-xl max-[500px]:bg-white/10 max-[500px]:border-white/20 max-[500px]:hover:bg-white/20"
           >
             Demo
           </Link>

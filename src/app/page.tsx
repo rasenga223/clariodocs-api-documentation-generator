@@ -7,6 +7,8 @@ import { FeaturesSection } from "@/components/sections/features-section";
 import { TestimonialsSection } from "@/components/sections/testimonials-section";
 import { BenefitsSection } from "@/components/sections/benefits-section";
 import { CTASection } from "@/components/sections/cta-section";
+import { StepsSection } from "@/components/sections/steps-section";
+import { SupportedFormats } from "@/components/sections/supported-formats";
 
 export default function Home() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -18,7 +20,9 @@ export default function Home() {
     >
       <Header />
       <HeroSection />
+      <SupportedFormats />
       <FeaturesSection />
+      <StepsSection />
       <BenefitsSection />
       <CTASection />
       <Footer />

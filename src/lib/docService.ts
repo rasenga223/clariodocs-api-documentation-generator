@@ -38,6 +38,23 @@ export interface DocOutlineItem {
 }
 
 /**
+ * Interface for pagination options
+ */
+export interface PaginationOptions {
+  page: number;
+  perPage: number;
+}
+
+/**
+ * Interface for paginated response
+ */
+export interface PaginatedResponse<T> {
+  data: T[];
+  hasMore: boolean;
+  total?: number;
+}
+
+/**
  * Creates a new API documentation project in the database
  * 
  * @param title - Project title
@@ -153,24 +170,48 @@ export async function getProject(projectId: string): Promise<DocProject | null> 
 }
 
 /**
- * Retrieves all projects for a user
+ * Retrieves paginated projects for a user
  * 
  * @param userId - User ID
- * @returns Array of projects
+ * @param options - Pagination options
+ * @returns Paginated array of projects
  */
-export async function getUserProjects(userId: string): Promise<DocProject[]> {
+export async function getUserProjects(
+  userId: string,
+  options: PaginationOptions = { page: 1, perPage: 10 }
+): Promise<PaginatedResponse<DocProject>> {
+  const { page, perPage } = options;
+  const offset = (page - 1) * perPage;
+  
+  // First get total count
+  const { count, error: countError } = await supabase
+    .from('projects')
+    .select('*', { count: 'exact', head: true })
+    .eq('user_id', userId);
+    
+  if (countError) {
+    console.error('Error getting project count:', countError);
+    return { data: [], hasMore: false };
+  }
+  
+  // Then get paginated data
   const { data, error } = await supabase
     .from('projects')
     .select('*')
     .eq('user_id', userId)
-    .order('updated_at', { ascending: false });
+    .order('updated_at', { ascending: false })
+    .range(offset, offset + perPage - 1);
   
   if (error) {
     console.error('Error retrieving user projects:', error);
-    return [];
+    return { data: [], hasMore: false };
   }
   
-  return data || [];
+  return {
+    data: data || [],
+    hasMore: count ? offset + perPage < count : false,
+    total: count || undefined
+  };
 }
 
 /**

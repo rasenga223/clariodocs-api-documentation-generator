@@ -83,7 +83,7 @@ const GridItem = ({ area, icon, title, description }: GridItemProps) => {
           proximity={64}
           inactiveZone={0.01}
         />
-        <div className="relative flex h-full flex-col justify-between gap-6 overflow-hidden rounded-xl border-0 border-zinc-800 bg-zinc-900/90 p-6 md:p-6 backdrop-blur-sm dark:shadow-[0px_0px_27px_0px_#2D2D2D] transition-all duration-300 group">
+        <div className="relative flex h-full flex-col justify-between gap-6 overflow-hidden rounded-xl border-0 border-zinc-800 bg-[#0d0d0d]/90 p-6 md:p-6 backdrop-blur-sm dark:shadow-[0px_0px_27px_0px_#2D2D2D] transition-all duration-300 group">
           <div className="relative flex flex-col justify-between flex-1 gap-3">
             <div className="w-fit rounded-lg border border-zinc-700 bg-zinc-800 p-2.5 transition-all duration-300 group-hover:border-green-500/50 group-hover:bg-zinc-800/90">
               {icon}

@@ -198,6 +198,30 @@
   .text-balance {
     text-wrap: balance;
   }
+  
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .no-scrollbar {
+    -ms-overflow-hide: none;
+    scrollbar-width: none;
+  }
+  
+  /* Animation for slow bouncing cursor */
+  @keyframes bounce-slow {
+    0%, 100% {
+      transform: translateY(-25%) rotate(-45deg);
+      animation-timing-function: cubic-bezier(0.8, 0, 1, 1);
+    }
+    50% {
+      transform: translateY(0) rotate(-45deg);
+      animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
+    }
+  }
+  .animate-bounce-slow {
+    animation: bounce-slow 2s infinite;
+  }
 }
 
 /* animation keyframes */

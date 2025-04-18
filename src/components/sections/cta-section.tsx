@@ -1,5 +1,15 @@
+"use client";
+
 import { Link } from "@/components/ui/link";
 import { motion } from "framer-motion";
+import { 
+  Endpoint, 
+  Note, 
+  Terminal, 
+  ParamsTable, 
+  Param, 
+  RateLimit
+} from "@/components/mdx/MdxComponents";
 
 // Animated shape component for the background
 const AnimatedShape = ({ className }: { className?: string }) => (
@@ -11,9 +21,30 @@ const AnimatedShape = ({ className }: { className?: string }) => (
   />
 );
 
+// Floating component with custom animation
+const FloatingComponent = ({ children, className, delay = 0 }: { children: React.ReactNode; className?: string; delay?: number }) => (
+  <motion.div
+    className={className}
+    initial={{ opacity: 0, y: 20 }}
+    animate={{ 
+      opacity: [0.5, 0.8, 0.5],
+      y: [0, -20, 0],
+      x: [0, 10, 0],
+    }}
+    transition={{ 
+      duration: 8,
+      delay,
+      repeat: Infinity,
+      ease: "easeInOut"
+    }}
+  >
+    {children}
+  </motion.div>
+);
+
 export const CTASection = () => {
   return (
-    <section className="relative px-4 py-32 isolate bg-zinc-950 md:py-40">
+    <section className="relative px-2 sm:px-4 py-24 sm:py-32 isolate bg-zinc-950 md:py-40 overflow-hidden">
       {/* Animated background shapes */}
       <div className="absolute inset-0 overflow-hidden -z-10">
         <AnimatedShape className="absolute -left-[40%] top-0 h-[1000px] w-[1000px] rounded-full bg-gradient-to-tr from-green-500/10 via-emerald-500/5 to-transparent blur-[128px]" />
@@ -28,104 +59,87 @@ export const CTASection = () => {
       {/* Noise texture overlay */}
       <div className="absolute inset-0 -z-10 opacity-[0.015] bg-[url('/noise.png')] bg-repeat"></div>
 
-      <div className="px-6 mx-auto max-w-7xl lg:px-8">
+      {/* Floating MDX Components in Background */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none select-none">
+        {/* Top left component */}
+        <FloatingComponent className="absolute top-[10%] left-[5%] w-[300px] max-[500px]:w-[200px] max-[500px]:top-[5%] max-[500px]:left-[2%] transform -rotate-6 opacity-50">
+          <Note>
+            Beautiful API documentation that developers love
+          </Note>
+        </FloatingComponent>
+
+        {/* Top right component */}
+        <FloatingComponent className="absolute top-[15%] right-[5%] w-[300px] max-[500px]:w-[200px] max-[500px]:top-[8%] max-[500px]:right-[2%] transform rotate-3 opacity-50" delay={2}>
+          <Terminal title="Installation" showPrompt={true}>
+            npm install @company/api-client
+          </Terminal>
+        </FloatingComponent>
+
+        {/* Bottom left component */}
+        <FloatingComponent className="absolute bottom-[20%] left-[8%] w-[300px] max-[500px]:w-[200px] max-[500px]:bottom-[25%] max-[500px]:left-[2%] transform -rotate-3 opacity-50" delay={1}>
+          <RateLimit limit="100" period="1 minute">
+            Premium plans have higher limits
+          </RateLimit>
+        </FloatingComponent>
+
+        {/* Bottom right component */}
+        <FloatingComponent className="absolute bottom-[15%] right-[8%] w-[300px] max-[500px]:w-[200px] max-[500px]:bottom-[28%] max-[500px]:right-[2%] transform rotate-6 opacity-50" delay={3}>
+          <Endpoint 
+            method="GET" 
+            path="/api/v1/users"
+          >
+            <ParamsTable>
+              <Param name="page" type="integer">Page number</Param>
+            </ParamsTable>
+          </Endpoint>
+        </FloatingComponent>
+      </div>
+
+      <div className="mx-auto w-[90%] max-w-[1600px] relative z-10">
         <div className="relative">
-          {/* Main content container */}
-          <div className="px-8 py-16 overflow-hidden border shadow-2xl rounded-3xl border-zinc-800/50 bg-gradient-to-b from-zinc-900/90 to-zinc-950/90 backdrop-blur-xl md:px-16 md:py-24">
-            {/* Glare effects */}
-            <div className="absolute inset-0 pointer-events-none">
-              <div className="absolute w-1/2 -translate-x-1/2 translate-y-0 -top-1/2 left-1/2 aspect-square bg-gradient-radial from-green-500/20 via-green-500/5 to-transparent blur-2xl" />
-              <div className="absolute w-1/2 -translate-x-1/2 translate-y-0 -bottom-1/2 left-1/2 aspect-square bg-gradient-radial from-blue-500/20 via-blue-500/5 to-transparent blur-2xl" />
-            </div>
+          {/* Content */}
+          <div className="text-center">
+            <motion.h2 
+              className="relative max-w-3xl mx-auto mb-4 sm:mb-6 text-3xl sm:text-4xl font-bold tracking-tight text-transparent bg-gradient-to-br from-white via-zinc-200 to-zinc-400 bg-clip-text md:text-6xl px-2"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+            >
+              Create Beautiful API Documentation{" "}
+              <span className="whitespace-nowrap bg-gradient-to-r from-green-400 to-emerald-500 bg-clip-text">in Minutes</span>
+            </motion.h2>
 
-            <div className="relative max-w-5xl mx-auto">
-              {/* Decorative elements */}
-              <div className="absolute -translate-x-1/2 -top-4 left-1/2">
-                <div className="h-8 w-[2px] bg-gradient-to-b from-transparent via-green-500 to-transparent" />
-              </div>
+            <motion.p 
+              className="max-w-2xl mx-auto mb-8 sm:mb-12 text-base sm:text-lg text-zinc-400 px-2"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+            >
+              Transform your API specifications into beautiful, interactive documentation with our AI-powered platform.
+            </motion.p>
 
-              {/* Content */}
-              <div className="text-center">
-                <motion.h2 
-                  className="relative max-w-3xl mx-auto mb-6 text-4xl font-bold tracking-tight text-transparent bg-gradient-to-br from-white via-zinc-200 to-zinc-400 bg-clip-text md:text-6xl"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5 }}
-                >
-                  Create Beautiful API Documentation{" "}
-                  <span className="whitespace-nowrap bg-gradient-to-r from-green-400 to-emerald-500 bg-clip-text">in Minutes</span>
-                </motion.h2>
-
-                <motion.p 
-                  className="max-w-2xl mx-auto mb-12 text-lg text-zinc-400"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: 0.1 }}
-                >
-                  Join forward-thinking developers who are transforming their API documentation into 
-                  engaging, interactive experiences that users love.
-                </motion.p>
-
-                {/* Feature highlights */}
-                <motion.div 
-                  className="grid grid-cols-1 gap-6 mb-12 md:grid-cols-3"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: 0.2 }}
-                >
-                  <div className="p-6 border rounded-xl border-zinc-800/50 bg-zinc-900/30 backdrop-blur-sm">
-                    <div className="mb-2 text-green-500">
-                      <svg className="w-6 h-6 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                      </svg>
-                    </div>
-                    <h3 className="mb-1 text-sm font-medium text-white">Instant Setup</h3>
-                    <p className="text-xs text-zinc-400">Get your documentation live in under 5 minutes</p>
-                  </div>
-                  <div className="p-6 border rounded-xl border-zinc-800/50 bg-zinc-900/30 backdrop-blur-sm">
-                    <div className="mb-2 text-green-500">
-                      <svg className="w-6 h-6 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
-                      </svg>
-                    </div>
-                    <h3 className="mb-1 text-sm font-medium text-white">AI-Powered</h3>
-                    <p className="text-xs text-zinc-400">Smart suggestions and auto-generated examples</p>
-                  </div>
-                  <div className="p-6 border rounded-xl border-zinc-800/50 bg-zinc-900/30 backdrop-blur-sm">
-                    <div className="mb-2 text-green-500">
-                      <svg className="w-6 h-6 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z" />
-                      </svg>
-                    </div>
-                    <h3 className="mb-1 text-sm font-medium text-white">Custom Domains</h3>
-                    <p className="text-xs text-zinc-400">Host on your domain or use our subdomain</p>
-                  </div>
-                </motion.div>
-
-                {/* CTA buttons */}
-                <motion.div 
-                  className="flex flex-wrap items-center justify-center gap-4"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: 0.3 }}
-                >
-                  <Link
-                    href="/login"
-                    variant="primary"
-                    className="w-60 transform rounded-xl bg-green-500 px-6 py-3 font-medium text-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:bg-green-600 hover:shadow-lg hover:shadow-green-500/20 focus:outline-none focus:ring-2 focus:ring-green-500/50 active:scale-[0.98]"
-                  >
-                    Generate Documentation
-                  </Link>
-                  <Link
-                    href="/demo"
-                    variant="secondary"
-                    className="w-60 transform rounded-xl border border-zinc-800 bg-zinc-900/30 px-6 py-3 font-medium text-zinc-300 backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:bg-zinc-800/40 hover:border-zinc-700 hover:text-white hover:shadow-lg hover:shadow-zinc-900/50 focus:outline-none focus:ring-2 focus:ring-zinc-400/20 active:scale-[0.98]"
-                  >
-                    Demo
-                  </Link>
-                </motion.div>
-              </div>
-            </div>
+            {/* CTA buttons */}
+            <motion.div 
+              className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 px-4"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.3 }}
+            >
+              <Link
+                href="/login"
+                variant="primary"
+                className="w-full sm:w-60 transform rounded-xl bg-green-500 px-6 py-3 font-medium text-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:bg-green-600 hover:shadow-lg hover:shadow-green-500/20 focus:outline-none focus:ring-2 focus:ring-green-500/50 active:scale-[0.98]"
+              >
+                Generate Documentation
+              </Link>
+              <Link
+                href="/demo"
+                variant="secondary"
+                className="w-full sm:w-60 transform rounded-xl border border-zinc-800 bg-zinc-900/30 px-6 py-3 font-medium text-zinc-300 backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:bg-zinc-800/40 hover:border-zinc-700 hover:text-white hover:shadow-lg hover:shadow-zinc-900/50 focus:outline-none focus:ring-2 focus:ring-zinc-400/20 active:scale-[0.98]"
+              >
+                Demo
+              </Link>
+            </motion.div>
           </div>
         </div>
       </div>

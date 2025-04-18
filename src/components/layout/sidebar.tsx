@@ -35,7 +35,7 @@ export const Sidebar = () => {
   const [hasMounted, setHasMounted] = useState(false);
   const { isOpen, openSidebar, closeSidebar, toggleSidebar } = useSidebar();
   const { theme, setTheme } = useTheme();
-  const { user } = useAuth();
+  const { user, signOut } = useAuth();
 
   // Get first initial of email
   const getInitial = (email?: string) => {
@@ -174,7 +174,10 @@ export const Sidebar = () => {
         {/* Theme Switcher */}
         <div className="flex justify-center pt-4 mt-auto">
           <button
-            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+            onClick={() => {
+              const newTheme = theme === "dark" ? "light" : "dark";
+              setTheme(newTheme);
+            }}
             className={cn(
               "relative flex items-center rounded-full transition-all duration-300 overflow-hidden",
               isOpen ? "w-[120px] p-1" : "w-10 p-1",
@@ -187,7 +190,7 @@ export const Sidebar = () => {
               className={cn(
                 "absolute top-0 bottom-0 w-[60px] rounded-full bg-accent transition-all duration-300 z-0",
                 isOpen ? (
-                  hasMounted && theme === "dark" ? "left-0" : "left-[60px]"
+                  theme === "dark" ? "left-0" : "left-[60px]"
                 ) : "w-full left-0"
               )}
             />
@@ -197,13 +200,13 @@ export const Sidebar = () => {
               <>
                 <span className={cn(
                   "flex h-8 w-[60px] items-center justify-center transition-colors duration-300 relative z-10",
-                  hasMounted && theme === "dark" ? "text-primary-foreground font-medium" : "text-muted-foreground"
+                  theme === "dark" ? "text-primary-foreground font-medium" : "text-muted-foreground"
                 )}>
                   <Moon className="w-4 h-4" />
                 </span>
                 <span className={cn(
                   "flex h-8 w-[60px] items-center justify-center transition-colors duration-300 relative z-10",
-                  hasMounted && theme === "light" ? "text-foreground font-medium" : "text-muted-foreground"
+                  theme === "light" ? "text-foreground font-medium" : "text-muted-foreground"
                 )}>
                   <Sun className="w-4 h-4" />
                 </span>
@@ -211,7 +214,7 @@ export const Sidebar = () => {
             ) : (
               // Collapsed state with active icon
               <div className="relative z-10 flex items-center justify-center w-8 h-8">
-                {hasMounted && theme === "dark" ? (
+                {theme === "dark" ? (
                   <Moon className="w-4 h-4 text-primary-foreground" />
                 ) : (
                   <Sun className="w-4 h-4 text-foreground" />
@@ -230,8 +233,12 @@ export const Sidebar = () => {
               !isOpen && "justify-center",
               isOpen ? "w-full" : "w-12"
             )}
-            onClick={() => {
-              // Add logout logic here
+            onClick={async () => {
+              try {
+                await signOut();
+              } catch (error) {
+                console.error("Error signing out:", error);
+              }
             }}
           >
             <LogOut className="w-4 h-4" />

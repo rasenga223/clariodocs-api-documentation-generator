@@ -34,10 +34,10 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
   }
 
   return (
-    <div className="grid h-screen md:grid-cols-[auto_1fr] md:[&>*:nth-child(2)]:col-start-2">
+    <div className="grid h-screen w-screen overflow-hidden md:grid-cols-[auto_1fr] md:[&>*:nth-child(2)]:col-start-2">
       <Sidebar />
-      <main className="flex flex-col h-full bg-zinc-100/80 dark:bg-[#0b0b0b]/60 backdrop-blur-xl">
-        <div className="relative max-h-[calc(100dvh)] min-h-0 flex-1 overflow-y-auto">
+      <main className="flex flex-col h-full w-full bg-zinc-100/80 dark:bg-[#0b0b0b]/60 backdrop-blur-xl overflow-hidden">
+        <div className="relative flex-1 max-h-full min-h-0 overflow-hidden">
           <div className="relative h-full p-2">
             <div 
               className="relative h-full p-2 overflow-y-auto border rounded-3xl border-border/40 bg-background"

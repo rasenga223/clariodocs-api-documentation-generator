@@ -80,7 +80,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={cn("min-h-screen dark bg-background antialiased", dmSans.variable)}>
+      <body className={cn("min-h-screen bg-background antialiased", dmSans.variable)}>
         <Suspense fallback={<Loading />}>
           <Providers>
             <ToastProvider>
