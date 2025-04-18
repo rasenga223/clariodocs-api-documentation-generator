@@ -12,6 +12,8 @@ import { ChevronRight } from "lucide-react"
 import { DEFAULT_MDX_CONTENT } from "./DefaultContent"
 import ChatWindow from "@/components/ChatWindow"
 import { MDXFileInfo } from "@/lib/chatService"
+import { publishProject, getPublishStatus } from '@/lib/publishService';
+import { toast } from "sonner";
 
 export default function EditorPage() {
   const router = useRouter()
@@ -29,6 +31,8 @@ export default function EditorPage() {
   const [selectedSection, setSelectedSection] = useState<string | undefined>(undefined)
   const [allMdxFiles, setAllMdxFiles] = useState<MDXFileInfo[]>([])
   const [isChatOpen, setIsChatOpen] = useState(false)  // Add this state for chat window
+  const [isPublishing, setIsPublishing] = useState(false);
+  const [publishedUrl, setPublishedUrl] = useState<string | undefined>();
   
   // Check if we're on mobile
   useEffect(() => {
@@ -585,6 +589,55 @@ Add detailed reference documentation...
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [saveVersion]); // Add saveVersion to dependencies
 
+  // Add effect to check initial publish status
+  useEffect(() => {
+    async function checkPublishStatus() {
+      if (!projectId) return;
+      
+      try {
+        const status = await getPublishStatus(projectId);
+        if (status.status === 'published' && status.url) {
+          setPublishedUrl(status.url);
+        }
+      } catch (error) {
+        console.error('Error checking publish status:', error);
+      }
+    }
+    
+    checkPublishStatus();
+  }, [projectId]);
+
+  // Add publish handler
+  const handlePublish = async () => {
+    if (!projectId) {
+      toast.error('No project selected');
+      return;
+    }
+
+    console.log('Starting publish process...');
+    setIsPublishing(true);
+    
+    try {
+      console.log('Calling publishProject with ID:', projectId);
+      const result = await publishProject(projectId);
+      console.log('Publish result:', result);
+      
+      if (result.status === 'published' && result.url) {
+        setPublishedUrl(result.url);
+        toast.success('Documentation published successfully!');
+      } else if (result.error) {
+        console.error('Publish error:', result.error);
+        toast.error(result.error);
+      }
+    } catch (error) {
+      console.error('Publish error:', error);
+      toast.error('Failed to publish documentation');
+    } finally {
+      console.log('Publish process complete');
+      setIsPublishing(false);
+    }
+  };
+
   return (
     <div className="flex h-full overflow-hidden">
       <div className={cn("flex transition-all duration-300", sidebarCollapsed ? "w-8" : "")}>
@@ -632,6 +685,9 @@ Add detailed reference documentation...
           currentVersionIndex={currentVersionIndex}
           onProjectSelect={handleProjectSelect}
           currentProjectId={projectId || undefined}
+          isPublishing={isPublishing}
+          onPublish={handlePublish}
+          publishedUrl={publishedUrl}
         />
         <div className="flex flex-1 overflow-hidden">
           {view !== "preview" && (

@@ -2,7 +2,7 @@
 
 import { saveAs } from "file-saver"
 import { jsPDF } from "jspdf"
-import { Code, Download, Eye, FileText, History, SplitIcon as LayoutSplit, Save, FolderOpen, ExternalLink } from 'lucide-react'
+import { Code, Download, Eye, FileText, History, SplitIcon as LayoutSplit, Save, FolderOpen, ExternalLink, Globe } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -29,6 +29,9 @@ type Props = {
   currentVersionIndex?: number
   onProjectSelect?: (projectId: string) => void
   currentProjectId?: string
+  isPublishing?: boolean
+  onPublish?: () => void
+  publishedUrl?: string
 }
 
 export default function EditorHeader({ 
@@ -42,7 +45,10 @@ export default function EditorHeader({
   hasProject, 
   currentVersionIndex = 0,
   onProjectSelect,
-  currentProjectId
+  currentProjectId,
+  isPublishing,
+  onPublish,
+  publishedUrl
 }: Props) {
   const [projects, setProjects] = useState<ProjectSelectItem[]>([])
   const [isLoadingProjects, setIsLoadingProjects] = useState(false)
@@ -294,23 +300,100 @@ export default function EditorHeader({
 
         {/* Preview Button - only show if we have a project */}
         {currentProjectId && (
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => router.push(`/preview/${currentProjectId}`)}
-            className={cn(
-              "transition-all duration-300",
-              "bg-primary/5 border-primary/20",
-              "hover:bg-primary/10 hover:border-primary/30",
-              "text-primary hover:text-primary",
-              "shadow-[0_2px_10px_rgba(0,0,0,0.05)]",
-              "hover:shadow-[0_2px_15px_rgba(var(--primary),0.15)]",
-              "hover:scale-105 active:scale-95"
-            )}
-          >
-            <ExternalLink className="w-4 h-4 mr-2" />
-            <span className="hidden sm:inline">Preview Live</span>
-          </Button>
+          <>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => router.push(`/preview/${currentProjectId}`)}
+              className={cn(
+                "transition-all duration-300",
+                "bg-primary/5 border-primary/20",
+                "hover:bg-primary/10 hover:border-primary/30",
+                "text-primary hover:text-primary",
+                "shadow-[0_2px_10px_rgba(0,0,0,0.05)]",
+                "hover:shadow-[0_2px_15px_rgba(var(--primary),0.15)]",
+                "hover:scale-105 active:scale-95"
+              )}
+            >
+              <ExternalLink className="w-4 h-4 mr-2" />
+              <span className="hidden sm:inline">Preview Live</span>
+            </Button>
+
+            {/* Temporarily commented out - Publish functionality to be implemented later
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="default"
+                  size="sm"
+                  disabled={isPublishing}
+                  className={cn(
+                    "transition-all duration-300",
+                    "bg-green-600 hover:bg-green-700",
+                    "text-white",
+                    "shadow-lg shadow-green-600/20",
+                    "hover:shadow-xl hover:shadow-green-600/30",
+                    "hover:scale-105 active:scale-95"
+                  )}
+                >
+                  {isPublishing ? (
+                    <>
+                      <svg className="w-4 h-4 mr-2 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                      </svg>
+                      <span className="hidden sm:inline">Publishing...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Globe className="w-4 h-4 mr-2" />
+                      <span className="hidden sm:inline">Publish Site</span>
+                    </>
+                  )}
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-72 bg-popover border-border">
+                {publishedUrl ? (
+                  <>
+                    <DropdownMenuLabel>Documentation Published!</DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <div className="p-3">
+                      <p className="mb-2 text-sm text-muted-foreground">Your documentation is live at:</p>
+                      <a 
+                        href={publishedUrl} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="flex items-center justify-between p-2 text-sm bg-secondary/30 rounded-md hover:bg-secondary/50"
+                      >
+                        <span className="truncate">{publishedUrl}</span>
+                        <ExternalLink className="w-4 h-4 ml-2 flex-shrink-0" />
+                      </a>
+                    </div>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={onPublish}>
+                      <Globe className="w-4 h-4 mr-2" />
+                      Republish Site
+                    </DropdownMenuItem>
+                  </>
+                ) : (
+                  <>
+                    <DropdownMenuLabel>Publish Documentation</DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <div className="p-3">
+                      <p className="text-sm text-muted-foreground">
+                        This will publish your documentation as a public website under a subdomain of our site.
+                      </p>
+                    </div>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={onPublish}>
+                      <Globe className="w-4 h-4 mr-2" />
+                      Publish Now
+                    </DropdownMenuItem>
+                  </>
+                )}
+              </DropdownMenuContent>
+            </DropdownMenu>
+            */}
+          </>
         )}
       </div>
     </header>
