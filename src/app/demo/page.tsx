@@ -95,7 +95,7 @@ export default function DemoPage() {
               variant="outline"
               className="text-white bg-transparent border-zinc-700 hover:bg-zinc-800"
             >
-              <Link href="https://github.com/yourusername/api-documentation-generator">
+              <Link href="https://github.com/rasenga223/clariodocs-api-documentation-generator.git">
                 <Github className="w-4 h-4 mr-2" />
                 View on GitHub
               </Link>

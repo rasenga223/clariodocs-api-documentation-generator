@@ -65,7 +65,7 @@ export const Footer = () => {
                 <XIcon className="w-5 h-5" />
               </Link>
               <Link
-                href="https://github.com/clariodocs"
+                href="https://github.com/rasenga223/clariodocs-api-documentation-generator.git"
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Visit our GitHub repository"
