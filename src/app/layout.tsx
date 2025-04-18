@@ -28,7 +28,7 @@ export const metadata: Metadata = {
       "One-click API documentation generator with AI enhancement and custom domain support",
     images: [
       {
-        url: "/og-image.png",
+        url: "/images/create-beautiful-api.png",
         width: 1200,
         height: 630,
         alt: "Clario API Documentation Generator",
@@ -40,7 +40,7 @@ export const metadata: Metadata = {
     title: "Clario | API Documentation Generator",
     description:
       "Transform your API spec into a clean, branded, shareable documentation site instantly",
-    images: ["/og-image.png"],
+    images: ["/images/create-beautiful-api.png"],
   },
   icons: {
     icon: ["/favicon_io/favicon.ico?v=4"],

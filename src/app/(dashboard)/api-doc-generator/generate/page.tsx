@@ -4,7 +4,7 @@ import { useState, ChangeEvent, FormEvent, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { generateDocumentation, AVAILABLE_MODELS } from '@/lib/openrouter';
-import { createProject, saveMdxFiles, updateProjectStatus, saveAiJob, updateAiJob } from '@/lib/docService';
+import { createProject, saveMdxFiles, updateProjectStatus, saveAiJob, updateAiJob, getUserDailyAiJobCount } from '@/lib/docService';
 import { getUser } from '@/lib/supabase';
 import FileUploader from '@/components/api-doc-generator/FileUploader';
 
@@ -27,19 +27,23 @@ export default function GenerateDocumentationPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
+  const [aiJobCount, setAiJobCount] = useState<number>(0);
+  const AI_JOB_DAILY_LIMIT = 7;
   
-  // Get the current user
+  // Get the current user and AI job count
   useEffect(() => {
-    async function fetchUser() {
+    async function fetchUserAndJobCount() {
       const user = await getUser();
       if (user) {
         setUserId(user.id);
+        const count = await getUserDailyAiJobCount(user.id);
+        setAiJobCount(count);
       } else {
         // Redirect to login if user is not authenticated
         router.push('/login');
       }
     }
-    fetchUser();
+    fetchUserAndJobCount();
   }, [router]);
   
   /**
@@ -94,6 +98,11 @@ export default function GenerateDocumentationPage() {
     
     if (!userId) {
       setError('You must be logged in to generate documentation');
+      return;
+    }
+
+    if (aiJobCount >= AI_JOB_DAILY_LIMIT) {
+      setError(`You have reached the limit of ${AI_JOB_DAILY_LIMIT} AI generations per day. Please try again tomorrow.`);
       return;
     }
     
@@ -185,6 +194,9 @@ export default function GenerateDocumentationPage() {
       // Store all generated files for later access if needed
       sessionStorage.setItem('generatedDocs', JSON.stringify(formattedFiles));
       console.log('💾 Saved formatted docs to sessionStorage');
+      
+      // Update the AI job count after successful generation
+      setAiJobCount(prevCount => prevCount + 1);
       
       // Navigate directly to the editor instead of preview
       router.push('/editor');
@@ -500,9 +512,9 @@ export default function GenerateDocumentationPage() {
               <div className="flex justify-end">
                 <button
                   type="submit"
-                  disabled={isLoading || !apiSpec.trim() || !userId}
+                  disabled={isLoading || !apiSpec.trim() || !userId || aiJobCount >= AI_JOB_DAILY_LIMIT}
                   className={`inline-flex items-center justify-center px-8 py-3 text-base font-medium rounded-lg transition-all duration-200 ${
-                    isLoading || !apiSpec.trim() || !userId
+                    isLoading || !apiSpec.trim() || !userId || aiJobCount >= AI_JOB_DAILY_LIMIT
                       ? 'cursor-not-allowed bg-muted text-muted-foreground'
                       : 'bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30'
                   }`}
@@ -533,7 +545,12 @@ export default function GenerateDocumentationPage() {
                     </>
                   ) : (
                     <>
-                      <span>Generate Documentation</span>
+                      <span>
+                        {aiJobCount >= AI_JOB_DAILY_LIMIT 
+                          ? `Daily Limit Reached (${aiJobCount}/${AI_JOB_DAILY_LIMIT})`
+                          : `Generate Documentation (${aiJobCount}/${AI_JOB_DAILY_LIMIT})`
+                        }
+                      </span>
                       <svg
                         className="w-5 h-5 ml-2"
                         fill="none"

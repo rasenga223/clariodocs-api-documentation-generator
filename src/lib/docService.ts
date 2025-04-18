@@ -572,4 +572,37 @@ export async function updateMdxFileOrder(
     console.error('Error updating MDX file order:', error);
     return false;
   }
+}
+
+/**
+ * Gets the count of AI jobs created by a user in the last 24 hours
+ * 
+ * @param userId - User ID
+ * @returns Number of AI jobs created today
+ */
+export async function getUserDailyAiJobCount(userId: string): Promise<number> {
+  const oneDayAgo = new Date();
+  oneDayAgo.setDate(oneDayAgo.getDate() - 1);
+  
+  // First get the user's project IDs
+  const { data: projectIds } = await supabase
+    .from('projects')
+    .select('id')
+    .eq('user_id', userId);
+    
+  if (!projectIds) return 0;
+  
+  // Then count AI jobs for these projects
+  const { count, error } = await supabase
+    .from('ai_jobs')
+    .select('*', { count: 'exact', head: true })
+    .in('project_id', projectIds.map(p => p.id))
+    .gte('started_at', oneDayAgo.toISOString());
+    
+  if (error) {
+    console.error('Error getting AI job count:', error);
+    return 0;
+  }
+  
+  return count || 0;
 } 

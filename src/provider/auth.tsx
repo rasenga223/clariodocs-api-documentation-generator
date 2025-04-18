@@ -150,9 +150,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       // Create demo user in public table if needed
       if (data.user) {
         await ensureUserInPublicTable(data.user as UserData);
+        // Set the user state immediately after successful login
+        setUser(data.user as UserData);
+        // Wait a brief moment to ensure auth state is properly updated
+        await new Promise(resolve => setTimeout(resolve, 100));
+        router.push('/dashboard');
       }
-      
-      router.push('/dashboard');
     } catch (error) {
       console.error("Error signing in with demo account:", error);
       toast.error("Failed to sign in with demo account");
