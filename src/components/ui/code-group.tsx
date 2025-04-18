@@ -1,5 +1,7 @@
 import React, { useState } from 'react'
 import { cn } from '@/lib/utils'
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
+import { oneDark } from 'react-syntax-highlighter/dist/cjs/styles/prism'
 
 /**
  * CodeGroup component for displaying multiple code blocks in tabs
@@ -128,6 +130,21 @@ const LANGUAGE_NAMES: { [key: string]: string } = {
   http: 'HTTP',
 }
 
+// Custom syntax highlighting theme based on oneDark
+const customTheme = {
+  ...oneDark,
+  'pre[class*="language-"]': {
+    ...oneDark['pre[class*="language-"]'],
+    background: 'transparent',
+    margin: 0,
+    padding: 0,
+  },
+  'code[class*="language-"]': {
+    ...oneDark['code[class*="language-"]'],
+    background: 'transparent',
+  }
+}
+
 // Add this function before the CodeGroup component
 /**
  * Preprocesses code content to fix common MDX parsing issues:
@@ -166,42 +183,90 @@ export function CodeGroup({ children, className }: CodeGroupProps) {
         // Preprocess the code content
         const processedCode = preprocessCode(code);
         
-        return React.createElement('div', {
-          key: `${index}-${displayTitle}`,
-          className: "font-mono text-sm processed-code-block",
-          'data-type': 'processed',
-          'data-language': language,
-          'data-title': displayTitle,
-          children: processedCode
-        });
+        return (
+          <div key={`${index}-${displayTitle}`} className="relative">
+            <SyntaxHighlighter
+              language={language.toLowerCase()}
+              style={customTheme}
+              showLineNumbers
+              wrapLines
+              customStyle={{
+                margin: 0,
+                padding: '1rem',
+                background: 'transparent',
+                fontSize: '0.875rem',
+              }}
+              lineNumberStyle={{
+                minWidth: '2.5em',
+                paddingRight: '1em',
+                textAlign: 'right',
+                color: 'rgba(156, 163, 175, 0.5)',
+                userSelect: 'none',
+              }}
+              codeTagProps={{
+                style: {
+                  fontSize: 'inherit',
+                  lineHeight: '1.5',
+                }
+              }}
+            >
+              {processedCode}
+            </SyntaxHighlighter>
+          </div>
+        );
       }
     }
     
     // Handle regular JSX components (likely our <Code> component)
     if (React.isValidElement(child)) {
       const element = child as React.ReactElement<ElementProps>;
+      let language = '';
+      let code = '';
       
-      // If the child has string content, preprocess it
-      if (typeof element.props.children === 'string') {
-        return React.cloneElement(element, {
-          ...element.props,
-          children: preprocessCode(element.props.children)
-        });
-      }
-      
-      // If the child has nested content, process it recursively
-      if (React.isValidElement(element.props.children)) {
-        const nestedElement = element.props.children as React.ReactElement<ElementProps>;
-        if (nestedElement.props?.children && typeof nestedElement.props.children === 'string') {
-          return React.cloneElement(element, {
-            ...element.props,
-            children: React.cloneElement(nestedElement, {
-              ...nestedElement.props,
-              children: preprocessCode(nestedElement.props.children)
-            })
-          });
+      // Extract language from className
+      if (element.props.className) {
+        const match = String(element.props.className).match(/language-(\w+)/);
+        if (match) {
+          language = match[1].toLowerCase();
         }
       }
+      
+      // Extract code content
+      if (typeof element.props.children === 'string') {
+        code = preprocessCode(element.props.children);
+      }
+      
+      return (
+        <div key={index} className="relative">
+          <SyntaxHighlighter
+            language={language || 'text'}
+            style={customTheme}
+            showLineNumbers
+            wrapLines
+            customStyle={{
+              margin: 0,
+              padding: '1rem',
+              background: 'transparent',
+              fontSize: '0.875rem',
+            }}
+            lineNumberStyle={{
+              minWidth: '2.5em',
+              paddingRight: '1em',
+              textAlign: 'right',
+              color: 'rgba(156, 163, 175, 0.5)',
+              userSelect: 'none',
+            }}
+            codeTagProps={{
+              style: {
+                fontSize: 'inherit',
+                lineHeight: '1.5',
+              }
+            }}
+          >
+            {code}
+          </SyntaxHighlighter>
+        </div>
+      );
     }
     
     return child;
@@ -299,12 +364,13 @@ export function CodeGroup({ children, className }: CodeGroupProps) {
 
   return (
     <div className={cn(
-      "relative my-6 overflow-hidden rounded-3xl border border-gray-200/50 dark:border-gray-800/80", 
+      "relative my-6 overflow-hidden rounded-xl border border-gray-200/50 dark:border-gray-800/80", 
       "shadow-sm hover:shadow-md transition-all duration-300 backdrop-blur-sm",
+      "bg-gray-50/50 dark:bg-gray-900/50",
       className
     )}>
       {/* Tabs */}
-      <div className="flex overflow-x-auto border-b border-gray-200/50 dark:border-gray-800/80 scrollbar-none">
+      <div className="flex overflow-x-auto border-b border-gray-200/50 dark:border-gray-800/80 bg-white/50 dark:bg-black/50 scrollbar-none">
         {processedChildren.map((child, index) => {
           const { title } = getTabInfo(child, index);
           
@@ -315,7 +381,7 @@ export function CodeGroup({ children, className }: CodeGroupProps) {
               className={cn(
                 'px-5 py-3 text-sm font-medium whitespace-nowrap transition-all duration-200',
                 activeTab === index
-                  ? 'border-b-2 border-gray-800 text-gray-900 dark:border-gray-200 dark:text-gray-100'
+                  ? 'border-b-2 border-primary text-primary bg-primary/5'
                   : 'text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200'
               )}
             >
@@ -325,8 +391,8 @@ export function CodeGroup({ children, className }: CodeGroupProps) {
         })}
       </div>
       
-      {/* Content - clean minimal style */}
-      <div className="relative p-5 font-mono text-sm text-gray-800 dark:text-gray-200">
+      {/* Content - modern IDE style */}
+      <div className="relative font-mono text-sm text-gray-800 dark:text-gray-200 bg-gray-50/80 dark:bg-gray-900/80">
         {processedChildren[activeTab]}
         <CopyButton value={getContentToCopy()} />
       </div>
@@ -334,10 +400,42 @@ export function CodeGroup({ children, className }: CodeGroupProps) {
   )
 }
 
-export function Code({ title, children, className }: CodeProps) {
+export function Code({ title, children, className, language }: CodeProps) {
   return (
-    <div className={cn("font-mono text-sm", className)}>
-      {children}
+    <div className={cn("relative", className)}>
+      {title && (
+        <div className="px-4 py-2 text-xs font-medium text-gray-600 dark:text-gray-400 border-b border-gray-200/50 dark:border-gray-800/80 bg-white/50 dark:bg-black/50">
+          {title}
+        </div>
+      )}
+      <SyntaxHighlighter
+        language={language || 'text'}
+        style={customTheme}
+        showLineNumbers
+        wrapLines
+        customStyle={{
+          margin: 0,
+          padding: '1rem',
+          background: 'transparent',
+          fontSize: '0.875rem',
+        }}
+        lineNumberStyle={{
+          minWidth: '2.5em',
+          paddingRight: '1em',
+          textAlign: 'right',
+          color: 'rgba(156, 163, 175, 0.5)',
+          userSelect: 'none',
+        }}
+        codeTagProps={{
+          style: {
+            fontSize: 'inherit',
+            lineHeight: '1.5',
+          }
+        }}
+      >
+        {typeof children === 'string' ? children : ''}
+      </SyntaxHighlighter>
+      {typeof children === 'string' && <CopyButton value={children} className={title ? "top-11" : ""} />}
     </div>
   )
 } 
